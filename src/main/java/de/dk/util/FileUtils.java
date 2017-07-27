@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import sun.reflect.CallerSensitive;
+
 /**
  * Contains some static methods that are about files.
  *
@@ -17,7 +19,7 @@ import java.net.URISyntaxException;
  * <br/>Erstellt am 30.08.2016
  */
 public final class FileUtils {
-   private static URI jarDir;
+   private static URI sourceLocation;
 
    private FileUtils() {}
 
@@ -29,18 +31,18 @@ public final class FileUtils {
     * @throws IllegalStateException if the URI cannot be parsed (this should not happen
     */
    public static URI locateSource(Class<?> source) throws IllegalStateException {
-      if (jarDir != null)
-         return jarDir;
+      if (sourceLocation != null)
+         return sourceLocation;
 
       try {
-         jarDir = source.getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .toURI();
+         sourceLocation = source.getProtectionDomain()
+                                .getCodeSource()
+                                .getLocation()
+                                .toURI();
       } catch (URISyntaxException e) {
          throw new IllegalStateException(e);
       }
-      return jarDir;
+      return sourceLocation;
    }
 
    /**
@@ -50,6 +52,7 @@ public final class FileUtils {
     *
     * @throws IllegalStateException if the caller class cannot be found.
     */
+   @CallerSensitive
    public static URI locateSource() throws IllegalStateException {
       String callingClassName = null;
 
