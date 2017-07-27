@@ -1,10 +1,12 @@
 package de.dk.util.opt;
 
-import java.util.Objects;
+import de.dk.util.StringUtils;
 
 public class ExpectedOption implements ExpectedArgument {
+   public final static char NO_KEY = '\0';
+
    private final int index;
-   private final char key;
+   private char key;
    private final String name;
    private String longKey;
    private boolean mandatory;
@@ -14,52 +16,70 @@ public class ExpectedOption implements ExpectedArgument {
    private String value;
    private boolean present;
 
-   protected ExpectedOption(int index,
-                            String name,
-                            char key,
-                            String longKey,
-                            boolean mandatory,
-                            boolean expectsValue,
-                            String description) {
+   private ExpectedOption(int index,
+                          String name,
+                          char key,
+                          String longKey,
+                          boolean mandatory,
+                          boolean expectsValue,
+                          String description,
+                          String value,
+                          boolean present) {
       this.index = index;
-      this.name = Objects.requireNonNull(name);
+      this.name = name;
       this.key = key;
       this.longKey = longKey;
       this.mandatory = mandatory;
       this.expectsValue = expectsValue;
       this.description = description;
+      this.value = value;
+      this.present = present;
    }
 
-   protected ExpectedOption(int index, char key, String name, String longKey, String description) throws NullPointerException {
-      this(index, name, key, longKey, false, false, description);
+   public ExpectedOption(int index,
+                         String name,
+                         char key,
+                         String longKey,
+                         boolean mandatory,
+                         String description) {
+      this.index = index;
+      this.name = name;
+      this.key = key;
+      this.longKey = longKey;
+      this.mandatory = mandatory;
+      this.expectsValue = mandatory;
+      this.description = description;
    }
 
-   protected ExpectedOption(int index, char key, String name, boolean mandatory, String description) throws NullPointerException {
-      this(index, name, key, null, mandatory, false, description);
+   public ExpectedOption(int index, char key, String name, String longKey, String description) {
+      this(index, name, key, longKey, false, description);
    }
 
-   protected ExpectedOption(int index, char key, String name, String description) throws NullPointerException {
-      this(index, name, key, null, false, false, description);
+   public ExpectedOption(int index, char key, String name, boolean mandatory, String description) {
+      this(index, name, key, null, mandatory, description);
    }
 
-   protected ExpectedOption(int index, char key, String name) {
+   public ExpectedOption(int index, char key, String name, String description) {
+      this(index, name, key, null, false, description);
+   }
+
+   public ExpectedOption(int index, char key, String name) {
       this(index, key, name, null);
    }
 
+   public ExpectedOption(int index, String longKey, String name) {
+      this(index, NO_KEY, name, longKey, null);
+   }
+
    public void setValue(String value) throws UnsupportedOperationException {
-      if (!expectsValue)
-         throw new UnsupportedOperationException("No value for this option expected.");
+         if (!expectsValue)
+            throw new UnsupportedOperationException("No value for this option expected.");
 
       this.value = value;
    }
 
-   @Override
    public String getValue() {
       return value;
-   }
-
-   public void setLongKey(String longKey) {
-      this.longKey = longKey;
    }
 
    public void setMandatory(boolean mandatory) {
@@ -82,7 +102,7 @@ public class ExpectedOption implements ExpectedArgument {
 
    public void setExpectsValue(boolean expectsValue) {
       this.expectsValue = expectsValue;
-      mandatory &= expectsValue;
+      this.mandatory &= expectsValue;
    }
 
    public void setPresent(boolean present) {
@@ -93,8 +113,16 @@ public class ExpectedOption implements ExpectedArgument {
       return key;
    }
 
+   public void setKey(char key) {
+      this.key = key;
+   }
+
    public String getLongKey() {
       return longKey;
+   }
+
+   public void setLongKey(String longKey) {
+      this.longKey = StringUtils.isBlank(longKey) ? null : longKey;
    }
 
    @Override
@@ -124,16 +152,20 @@ public class ExpectedOption implements ExpectedArgument {
 
    @Override
    public String fullName() {
-      String fullName = "-" + key + (expectsValue ? " <" + getName() + ">" : "");
-      if (longKey != null)
-         fullName += "\n--" + longKey + (expectsValue ? " <" + getName() + ">" : "");
+      String fullName;
+      if (key != NO_KEY)
+         fullName = "-" + key + (expectsValue ? " <" + getName() + ">" : "");
+      else if (longKey != null)
+         fullName = "--" + longKey + (expectsValue ? "=<" + getName() + ">" : "");
+      else
+         fullName = "-" + (expectsValue ? " <" + getName() + ">" : "");
 
       return fullName;
    }
 
    @Override
    public ExpectedOption clone() {
-      return new ExpectedOption(index, name, key, longKey, mandatory, expectsValue, description);
+      return new ExpectedOption(index, name, key, longKey, mandatory, expectsValue, description, value, present);
    }
 
    @Override
@@ -177,7 +209,7 @@ public class ExpectedOption implements ExpectedArgument {
    public String toString() {
       return "ExpectedOption { name=" + name
                                + ", index=" + index
-                               + value != null ? (", value=" + value) : ""
+                               + (value != null ? (", value=" + value) : "")
               + " }";
    }
 }

@@ -15,7 +15,6 @@ public interface ExpectedArgument {
    public String fullName();
    public int getIndex();
    public String getDescription();
-   public String getValue();
    public boolean isPresent();
    public boolean isOption();
    public ExpectedArgument clone();

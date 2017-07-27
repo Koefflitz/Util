@@ -1,5 +1,7 @@
 package de.dk.util.opt;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.dk.util.PeekableIterator;
 import de.dk.util.opt.ex.MissingArgumentException;
+import de.dk.util.opt.ex.MissingOptionValueException;
+import de.dk.util.opt.ex.UnexpectedOptionValueException;
+import de.dk.util.opt.ex.UnknownArgumentException;
 
 /**
  * Builder class to build an argument model.
@@ -22,11 +28,36 @@ public class ArgumentModelBuilder {
    private final List<ExpectedPlainArgument> arguments;
    private final Map<Character, ExpectedOption> options;
    private final Map<String, ExpectedOption> longOptions;
-
+   private final Map<String, Command> commands;
    private final List<ExpectedArgument> mandatories;
-
    private boolean allMandatoriesPresent;
+
    private int plainArgIndex;
+
+   /**
+    * Create a new argumentmodel builder with plain arguments, options and long options.
+    *
+    * @param arguments The expected arguments
+    * @param options The expected options mapped by their key
+    * @param longOptions The expected options mapped by their long key
+    * @param commands The expeced commands mapped by their name
+    * @param plainArgIndex The index of the next plain argument that will be parsed
+    */
+   public ArgumentModelBuilder(List<ExpectedPlainArgument> arguments,
+                               Map<Character, ExpectedOption> options,
+                               Map<String, ExpectedOption> longOptions,
+                               Map<String, Command> commands,
+                               int plainArgIndex) {
+      this.arguments = Objects.requireNonNull(arguments);
+      this.options = Objects.requireNonNull(options);
+      this.longOptions = Objects.requireNonNull(longOptions);
+      this.commands = commands == null ? new HashMap<>(0) : commands;
+      this.plainArgIndex = plainArgIndex;
+      this.mandatories = Stream.of(arguments, options.values(), commands.values())
+                               .flatMap(Collection::stream)
+                               .filter(ExpectedArgument::isMandatory)
+                               .collect(Collectors.toList());
+   }
 
    /**
     * Create a new argumentmodel builder with plain arguments, options and long options.
@@ -40,13 +71,22 @@ public class ArgumentModelBuilder {
                                Map<Character, ExpectedOption> options,
                                Map<String, ExpectedOption> longOptions,
                                int plainArgIndex) {
-      this.arguments = Objects.requireNonNull(arguments);
-      this.options = Objects.requireNonNull(options);
-      this.longOptions = Objects.requireNonNull(longOptions);
-      this.plainArgIndex = plainArgIndex;
-      this.mandatories = Stream.concat(arguments.stream(), options.values().stream())
-                                      .filter(ExpectedArgument::isMandatory)
-                                      .collect(Collectors.toList());
+      this(arguments, options, longOptions, null, plainArgIndex);
+   }
+
+   /**
+    * Create a new argumentmodel builder with plain arguments, options and long options.
+    *
+    * @param arguments The expected arguments
+    * @param options The expected options mapped by their key
+    * @param longOptions The expected options mapped by their long key
+    * @param commands The expeced commands mapped by their name
+    */
+   public ArgumentModelBuilder(List<ExpectedPlainArgument> arguments,
+                               Map<Character, ExpectedOption> options,
+                               Map<String, ExpectedOption> longOptions,
+                               Map<String, Command> commands) {
+      this(arguments, options, longOptions, commands, 0);
    }
 
    /**
@@ -59,7 +99,7 @@ public class ArgumentModelBuilder {
    public ArgumentModelBuilder(List<ExpectedPlainArgument> arguments,
                                Map<Character, ExpectedOption> options,
                                Map<String, ExpectedOption> longOptions) {
-      this(arguments, options, longOptions, 0);
+      this(arguments, options, longOptions, null, 0);
    }
 
    /**
@@ -78,10 +118,13 @@ public class ArgumentModelBuilder {
       for (ExpectedPlainArgument arg : this.arguments)
          arguments.put(arg.getName(), arg);
 
-      return new ArgumentModel(arguments, options.entrySet()
-                                                 .stream()
-                                                 .filter(e -> e.getValue().isPresent())
-                                                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+      Map<Character, ExpectedOption> options = this.options
+                                                   .entrySet()
+                                                   .stream()
+                                                   .filter(e -> e.getValue().isPresent())
+                                                   .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+      return new ArgumentModel(arguments, options, commands);
    }
 
    /**
@@ -220,4 +263,35 @@ public class ArgumentModelBuilder {
       return Optional.ofNullable(longOptions.get(longKey));
    }
 
+   /**
+    * Parses the command with the given <code>name</code> sets the parsed ArgumentModel to the command.
+    *
+    * @param name The name of the command
+    * @param argIterator The iterator over the arguments to parse
+    * The next argument returned by the iterators <code>next</code> method has to be the first argument for the command.
+    *
+    * @return <code>true</code> if the command was successfully parsed.
+    * <code>false</code> if no command with the given <code>name</code> was found
+    *
+    * @throws MissingArgumentException If a mandatory argument (or mandatory option) is missing
+    * @throws MissingOptionValueException If an option that has to go with a following value was no value given
+    * @throws UnknownArgumentException If an unknown argument was discovered before the arguments were fully parsed
+    * @throws UnexpectedOptionValueException If an option value for an option that doesn't expect any value was supplied
+    * e.g. If an option <code>[-f --foo]</code> is just intended as a simple flag, that doesn't expect any value
+    * is given like <code>--foo=bar</code>
+    */
+   public boolean parseCommand(String name, PeekableIterator<String> argIterator) throws MissingArgumentException,
+                                                                                         MissingOptionValueException,
+                                                                                         UnknownArgumentException,
+                                                                                         UnexpectedOptionValueException {
+      Command cmd = commands.get(name);
+      if (cmd == null)
+         return false;
+
+      ArgumentModel result = cmd.getParser()
+                                .parseArguments(argIterator);
+
+      cmd.setValue(result);
+      return true;
+   }
 }

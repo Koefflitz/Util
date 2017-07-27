@@ -3,6 +3,7 @@ package de.dk.util.opt;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -16,8 +17,9 @@ import java.util.Optional;
  * @see ArgumentParserBuilder
  */
 public class ArgumentModel implements Iterable<String> {
-   private LinkedHashMap<String, ExpectedPlainArgument> arguments;
-   private Map<Character, ExpectedOption> options;
+   private final LinkedHashMap<String, ExpectedPlainArgument> arguments;
+   private final Map<Character, ExpectedOption> options;
+   private final Map<String, Command> commands;
 
    /**
     * Creates a new argument model with argument and options.
@@ -25,9 +27,12 @@ public class ArgumentModel implements Iterable<String> {
     * @param arguments The arguments mapped by their names
     * @param options The options mapped by their key characters
     */
-   public ArgumentModel(LinkedHashMap<String, ExpectedPlainArgument> arguments, Map<Character, ExpectedOption> options) {
-      this.arguments = arguments;
-      this.options = options;
+   public ArgumentModel(LinkedHashMap<String, ExpectedPlainArgument> arguments,
+                        Map<Character, ExpectedOption> options,
+                        Map<String, Command> commands) {
+      this.arguments = Objects.requireNonNull(arguments);
+      this.options = Objects.requireNonNull(options);
+      this.commands = Objects.requireNonNull(commands);
    }
 
    /**
@@ -39,20 +44,32 @@ public class ArgumentModel implements Iterable<String> {
     * <code>name</code> was not specified.
     */
    public String getArgumentValue(String name) {
-      return arguments.get(name) == null ? null : arguments.get(name).getValue();
+      return getOptionalArgumentValue(name).orElse(null);
    }
 
    /**
-    * Get the value of the argument with the given <code>name</code>.
+    * Get the value of an optional plain argument.
     *
     * @param name The name of the argument
     *
-    * @return The value of the argument of <code>null</code> if the argument
-    * <code>name</code> was not specified.
+    * @return An optional that contains the arguments value if present.
     */
    public Optional<String> getOptionalArgumentValue(String name) {
       return Optional.ofNullable(arguments.get(name))
-                     .map(ExpectedArgument::getValue);
+                     .map(ExpectedPlainArgument::getValue);
+   }
+
+   /**
+    * Find out whether a plain argument was given or not.
+    *
+    * @param name The name of the argument
+    *
+    * @return <code>true</code> if the agument was given. <code>false</code> otherwise
+    */
+   public boolean isArgumentPresent(String name) {
+      return Optional.ofNullable(arguments.get(name))
+                     .map(ExpectedArgument::isPresent)
+                     .orElse(false);
    }
 
    /**
@@ -75,7 +92,7 @@ public class ArgumentModel implements Iterable<String> {
     */
    public Optional<String> getOptionalValue(char key) {
       return Optional.ofNullable(options.get(key))
-                     .map(ExpectedArgument::getValue);
+                     .map(ExpectedOption::getValue);
    }
 
    /**
@@ -85,15 +102,58 @@ public class ArgumentModel implements Iterable<String> {
     *
     * @return <code>true</code> if the option was set. <code>false</code> otherwise
     */
-   public boolean isOptionPresent(char key) {
-      return options.containsKey(key);
-   }
+    public boolean isOptionPresent(char key) {
+       return Optional.ofNullable(options.get(key))
+                      .map(ExpectedArgument::isPresent)
+                      .orElse(false);
+    }
 
-   @Override
-   public Iterator<String> iterator() {
-      return arguments.values()
-                      .stream()
-                      .map(ExpectedPlainArgument::getValue)
-                      .iterator();
-   }
+    /**
+     * Get the parsed argument model of the command with the given <code>name</code>.
+     *
+     * @param name The name of the command
+     *
+     * @return The parsed argument model of the command
+     */
+    public ArgumentModel getCommandValue(String name) {
+       if (commands == null)
+          return null;
+
+       return Optional.ofNullable(commands.get(name))
+                      .map(Command::getValue)
+                      .orElse(null);
+    }
+
+    /**
+     * Get the parsed argument model of the command with the given <code>name</code>.
+     *
+     * @param name The name of the command
+     *
+     * @return An optional containing the parsed argument model of the command if present
+     */
+    public Optional<ArgumentModel> getOptionalCommandValue(String name) {
+       return Optional.ofNullable(commands.get(name))
+                      .map(Command::getValue);
+    }
+
+    /**
+     * Find out whether a command was given or not.
+     *
+     * @param name The name of the command
+     *
+     * @return <code>true</code> if the command was given. <code>false</code> otherwise
+     */
+    public boolean isCommandPresent(String name) {
+       return Optional.ofNullable(commands.get(name))
+                      .map(ExpectedArgument::isPresent)
+                      .orElse(false);
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+       return arguments.values()
+                       .stream()
+                       .map(ExpectedPlainArgument::getValue)
+                       .iterator();
+    }
 }

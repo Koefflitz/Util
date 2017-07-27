@@ -1,56 +1,32 @@
 package de.dk.util.opt;
 
-/**
- * A builder class to build an argument for an {@link ArgumentParser}.
- * An argument builder is a sub builder of an {@link ArgumentParserBuilder}.
- * The built argument is given to the parent argumentparser builder.
- *
- * @author David Koettlitz
- * <br>Erstellt am 24.07.2017
- *
- * @see ArgumentParser
- * @see ArgumentParserBuilder
- */
-public class ArgumentBuilder {
-   private final ArgumentParserBuilder parentBuilder;
-   private final ExpectedPlainArgument argument;
+public interface ArgumentBuilder {
 
    /**
-    * Creates a new argument builder that belongs to the given <code>parentBuilder</code>.
-    * The argument that this argument builder is building is passed to the <code>parentBuilder</code>.
-    *
-    * @param parentBuilder The argumentparser builder this argument builder belongs to
-    * @param index The index of the argument it has in the order
-    * @param name The name of the argument
-    */
-   protected ArgumentBuilder(ArgumentParserBuilder parentBuilder, int index, String name) {
-      this.parentBuilder = parentBuilder;
-      this.argument = new ExpectedPlainArgument(index, name);
-   }
-
-   /**
-    * Builds the argument and adds it to the argumentparser builder
+    * Builds the argument and adds it to the parent argumentparser builder
     * by which this argument builder was created and returns the argumentparser builder.
+    * If this command builder is not a child builder use the {@link ArgumentBuilder#buildAndGet()} method instead.
     *
     * @return The argumentparser builder by which this argument builder was created.
+    *
+    * @throws UnsupportedOperationException If this argument builder is not a child builder of an
+    * <code>ArgumentParserBuilder</code>
+    * @throws IllegalStateException If the argument could not be build
     */
-   public ArgumentParserBuilder build() {
-      return parentBuilder.addArgument(argument);
-   }
+   public ArgumentParserBuilder build() throws UnsupportedOperationException, IllegalStateException;
 
    /**
     * Builds the argument and passes it to the parent argumentparser builder.
     * It is recommended to use the {@link ArgumentBuilder#build()} method instead.
     *
     * @return The built argument.
+    *
+    * @throws IllegalStateException If the argument could not be build
     */
-   public ExpectedPlainArgument buildAndGet() {
-      parentBuilder.addArgument(argument);
-      return argument;
-   }
+   public ExpectedArgument buildAndGet() throws IllegalStateException;
 
    /**
-    * Makes the argument mandatory. By default arguments are mandatory.
+    * Makes the argument mandatory.
     * If an argument is mandatory, the argumentparser is throwing a <code>MissingArgumentException</code>
     * if the argument is not present.
     *
@@ -58,10 +34,7 @@ public class ArgumentBuilder {
     *
     * @return This argument builder to go on
     */
-   public ArgumentBuilder setMandatory(boolean mandatory) {
-      argument.setMandatory(mandatory);
-      return this;
-   }
+   public ArgumentBuilder setMandatory(boolean mandatory);
 
    /**
     * Set a description of the argument. This description can be printed for the user to help him.
@@ -70,9 +43,12 @@ public class ArgumentBuilder {
     *
     * @return This argument builder to go on
     */
-   public ArgumentBuilder setDescription(String description) {
-      argument.setDescription(description);
-      return this;
-   }
+   public ArgumentBuilder setDescription(String description);
 
+   /**
+    * Informs if this ArgumentBuilder is a children of another builder or not.
+    *
+    * @return <code>true</code> if this builder has a parentbuilder the result is passed to, <code>false</code> otherwise.
+    */
+   public boolean isChild();
 }

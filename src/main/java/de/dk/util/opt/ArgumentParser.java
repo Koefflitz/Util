@@ -3,17 +3,21 @@ package de.dk.util.opt;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.dk.util.ArrayIterator;
+import de.dk.util.PeekableIterator;
 import de.dk.util.opt.ex.MissingArgumentException;
 import de.dk.util.opt.ex.MissingOptionValueException;
+import de.dk.util.opt.ex.UnexpectedOptionValueException;
+import de.dk.util.opt.ex.UnknownArgumentException;
 
 /**
  * A class to parse command line arguments and options.
@@ -28,40 +32,34 @@ import de.dk.util.opt.ex.MissingOptionValueException;
 public class ArgumentParser {
    private static final String HELP = "help";
    private static final String SHORT_HELP = "h";
+
    private final List<ExpectedPlainArgument> arguments;
    private final Map<Character, ExpectedOption> options;
    private final Map<String, ExpectedOption> longOptions;
+   private final Map<String, Command> commands;
 
    private ExpectedArgument[] allArguments;
 
-   /**
-    * Creates a new argumentparser expecting the given arguments and options.
-    * Use a {@link ArgumentParserBuilder} to comfortably build an argumentparser.
-    *
-    * @param arguments The expected plain arguments in the order of the list
-    * @param options The expected options mapped by their key
-    * @param longOptions The expected options mapped by their long key
-    */
    public ArgumentParser(List<ExpectedPlainArgument> arguments,
                          Map<Character, ExpectedOption> options,
-                         Map<String, ExpectedOption> longOptions) {
+                         Map<String, ExpectedOption> longOptions,
+                         Map<String, Command> commands) {
       this.arguments = Objects.requireNonNull(arguments);
       this.options = Objects.requireNonNull(options);
       this.longOptions = Objects.requireNonNull(longOptions);
+      this.commands = commands == null ? new HashMap<>(0) : commands;
 
-      this.allArguments = joinArguments(arguments, options.values());
+      this.allArguments = Stream.of(arguments, options.values(), longOptions.values(), commands.values())
+                                .flatMap(Collection::stream)
+                                .sorted((a, b) -> a.getIndex() - b.getIndex())
+                                .distinct()
+                                .toArray(ExpectedArgument[]::new);
    }
 
-   private static ExpectedArgument[] joinArguments(Collection<ExpectedPlainArgument> plainArgs,
-                                                   Collection<ExpectedOption> options) {
-      ExpectedArgument[] result = new ExpectedArgument[plainArgs.size() + options.size()];
-      for (ExpectedPlainArgument arg : plainArgs)
-         result[arg.getIndex()] = arg;
-
-      for (ExpectedOption opt : options)
-         result[opt.getIndex()] = opt;
-
-      return result;
+   public ArgumentParser(List<ExpectedPlainArgument> arguments,
+                         Map<Character, ExpectedOption> options,
+                         Map<String, ExpectedOption> longOptions) {
+      this(arguments, options, longOptions, null);
    }
 
    /**
@@ -73,56 +71,101 @@ public class ArgumentParser {
     *
     * @throws MissingArgumentException If a mandatory argument (or mandatory option) is missing
     * @throws MissingOptionValueException If an option that has to go with a following value was no value given
+    * @throws UnknownArgumentException If an unknown argument was discovered before the arguments were fully parsed
+    * @throws UnexpectedOptionValueException If an option value for an option that doesn't expect any value was supplied
+    * e.g. If an option <code>[-f --foo]</code> is just intended as a simple flag, that doesn't expect any value
+    * is given like <code>--foo=bar</code>
     */
-   public ArgumentModel parseArguments(String... args) throws MissingArgumentException,
-                                                              MissingOptionValueException {
-      List<ExpectedPlainArgument> arguments = this.arguments
-                                                  .stream()
-                                                  .map(ExpectedPlainArgument::clone)
-                                                  .collect(ArrayList::new,
-                                                           Collection::add,
-                                                           Collection::addAll);
-
-      Map<Character, ExpectedOption> options = this.options
-                                                   .entrySet()
-                                                   .stream()
-                                                   .collect(Collectors.toMap(Entry::getKey,
-                                                                             e -> e.getValue().clone()));
-
-      Map<String, ExpectedOption> longOptions = this.longOptions
-                                                    .entrySet()
-                                                    .stream()
-                                                    .collect(Collectors.toMap(Entry::getKey,
-                                                                              e -> e.getValue().clone()));
-
-      ArgumentModelBuilder builder = new ArgumentModelBuilder(arguments, options, longOptions);
-      return parseArguments(ArrayIterator.of(args), builder);
+   public ArgumentModel parseArguments(int offset, int length, String... args) throws MissingArgumentException,
+                                                                                      MissingOptionValueException,
+                                                                                      UnknownArgumentException,
+                                                                                      UnexpectedOptionValueException {
+      return parseArguments(ArrayIterator.of(offset, length, args));
    }
 
-   private ArgumentModel parseArguments(Iterator<String> iterator,
-                                        ArgumentModelBuilder builder) throws MissingArgumentException,
-                                                                             MissingOptionValueException {
+   /**
+    * Parses the given <code>args</code> and returns the results as an argument model.
+    *
+    * @param args The arguments to parse
+    *
+    * @return An argument model containing the results.
+    *
+    * @throws MissingArgumentException If a mandatory argument (or mandatory option) is missing
+    * @throws MissingOptionValueException If an option that has to go with a following value was no value given
+    * @throws UnknownArgumentException If an unknown argument was discovered before the arguments were fully parsed
+    * @throws UnexpectedOptionValueException If an option value for an option that doesn't expect any value was supplied
+    * e.g. If an option <code>[-f --foo]</code> is just intended as a simple flag, that doesn't expect any value
+    * is given like <code>--foo=bar</code>
+    */
+   public ArgumentModel parseArguments(String... args) throws MissingArgumentException,
+                                                              MissingOptionValueException,
+                                                              UnknownArgumentException,
+                                                              UnexpectedOptionValueException {
+      return parseArguments(ArrayIterator.of(args));
+   }
+
+   /**
+    * Parses the args given by the <code>iterator</code> and returns the results as an argument model.
+    * Unknown additional argument at the end (and only at the end!) of the argument list will be ignored.
+    *
+    * @param iterator The arguments to parse
+    *
+    * @return An argument model containing the results.
+    *
+    * @throws MissingArgumentException If a mandatory argument (or mandatory option) is missing
+    * @throws MissingOptionValueException If an option that has to go with a following value was no value given
+    * @throws UnknownArgumentException If an unknown argument was discovered before the arguments were fully parsed
+    * @throws UnexpectedOptionValueException If an option value for an option that doesn't expect any value was supplied
+    * e.g. If an option <code>[-f --foo]</code> is just intended as a simple flag, that doesn't expect any value
+    * is given like <code>--foo=bar</code>
+    */
+   public ArgumentModel parseArguments(PeekableIterator<String> iterator) throws MissingArgumentException,
+                                                                                 MissingOptionValueException,
+                                                                                 UnknownArgumentException,
+                                                                                 UnexpectedOptionValueException {
+      return parseArguments(iterator, createModelBuilder());
+   }
+
+   protected ArgumentModel parseArguments(PeekableIterator<String> iterator,
+                                          ArgumentModelBuilder builder) throws MissingArgumentException,
+                                                                               MissingOptionValueException,
+                                                                               UnknownArgumentException,
+                                                                               UnexpectedOptionValueException {
+      NoSuchElementException ex = null;
+      String arg = null;
       try {
          while (iterator.hasNext()) {
-            String arg = iterator.next();
+            arg = iterator.peek();
             if (!arg.startsWith("-")) {
-               handlePlainArgument(arg, builder);
-               continue;
-            }
+               if (commands.containsKey(arg)) {
+                  iterator.next();
+                  builder.parseCommand(arg, iterator);
+               } else {
+                  handlePlainArgument(arg, builder);
+                  iterator.next();
+               }
+            } else {
+               ExpectedOption option = handleOption(arg, builder);
+               iterator.next();
+               if (option.expectsValue() && option.getValue() == null) {
+                  if (!iterator.hasNext())
+                     throw new MissingOptionValueException(option);
 
-            ExpectedOption option = handleOption(arg, builder);
-            if (option.expectsValue() && option.getValue() == null) {
-               if (!iterator.hasNext())
-                  throw new MissingOptionValueException(option);
-
-               option.setValue(iterator.next());
+                  option.setValue(iterator.next());
+               }
             }
          }
       } catch (NoSuchElementException e) {
-
+         ex = e;
       }
 
-      return builder.build();
+      try {
+         return builder.build();
+      } catch (MissingArgumentException e) {
+         if (ex != null)
+            throw new UnknownArgumentException(arg);
+         else throw e;
+      }
    }
 
    private void handlePlainArgument(String arg, ArgumentModelBuilder builder) throws NoSuchElementException {
@@ -131,9 +174,12 @@ public class ArgumentParser {
       expected.setValue(arg);
    }
 
-   private ExpectedOption handleOption(String arg, ArgumentModelBuilder builder) throws MissingOptionValueException {
+   private ExpectedOption handleOption(String arg, ArgumentModelBuilder builder) throws MissingOptionValueException,
+                                                                                        NoSuchElementException,
+                                                                                        UnexpectedOptionValueException {
       ExpectedOption result = null;
 
+      // long options e.g. '--longOpt'
       if (arg.length() > 2 && arg.charAt(1) == '-') {
          int equalsIndex = arg.indexOf('=');
          if (equalsIndex == -1) {
@@ -146,9 +192,13 @@ public class ArgumentParser {
             result = builder.getOption(arg.substring(2, equalsIndex))
                             .orElseThrow(() -> new NoSuchElementException(arg));
 
-            if (arg.length() > equalsIndex + 1)
-               result.setValue(arg.substring(equalsIndex + 1));
+            if (arg.length() > equalsIndex + 1) {
+               if (result.expectsValue())
+                  result.setValue(arg.substring(equalsIndex + 1));
+               else throw new UnexpectedOptionValueException(result, arg);
+            }
          }
+      // Single char options e.g. '-a', '-abc' or '--'
       } else if (arg.length() >= 2) {
          for (int i = 1; i < arg.length(); i++) {
             char key = arg.charAt(i);
@@ -159,14 +209,42 @@ public class ArgumentParser {
             if (result.expectsValue() && i + 1 < arg.length())
                throw new MissingOptionValueException(result);
          }
+      // Can only be '-'
       } else {
-         result = builder.getOption('\0')
+         result = builder.getOption(ExpectedOption.NO_KEY)
                          .orElseThrow(() -> new NoSuchElementException(arg));
-         result.setPresent(true);
       }
 
       result.setPresent(true);
       return result;
+   }
+
+   private ArgumentModelBuilder createModelBuilder() {
+      List<ExpectedPlainArgument> arguments = this.arguments
+                                                  .stream()
+                                                  .map(ExpectedPlainArgument::clone)
+                                                  .collect(ArrayList::new,
+                                                           Collection::add,
+                                                           Collection::addAll);
+
+      Map<Character, ExpectedOption> options = this.options
+                                                   .entrySet()
+                                                   .stream()
+                                                   .collect(Collectors.toMap(Entry::getKey,
+                                                                e -> e.getValue().clone()));
+
+      Map<String, ExpectedOption> longOptions = this.longOptions
+                                                    .entrySet()
+                                                    .stream()
+                                                    .collect(Collectors.toMap(Entry::getKey,
+                                                                              e -> options.get(e.getValue().getKey())));
+
+      Map<String, Command> commands = this.commands
+                                          .entrySet()
+                                          .stream()
+                                          .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().clone()));
+
+      return new ArgumentModelBuilder(arguments, options, longOptions, commands);
    }
 
    /**

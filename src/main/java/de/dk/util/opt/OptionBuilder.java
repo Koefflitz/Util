@@ -30,13 +30,41 @@ public class OptionBuilder {
    }
 
    /**
+    * Creates a new option builder that belongs to the given <code>parentBuilder</code>.
+    * The option that this option builder is building is passed to the <code>parentBuilder</code>.
+    *
+    * @param parentBuilder The argumentparser builder this option builder belongs to
+    * @param index The index of the option it has in the order
+    * @param longKey The long key of the option
+    * @param name The name of the option
+    */
+   protected OptionBuilder(ArgumentParserBuilder parentBuilder, int index, String longKey, String name) {
+      this.parentBuilder = parentBuilder;
+      this.option = new ExpectedOption(index, longKey, name);
+   }
+
+   /**
     * Builds the option and adds it to the argumentparser builder
     * by which this option builder was created and returns the argumentparser builder.
     *
     * @return The argumentparser builder by which this option builder was created.
+    *
+    * @throws IllegalArgumentException if the option doesn't have either a key nor a long key.
     */
    public ArgumentParserBuilder build() {
       return parentBuilder.addOption(option);
+   }
+
+   /**
+    * Set the key of the option. Use {@link ExpectedOption#NO_KEY} to prohibit a for the option single character key.
+    *
+    * @param key The key of the option
+    *
+    * @return This option builder to go on
+    */
+   public OptionBuilder setKey(char key) {
+      option.setKey(key);
+      return this;
    }
 
    /**

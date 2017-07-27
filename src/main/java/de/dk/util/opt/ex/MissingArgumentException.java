@@ -10,7 +10,7 @@ import de.dk.util.opt.ExpectedArgument;
  * @author David Koettlitz
  * <br>Erstellt am 24.07.2017
  */
-public class MissingArgumentException extends ArgumentParserException {
+public class MissingArgumentException extends ArgumentParseException {
    private static final long serialVersionUID = 1L;
 
    private final List<? extends ExpectedArgument> missingArguments;

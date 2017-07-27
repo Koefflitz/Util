@@ -47,11 +47,18 @@ public class ArgumentParserBuilder {
    private List<ExpectedPlainArgument> arguments = new ArrayList<>();
    private Map<Character, ExpectedOption> options = new LinkedHashMap<>();
    private Map<String, ExpectedOption> longOptions = new LinkedHashMap<>();
+   private Map<String, Command> commands = new LinkedHashMap<>(0);
+
+   private CommandBuilder parentBuilder;
 
    private int argCount;
 
-   public ArgumentParserBuilder() {
+   public ArgumentParserBuilder(CommandBuilder parentBuilder) {
+      this.parentBuilder = parentBuilder;
+   }
 
+   public ArgumentParserBuilder() {
+      this(null);
    }
 
    /**
@@ -59,56 +66,20 @@ public class ArgumentParserBuilder {
     *
     * @return A new argumentparser
     */
-   public ArgumentParser build() {
-      return new ArgumentParser(arguments, options, longOptions);
+   public ArgumentParser buildAndGet() {
+      ArgumentParser parser = new ArgumentParser(arguments, options, longOptions, commands);
+      if (parentBuilder != null)
+         parentBuilder.setParser(parser);
+
+      return parser;
    }
 
-   /**
-    * Creates a new option builder to build an option.
-    * The build method of that option builder will return this argumentparser builder again.
-    *
-    * @param key The key of the option
-    * @param name The name of the option
-    *
-    * @return An option builder that will be a child builder of this builder
-    *
-    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
-    */
-   public OptionBuilder buildOption(char key, String name) throws NullPointerException {
-      return new OptionBuilder(this, argCount++, key, name);
-   }
+   public CommandBuilder build() {
+      if (parentBuilder == null)
+         throw new UnsupportedOperationException("This ArgumentParserBuilder didn't have a parent builder.");
 
-   /**
-    * Adds an option to this builder, that the resulting argument parser will be able to parse.
-    * The option will be a simple flag without any value.
-    * To add a more specific option use the {@link ArgumentParserBuilder#buildOption(char, String)} method.
-    *
-    * @param key The key of the option
-    * @param name The name of the option
-    *
-    * @return This argumentparser builder to go on
-    *
-    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
-    */
-   public ArgumentParserBuilder addOption(char key, String name) throws NullPointerException {
-      return addOption(new ExpectedOption(argCount++, key, name));
-   }
-
-   /**
-    * Adds an option to this builder, that the resulting argument parser will be able to parse.
-    * The option will be a simple flag without any value.
-    * To add a more specific option use the {@link ArgumentParserBuilder#buildOption(char, String)} method.
-    *
-    * @param key The key of the option
-    * @param name The name of the option
-    * @param description The description of the option
-    *
-    * @return This argumentparser builder to go on
-    *
-    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
-    */
-   public ArgumentParserBuilder addOption(char key, String name, String description) throws NullPointerException {
-      return addOption(new ExpectedOption(argCount++, key, name, description));
+      buildAndGet();
+      return parentBuilder;
    }
 
    /**
@@ -121,8 +92,8 @@ public class ArgumentParserBuilder {
     *
     * @throws NullPointerException If the given <code>name</code> is <code>null</code>
     */
-   public ArgumentBuilder buildArgument(String name) throws NullPointerException {
-      return new ArgumentBuilder(this, argCount++, name);
+   public PlainArgumentBuilder buildArgument(String name) throws NullPointerException {
+      return new PlainArgumentBuilder(this, argCount++, name);
    }
 
    /**
@@ -184,6 +155,88 @@ public class ArgumentParserBuilder {
    }
 
    /**
+    * Creates a new option builder to build an option.
+    * The build method of that option builder will return this argumentparser builder again.
+    *
+    * @param key The key of the option
+    * @param name The name of the option
+    *
+    * @return An option builder that will be a child builder of this builder
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+   public OptionBuilder buildOption(char key, String name) throws NullPointerException {
+
+      return new OptionBuilder(this, argCount++, key, name);
+   }
+
+   /**
+    * Creates a new option builder to build an option.
+    * The build method of that option builder will return this argumentparser builder again.
+    *
+    * @param longKey The long key of the option
+    * @param name The name of the option
+    *
+    * @return An option builder that will be a child builder of this builder
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+   public OptionBuilder buildOption(String longKey, String name) throws NullPointerException {
+
+      return new OptionBuilder(this, argCount++, longKey, name);
+   }
+
+   /**
+    * Adds an option to this builder, that the resulting argument parser will be able to parse.
+    * The option will be a simple flag without any value.
+    * To add a more specific option use the {@link ArgumentParserBuilder#buildOption(char, String)} method.
+    *
+    * @param key The key of the option
+    * @param name The name of the option
+    *
+    * @return This argumentparser builder to go on
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+
+   public ArgumentParserBuilder addOption(char key, String name) throws NullPointerException {
+      return addOption(new ExpectedOption(argCount++, key, name));
+   }
+
+   /**
+    * Adds an option to this builder, that the resulting argument parser will be able to parse.
+    * The option will be a simple flag without any value.
+    * To add a more specific option use the {@link ArgumentParserBuilder#buildOption(char, String)} method.
+    *
+    * @param longKey The longKey of the option
+    * @param name The name of the option
+    *
+    * @return This argumentparser builder to go on
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+   public ArgumentParserBuilder addOption(String longKey, String name) throws NullPointerException {
+      return addOption(new ExpectedOption(argCount++, longKey, name));
+   }
+
+   /**
+    * Adds an option to this builder, that the resulting argument parser will be able to parse.
+    * The option will be a simple flag without any value.
+    * To add a more specific option use the {@link ArgumentParserBuilder#buildOption(char, String)} method.
+    *
+    * @param key The key of the option
+    * @param name The name of the option
+    * @param description The description of the option
+    *
+    * @return This argumentparser builder to go on
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+   public ArgumentParserBuilder addOption(char key, String name, String description) throws NullPointerException {
+      return addOption(new ExpectedOption(argCount++, key, name, description));
+   }
+
+   /**
     * Adds an option to this builder, that the resulting argument parser will be able to parse.
     *
     * @param option The option to be added
@@ -195,6 +248,25 @@ public class ArgumentParserBuilder {
       if (option.getLongKey() != null)
          longOptions.put(option.getLongKey(), option);
 
+      return this;
+   }
+
+   /**
+    * Creates a new command builder to build a command.
+    * The build method of that command builder will return this argumentparser builder again.
+    *
+    * @param name The name of the command
+    *
+    * @return A command builder that will be a child builder of this builder
+    *
+    * @throws NullPointerException If the given <code>name</code> is <code>null</code>
+    */
+   public CommandBuilder buildCommand(String name) throws NullPointerException {
+      return new CommandBuilder(this, argCount++, name);
+   }
+
+   protected ArgumentParserBuilder addCommand(Command command) {
+      commands.put(command.getName(), command);
       return this;
    }
 }

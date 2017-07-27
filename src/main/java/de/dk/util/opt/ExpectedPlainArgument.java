@@ -25,7 +25,6 @@ public class ExpectedPlainArgument implements ExpectedArgument {
       this(index, name, true, description);
    }
 
-   @Override
    public String getValue() {
       return value;
    }
@@ -120,7 +119,7 @@ public class ExpectedPlainArgument implements ExpectedArgument {
    public String toString() {
       return "ExpectedPlainArgument { name=" + name
                                       + ", index=" + index
-                                      + value != null ? (", value=" + value) : ""
+                                      + (value != null ? (", value=" + value) : "")
              + " }";
    }
 }

@@ -8,7 +8,7 @@ import de.dk.util.opt.ExpectedOption;
  * @author David Koettlitz
  * <br>Erstellt am 24.07.2017
  */
-public class MissingOptionException extends ArgumentParserException {
+public class MissingOptionException extends ArgumentParseException {
    private static final long serialVersionUID = 1L;
 
    public MissingOptionException(ExpectedOption option) {
