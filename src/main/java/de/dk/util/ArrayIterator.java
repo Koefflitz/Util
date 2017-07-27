@@ -1,46 +1,71 @@
 package de.dk.util;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class ArrayIterator<E> implements Iterator<E> {
+public class ArrayIterator<E> implements PeekableIterator<E> {
    private final E[] array;
    private int index;
+   private int length;
 
-   protected ArrayIterator(E[] array) {
+   protected ArrayIterator(int offset, int length, E[] array) {
       this.array = Objects.requireNonNull(array);
+      if (offset < 0)
+         throw new IllegalArgumentException("offset can not be less than 0. Was " + offset);
+      if (length < 0 || offset + length > array.length)
+         throw new IllegalArgumentException("Length cannot be less than 0 or greater than the length of the array. Was " + length);
+
+      this.index = offset;
+      this.length = length;
    }
 
-   public static <E> Iterator<E> of(E[] array) {
+   public static <E> PeekableIterator<E> of(E[] array) {
       if (array == null || array.length < 1)
          return new EmptyIterator<>();
 
-      return new ArrayIterator<>(array);
+      return new ArrayIterator<>(0, array.length, array);
+   }
+
+   public static <E> PeekableIterator<E> of(int offset, int length, E[] array) {
+      if (array == null || array.length < 1)
+         return new EmptyIterator<>();
+
+      return new ArrayIterator<>(offset, length, array);
    }
 
    @Override
-   public boolean hasNext() {
-      return index < array.length;
+   public E peek() {
+      if (index >= length)
+         throw new NoSuchElementException();
+
+      return array[index];
    }
 
    @Override
    public E next() {
-      if (index >= array.length)
+      if (index >= length)
          throw new NoSuchElementException();
 
       return array[index++];
    }
 
-   private static class EmptyIterator<E> implements Iterator<E> {
-      @Override
-      public boolean hasNext() {
-         return false;
-      }
+   @Override
+   public boolean hasNext() {
+      return index < length;
+   }
 
+   private static class EmptyIterator<E> implements PeekableIterator<E> {
+      @Override
+      public E peek() {
+         throw new NoSuchElementException();
+      }
       @Override
       public E next() {
          throw new NoSuchElementException();
+      }
+      @Override
+      public boolean hasNext() {
+         return false;
       }
    }
 }
