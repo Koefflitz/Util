@@ -1,5 +1,7 @@
 package de.dk.util.opt;
 
+import static de.dk.util.opt.ArgumentModelBuilder.getValueFor;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -195,7 +197,8 @@ public class ArgumentParser {
             if (arg.length() > equalsIndex + 1) {
                if (result.expectsValue())
                   result.setValue(arg.substring(equalsIndex + 1));
-               else throw new UnexpectedOptionValueException(result, arg);
+               else
+                  throw new UnexpectedOptionValueException(result, arg);
             }
          }
       // Single char options e.g. '-a', '-abc' or '--'
@@ -232,12 +235,11 @@ public class ArgumentParser {
                                                    .stream()
                                                    .collect(Collectors.toMap(Entry::getKey,
                                                                 e -> e.getValue().clone()));
-
       Map<String, ExpectedOption> longOptions = this.longOptions
                                                     .entrySet()
                                                     .stream()
                                                     .collect(Collectors.toMap(Entry::getKey,
-                                                                              e -> options.get(e.getValue().getKey())));
+                                                                              e -> getValueFor(e, options)));
 
       Map<String, Command> commands = this.commands
                                           .entrySet()

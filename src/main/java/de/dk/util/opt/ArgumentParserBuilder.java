@@ -62,6 +62,16 @@ public class ArgumentParserBuilder {
    }
 
    /**
+    * This method is equivalent to the empty constructor.
+    * Its just to make the code more readable.
+    *
+    * @return A new ArgumentParserBuilder
+    */
+   public static ArgumentParserBuilder begin() {
+      return new ArgumentParserBuilder();
+   }
+
+   /**
     * Builds the argumentparser, that will be able to parse all the arguments and options specified.
     *
     * @return A new argumentparser

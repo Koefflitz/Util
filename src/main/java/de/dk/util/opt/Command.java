@@ -2,6 +2,10 @@ package de.dk.util.opt;
 
 import java.util.Objects;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class Command implements ExpectedArgument {
    private String name;
    private boolean mandatory;

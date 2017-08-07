@@ -102,6 +102,12 @@ public class ArgumentModelBuilder {
       this(arguments, options, longOptions, null, 0);
    }
 
+   public static ExpectedOption getValueFor(Entry<String, ExpectedOption> longOptionEntry,
+                                            Map<Character, ExpectedOption> options) {
+      return options.getOrDefault(longOptionEntry.getValue().getKey(),
+                                  longOptionEntry.getValue());
+   }
+
    /**
     * Builds the argumentmodel with all the given arguments and options.
     * Fails if some mandatory arguments (including mandatory options) are missing.
@@ -124,7 +130,14 @@ public class ArgumentModelBuilder {
                                                    .filter(e -> e.getValue().isPresent())
                                                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-      return new ArgumentModel(arguments, options, commands);
+      Map<String, ExpectedOption> longOptions = this.longOptions
+                                                    .entrySet()
+                                                    .stream()
+                                                    .filter(e -> e.getValue().isPresent())
+                                                    .collect(Collectors.toMap(Entry::getKey,
+                                                                              e -> getValueFor(e, options)));
+
+      return new ArgumentModel(arguments, options, longOptions, commands);
    }
 
    /**

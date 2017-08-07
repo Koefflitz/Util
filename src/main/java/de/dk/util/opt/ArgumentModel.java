@@ -19,6 +19,7 @@ import java.util.Optional;
 public class ArgumentModel implements Iterable<String> {
    private final LinkedHashMap<String, ExpectedPlainArgument> arguments;
    private final Map<Character, ExpectedOption> options;
+   private final Map<String, ExpectedOption> longOptions;
    private final Map<String, Command> commands;
 
    /**
@@ -29,9 +30,11 @@ public class ArgumentModel implements Iterable<String> {
     */
    public ArgumentModel(LinkedHashMap<String, ExpectedPlainArgument> arguments,
                         Map<Character, ExpectedOption> options,
+                        Map<String, ExpectedOption> longOptions,
                         Map<String, Command> commands) {
       this.arguments = Objects.requireNonNull(arguments);
       this.options = Objects.requireNonNull(options);
+      this.longOptions = longOptions;
       this.commands = Objects.requireNonNull(commands);
    }
 
@@ -77,10 +80,25 @@ public class ArgumentModel implements Iterable<String> {
     *
     * @param key The key of the option
     *
-    * @return The value of the option
+    * @return The value of the option or <code>null</code> if the option was not specified.
     */
    public String getOptionValue(char key) {
-      return options.get(key) == null ? null : options.get(key).getValue();
+      return Optional.ofNullable(options.get(key))
+                     .map(ExpectedOption::getValue)
+                     .orElse(null);
+   }
+
+   /**
+    * Get the value of the option of the given <code>longKey</code>.
+    *
+    * @param longKey The long key of the option
+    *
+    * @return The value of the option or <code>null</code> if the option was not specified.
+    */
+   public String getOptionValue(String longKey) {
+      return Optional.ofNullable(longOptions.get(longKey))
+                     .map(ExpectedOption::getValue)
+                     .orElse(null);
    }
 
    /**
@@ -107,6 +125,19 @@ public class ArgumentModel implements Iterable<String> {
                       .map(ExpectedArgument::isPresent)
                       .orElse(false);
     }
+
+    /**
+     * Find out whether an option was set or not.
+     *
+     * @param longKey The longKey of the option
+     *
+     * @return <code>true</code> if the option was set. <code>false</code> otherwise
+     */
+     public boolean isOptionPresent(String longKey) {
+        return Optional.ofNullable(longOptions.get(longKey))
+                       .map(ExpectedArgument::isPresent)
+                       .orElse(false);
+     }
 
     /**
      * Get the parsed argument model of the command with the given <code>name</code>.
