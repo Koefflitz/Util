@@ -11,6 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class DMathTest {
    @Rule
    public final ExpectedException expectedException = ExpectedException.none();

@@ -3,6 +3,10 @@ package de.dk.util.text;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CutContentBuilder {
    private String value;
    private List<Substring> outtakes;

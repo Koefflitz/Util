@@ -2,6 +2,10 @@ package de.dk.util.channel;
 
 import static de.dk.util.channel.ChannelPacket.ChannelPacketType.REFUSED;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ChannelRefusedPacket extends ChannelPacket {
    private static final long serialVersionUID = -204989785585197191L;
 

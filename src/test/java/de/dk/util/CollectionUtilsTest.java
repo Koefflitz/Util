@@ -15,6 +15,10 @@ import org.junit.Test;
 
 import de.dk.util.CollectionUtils;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CollectionUtilsTest {
 
    public CollectionUtilsTest() {

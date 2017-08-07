@@ -2,6 +2,10 @@ package de.dk.util.opt;
 
 import de.dk.util.StringUtils;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ExpectedOption implements ExpectedArgument {
    public final static char NO_KEY = '\0';
 

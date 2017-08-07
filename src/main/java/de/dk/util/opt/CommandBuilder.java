@@ -1,5 +1,9 @@
 package de.dk.util.opt;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CommandBuilder implements ArgumentBuilder {
    private final ArgumentParserBuilder parentBuilder;
    private final Command command;

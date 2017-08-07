@@ -2,6 +2,10 @@ package de.dk.util.channel;
 
 import static de.dk.util.channel.ChannelPacket.ChannelPacketType.NEW;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class NewChannelRequestPacket extends ChannelPacket {
    private static final long serialVersionUID = -1974870581458480869L;
 

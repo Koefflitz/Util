@@ -14,6 +14,10 @@ import org.junit.Test;
 
 import de.dk.util.channel.Sender;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ConnectionTest {
    private SimpleConnection clientConnection;
    private SimpleConnection serverConnection;

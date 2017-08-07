@@ -14,6 +14,10 @@ import java.util.Map.Entry;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class MapUtilsTest {
    private static final String KEY0 = "Testschlüssel";
    private static final String KEY1 = "Pfirsichsuppe";

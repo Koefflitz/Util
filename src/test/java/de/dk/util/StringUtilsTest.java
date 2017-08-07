@@ -19,6 +19,10 @@ import org.junit.rules.ExpectedException;
 
 import de.dk.util.StringUtils.SimpleStringIterator;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class StringUtilsTest {
    @Rule
    public ExpectedException expectedException = ExpectedException.none();

@@ -2,6 +2,10 @@ package de.dk.util.net;
 
 import java.io.Serializable;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class TestObject implements Serializable {
    private static final long serialVersionUID = -123094996089802269L;
 

@@ -2,6 +2,10 @@ package de.dk.util.channel;
 
 import java.util.Objects;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ChannelPacket extends Packet {
    private static final long serialVersionUID = 4075237550738947272L;
 

@@ -3,6 +3,10 @@ package de.dk.util.channel;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class TestChannelHandler<P> implements ChannelHandler<P> {
    private final Class<P> packetType;
    private final Map<Long, Channel<P>> channels = new HashMap<>();

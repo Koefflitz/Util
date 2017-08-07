@@ -1,5 +1,9 @@
 package de.dk.util.channel;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CloseChannelPacket extends ChannelPacket {
    private static final long serialVersionUID = -8267538933859326659L;
 

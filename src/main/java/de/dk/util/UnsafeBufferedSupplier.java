@@ -1,5 +1,9 @@
 package de.dk.util;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class UnsafeBufferedSupplier<T, E extends Exception> implements UnsafeSupplier<T, E> {
    private T buffered;
    private UnsafeSupplier<? extends T, ? extends E> supplier;

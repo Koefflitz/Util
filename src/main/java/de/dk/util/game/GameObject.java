@@ -1,5 +1,9 @@
 package de.dk.util.game;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public interface GameObject {
    public Vector getPosition();
    public int getWidth();

@@ -13,6 +13,10 @@ import org.junit.Test;
 
 import de.dk.util.unit.memory.MemoryValue;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class MemoryUnitTest {
    private static final double DELTA = 0.000000000000006;
 

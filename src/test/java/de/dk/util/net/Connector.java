@@ -8,6 +8,10 @@ import java.net.Socket;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class Connector<C extends Connection> {
    public static final int PORT = 10000;
    public static final long TIMEOUT = 4096;

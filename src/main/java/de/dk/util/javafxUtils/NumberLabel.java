@@ -4,6 +4,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class NumberLabel extends Label implements ChangeListener<String> {
    private int minValue;
    private int maxValue;

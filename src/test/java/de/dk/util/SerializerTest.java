@@ -9,6 +9,10 @@ import java.io.Serializable;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class SerializerTest {
    private static final int NUMBER = 8;
    private static final String CONTENT = "Milkflip!";

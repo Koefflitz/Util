@@ -4,6 +4,10 @@ import java.util.function.BiConsumer;
 
 import org.slf4j.Logger;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public enum Level {
    INFO(Logger::info),
    ERROR(Logger::error),

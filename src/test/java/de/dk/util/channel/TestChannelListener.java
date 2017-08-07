@@ -3,6 +3,10 @@ package de.dk.util.channel;
 import de.dk.util.channel.ChannelListener;
 import de.dk.util.net.TestObject;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class TestChannelListener<P extends TestObject> implements ChannelListener<P> {
    private P packet;
 

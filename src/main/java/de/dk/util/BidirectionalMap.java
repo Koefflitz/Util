@@ -3,6 +3,10 @@ package de.dk.util;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class BidirectionalMap<K, V> extends HashMap<K, V> {
    private static final long serialVersionUID = 7711766342642236547L;
 

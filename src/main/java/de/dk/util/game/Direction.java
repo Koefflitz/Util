@@ -2,6 +2,10 @@ package de.dk.util.game;
 
 import java.util.function.BiFunction;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public enum Direction {
    TOP((a, b) -> a.topBorder() - b.bottomBorder()),
    BOTTOM((a, b) -> a.topBorder() - b.bottomBorder()),

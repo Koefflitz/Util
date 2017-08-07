@@ -16,6 +16,10 @@ import de.dk.util.opt.ex.MissingOptionValueException;
 import de.dk.util.opt.ex.UnexpectedOptionValueException;
 import de.dk.util.opt.ex.UnknownArgumentException;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ArgumentParserTest {
    private static final String ARG_NAME0 = "testarg";
    private static final String ARG_VALUE0 = "argvalue";

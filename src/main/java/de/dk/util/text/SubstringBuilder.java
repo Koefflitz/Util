@@ -2,6 +2,10 @@ package de.dk.util.text;
 
 import java.util.stream.IntStream;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class SubstringBuilder implements CharSequence {
    private StringBuilder builder;
    private int beginIndex;

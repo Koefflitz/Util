@@ -4,6 +4,10 @@ import java.io.OutputStream;
 
 import org.slf4j.Logger;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class LogOutputStream extends OutputStream {
    private final Logger logger;
    private Level level;

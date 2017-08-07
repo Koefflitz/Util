@@ -2,6 +2,10 @@ package de.dk.util.log;
 
 import java.util.Arrays;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class DynamicByteArray {
    private static final int CAPACITY_EXTENSION = 64;
 

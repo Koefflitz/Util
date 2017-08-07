@@ -7,6 +7,10 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class RedirectingCharIteratorTest extends CharIteratorTest {
    private ByteArrayOutputStream target;
 

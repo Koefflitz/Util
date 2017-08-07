@@ -3,6 +3,10 @@ package de.dk.util.text;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CutContent {
    private final String value;
    private List<Substring> outtakes;

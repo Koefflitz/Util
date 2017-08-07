@@ -21,6 +21,10 @@ import de.dk.util.net.Connector;
 import de.dk.util.net.SimpleConnection;
 import de.dk.util.net.TestObject;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ChannelTest {
    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelTest.class);
 

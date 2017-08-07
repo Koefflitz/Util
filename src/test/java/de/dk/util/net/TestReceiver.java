@@ -1,5 +1,9 @@
 package de.dk.util.net;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class TestReceiver implements Receiver {
    private Object object;
 

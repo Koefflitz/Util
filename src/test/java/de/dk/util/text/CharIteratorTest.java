@@ -14,6 +14,10 @@ import org.junit.rules.ExpectedException;
 
 import de.dk.util.timing.TimeUtils;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class CharIteratorTest {
    @Rule
    public ExpectedException expectedException = ExpectedException.none();

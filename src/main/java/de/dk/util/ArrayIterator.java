@@ -3,6 +3,10 @@ package de.dk.util;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class ArrayIterator<E> implements PeekableIterator<E> {
    private final E[] array;
    private int index;

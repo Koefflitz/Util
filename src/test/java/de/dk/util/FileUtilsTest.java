@@ -21,6 +21,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class FileUtilsTest {
    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsTest.class);
    private static final String FILE_CONTENT = "This file is created by a unit test and should be deleted.";

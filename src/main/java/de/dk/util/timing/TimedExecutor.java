@@ -2,6 +2,10 @@ package de.dk.util.timing;
 
 import java.util.concurrent.TimeoutException;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class TimedExecutor {
    private int index = 0;
    private final TimedRunnable[] tasks;

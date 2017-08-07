@@ -1,5 +1,9 @@
 package de.dk.util.channel;
 
+/**
+ * @author David Koettlitz
+ * <br>Erstellt am 07.08.2017
+ */
 public class PayloadPacket extends Packet {
    private static final long serialVersionUID = 3100740666396486617L;
 
