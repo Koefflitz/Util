@@ -1,5 +1,7 @@
 package de.dk.util.channel;
 
+import java.io.IOException;
+
 /**
  * Indicates that a channel has been closed.
  *
@@ -9,7 +11,7 @@ package de.dk.util.channel;
  * @see ChannelManager
  * @see Channel
  */
-public class ChannelClosedException extends RuntimeException {
+public class ChannelClosedException extends IOException {
    private static final long serialVersionUID = 4162162428990881318L;
 
    public ChannelClosedException(String message) {

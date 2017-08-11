@@ -250,10 +250,15 @@ public class ChannelManager implements Receiver {
          request.accepted();
       } else {
          Channel<?> channel = channels.get(channelId);
-         if (channel == null)
+         if (channel == null) {
             LOGGER.warn("Could not handle channelPacket with ChannelPacketType OK and channelId: " + channelId);
-         else
-            channel.setState(ChannelState.OPEN);
+         } else {
+            try {
+               channel.setState(ChannelState.OPEN);
+            } catch (ChannelClosedException e) {
+               // Nothing to do here
+            }
+         }
       }
 
    }
@@ -273,7 +278,11 @@ public class ChannelManager implements Receiver {
          return;
       }
 
-      channel.setState(ChannelState.CLOSED);
+      try {
+         channel.setState(ChannelState.CLOSED);
+      } catch (ChannelClosedException e) {
+         // Nothing to do here
+      }
       channels.remove(id);
       ChannelHandler<?> handler = handlers.get(id);
       if (handler != null)
