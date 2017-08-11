@@ -277,6 +277,17 @@ public class ArgumentModelBuilder {
    }
 
    /**
+    * Find out of a command with the given <code>name</code> is expected by this argumentmodel builder.
+    *
+    * @param name The name of the command to be expected or not
+    *
+    * @return <code>true</code> if the command <code>name</code> is expected, <code>false</code> otherwise.
+    */
+   public boolean expectsCommand(String name) {
+      return commands.containsKey(name);
+   }
+
+   /**
     * Parses the command with the given <code>name</code> sets the parsed ArgumentModel to the command.
     *
     * @param name The name of the command

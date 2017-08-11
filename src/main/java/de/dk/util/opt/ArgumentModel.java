@@ -114,6 +114,18 @@ public class ArgumentModel implements Iterable<String> {
    }
 
    /**
+    * Get the value of the option of the given <code>longKey</code>.
+    *
+    * @param longKey The long key of the option
+    *
+    * @return The value of the option
+    */
+   public Optional<String> getOptionalValue(String longKey) {
+      return Optional.ofNullable(longOptions.get(longKey))
+                     .map(ExpectedOption::getValue);
+   }
+
+   /**
     * Find out whether an option was set or not.
     *
     * @param key The key of the option

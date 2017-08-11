@@ -139,7 +139,7 @@ public class ArgumentParser {
          while (iterator.hasNext()) {
             arg = iterator.peek();
             if (!arg.startsWith("-")) {
-               if (commands.containsKey(arg)) {
+               if (builder.expectsCommand(arg)) {
                   iterator.next();
                   builder.parseCommand(arg, iterator);
                } else {
@@ -222,7 +222,7 @@ public class ArgumentParser {
       return result;
    }
 
-   private ArgumentModelBuilder createModelBuilder() {
+   private synchronized ArgumentModelBuilder createModelBuilder() {
       List<ExpectedPlainArgument> arguments = this.arguments
                                                   .stream()
                                                   .map(ExpectedPlainArgument::clone)
@@ -288,7 +288,7 @@ public class ArgumentParser {
     *
     * @throws NullPointerException If <code>out</code> is <code>null</code>
     */
-   public void printUsage(PrintStream out) throws NullPointerException {
+   public synchronized void printUsage(PrintStream out) throws NullPointerException {
       Objects.requireNonNull(out);
       out.println("Syntax:");
       out.println(syntax());
@@ -304,7 +304,7 @@ public class ArgumentParser {
     *
     * @return The syntax string
     */
-   public String syntax() {
+   public synchronized String syntax() {
       String synopsis = "";
       for (ExpectedArgument arg : allArguments) {
          if (arg.isMandatory())
