@@ -38,10 +38,10 @@ public class NumberTextField extends TextField
    }
 
    public NumberTextField(int value, int min, int max, String defaultString) {
-      super("" + value);
       this.minValue = min;
       this.maxValue = max;
       this.defaultString = defaultString;
+      setValue(value);
    }
 
    private static boolean isValid(String text) {
@@ -63,6 +63,7 @@ public class NumberTextField extends TextField
          setText("" + (getValue() + 1));
       } else if (e.getCode() == KeyCode.DOWN) {
          e.consume();
+         setText("" + (getValue() - 1));
       }
    }
 
@@ -90,7 +91,7 @@ public class NumberTextField extends TextField
    private void replacement(String text, Consumer<String> superCall) {
       if (text.isEmpty()) {
          if (getText().length() < 2) {
-            superCall.accept("" + getDefaultValue());
+            superCall.accept(defaultString);
             selectAll();
             return;
          }
