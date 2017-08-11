@@ -20,7 +20,7 @@ public class ArrayIterator<E> implements PeekableIterator<E> {
          throw new IllegalArgumentException("Length cannot be less than 0 or greater than the length of the array. Was " + length);
 
       this.index = offset;
-      this.length = length;
+      this.length = offset + length;
    }
 
    public static <E> PeekableIterator<E> of(E[] array) {
