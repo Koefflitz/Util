@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.dk</groupId>
-	<artifactId>Util</artifactId>
+	<artifactId>util</artifactId>
 	<version>00.00.01</version>
 	<packaging>jar</packaging>
 
