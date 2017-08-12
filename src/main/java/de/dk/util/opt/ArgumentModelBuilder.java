@@ -30,9 +30,11 @@ public class ArgumentModelBuilder {
    private final Map<String, ExpectedOption> longOptions;
    private final Map<String, Command> commands;
    private final List<ExpectedArgument> mandatories;
-   private boolean allMandatoriesPresent;
+
+   private boolean minusMinusPresent = false;
 
    private int plainArgIndex;
+   private boolean allMandatoriesPresent;
 
    /**
     * Create a new argumentmodel builder with plain arguments, options and long options.
@@ -317,5 +319,14 @@ public class ArgumentModelBuilder {
 
       cmd.setValue(result);
       return true;
+   }
+
+   public boolean isMinusMinusPresent() {
+      if (!minusMinusPresent) {
+         minusMinusPresent = Optional.ofNullable(options.get('-'))
+                                     .map(ExpectedArgument::isPresent)
+                                     .orElse(false);
+      }
+      return minusMinusPresent;
    }
 }

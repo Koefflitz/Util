@@ -39,7 +39,7 @@ public class CommandBuilder implements ArgumentBuilder {
          throw new UnsupportedOperationException("This command builder didn't have a parent builder.");
 
       if (command.getParser() == null)
-         throw new IllegalStateException("No parser specified");
+         buildParser().build();
 
       return parentBuilder.addCommand(command);
    }

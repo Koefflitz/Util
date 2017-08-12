@@ -9,13 +9,18 @@ package de.dk.util.opt;
  * @see ArgumentParser
  * @see ArgumentParserBuilder
  */
-public interface ExpectedArgument {
+public interface ExpectedArgument extends Comparable<ExpectedArgument> {
+   public int getIndex();
    public String getName();
    public boolean isMandatory();
    public String fullName();
-   public int getIndex();
    public String getDescription();
    public boolean isPresent();
    public boolean isOption();
    public ExpectedArgument clone();
+
+   @Override
+   public default int compareTo(ExpectedArgument arg) {
+      return getIndex() - arg.getIndex();
+   }
 }

@@ -1,7 +1,5 @@
 package de.dk.util.opt;
 
-import static de.dk.util.opt.ArgumentModelBuilder.getValueFor;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -138,7 +136,7 @@ public class ArgumentParser {
       try {
          while (iterator.hasNext()) {
             arg = iterator.peek();
-            if (!arg.startsWith("-")) {
+            if (!arg.startsWith("-") || builder.isMinusMinusPresent()) {
                if (builder.expectsCommand(arg)) {
                   iterator.next();
                   builder.parseCommand(arg, iterator);
@@ -234,17 +232,34 @@ public class ArgumentParser {
                                                    .entrySet()
                                                    .stream()
                                                    .collect(Collectors.toMap(Entry::getKey,
-                                                                e -> e.getValue().clone()));
-      Map<String, ExpectedOption> longOptions = this.longOptions
-                                                    .entrySet()
-                                                    .stream()
-                                                    .collect(Collectors.toMap(Entry::getKey,
-                                                                              e -> getValueFor(e, options)));
+                                                                             e -> e.getValue().clone()));
+
+      int count = arguments.size() + options.size() + commands.size();
+
+      Map<String, ExpectedOption> longOptions = new HashMap<>();
+      for (Entry<String, ExpectedOption> e : this.longOptions.entrySet()) {
+         ExpectedOption opt = e.getValue();
+         ExpectedOption shortOpt = options.get(opt.getKey());
+         if (shortOpt != null) {
+            longOptions.put(e.getKey(), shortOpt);
+         } else {
+            longOptions.put(e.getKey(), opt);
+            count++;
+         }
+      }
 
       Map<String, Command> commands = this.commands
                                           .entrySet()
                                           .stream()
                                           .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().clone()));
+
+      if (!options.containsKey('-')) {
+         options.put('-', new ExpectedOption(count,
+                                             '-',
+                                             "--",
+                                             "Indicates, that the following arguments are plain arguments"
+                                             + "and no options, even if they have a leading \'-\'"));
+      }
 
       return new ArgumentModelBuilder(arguments, options, longOptions, commands);
    }
