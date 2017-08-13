@@ -71,7 +71,12 @@ public class NumberTextField extends TextField
    public void changed(ObservableValue<? extends String> val,
                        String old,
                        String newVal) {
-      long value = getValue();
+      long value;
+      try {
+         value = Long.parseLong(getText());
+      } catch (NumberFormatException e) {
+         value = getDefaultValue();
+      }
       if (value > maxValue)
          setValue(maxValue);
       else if (value < minValue)
