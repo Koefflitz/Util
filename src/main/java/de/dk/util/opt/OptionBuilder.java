@@ -22,6 +22,7 @@ public class OptionBuilder {
     *
     * @param parentBuilder The argumentparser builder this option builder belongs to
     * @param index The index of the option it has in the order
+    * @param key The key of the option
     * @param name The name of the option
     */
    protected OptionBuilder(ArgumentParserBuilder parentBuilder, int index, char key, String name) {

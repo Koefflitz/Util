@@ -26,7 +26,7 @@ public interface UnsafeBiFunction<T, U, R, E extends Exception> {
     *
     * @return the function result
     *
-    * @throws E
+    * @throws E if an exception occurs
     */
    public R apply(T t, U u) throws E;
 

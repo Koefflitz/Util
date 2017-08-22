@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 21.11.2016
+ * <br>Erstellt am 21.11.2016
  */
 public class ObjectButton<T> extends Button implements ObjectTextControl<T> {
    private ObjectControlAdapter<T> adapter;

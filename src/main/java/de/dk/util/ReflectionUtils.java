@@ -12,7 +12,7 @@ import de.dk.util.function.UnsafeFunction;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 10.11.2016
+ * <br>Erstellt am 10.11.2016
  */
 public final class ReflectionUtils {
    private static final List<Primitive<?>> PRIMITIVES;
@@ -112,11 +112,7 @@ public final class ReflectionUtils {
    public static void invokePrimitiveSetter(Object target,
                                             Field field,
                                             Object value,
-                                            Class<?> primitiveClass) throws NoSuchMethodException,
-                                                                            SecurityException,
-                                                                            IllegalAccessException,
-                                                                            IllegalArgumentException,
-                                                                            InvocationTargetException {
+                                            Class<?> primitiveClass) throws ReflectiveOperationException {
       String name = "set" + field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
       Method setter = getMethod(target.getClass(), name, field.getType());
       setter.invoke(target, value);
@@ -191,7 +187,7 @@ public final class ReflectionUtils {
     * for handling reflective operations with primitive types and values.
     *
     * @author David Koettlitz
-    * <br/>Erstellt am 16.12.2017
+    * <br>Erstellt am 16.12.2017
     */
    public static class Primitive<T> {
       private final Class<T> type;
@@ -211,6 +207,8 @@ public final class ReflectionUtils {
        * An object wrapper class of the primitives will also go for a result.
        *
        * @param type The primitive type, object wrapper class of a primitive type or String class
+       * @param <P> The primitive type, object wrapper class of a primitive type or String class
+       *
        * @return The primitive instance matching the given primitive type, object wrapper class or String class.
        *         Otherwise <code>null</code> will be returned.
        */
@@ -231,12 +229,13 @@ public final class ReflectionUtils {
        * @param target The target object whose field value should be set
        * @param field The field whose value should be set
        * @param value The value that should be set to the field
+       *
+       * @throws ReflectiveOperationException If no public setter for the field is declared
+       * or the setter throws an exception
+       * @throws NullPointerException If <code>target</code> or <code>field</code> is <code>null</code>
        */
-      public void applyValue(Object target, Field field, String value) throws NoSuchMethodException,
-                                                                              SecurityException,
-                                                                              IllegalAccessException,
-                                                                              IllegalArgumentException,
-                                                                              InvocationTargetException {
+      public void applyValue(Object target, Field field, String value) throws ReflectiveOperationException,
+                                                                              NullPointerException{
          invokePrimitiveSetter(target, field, converter.apply(value), type);
       }
 

@@ -10,13 +10,11 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import sun.reflect.CallerSensitive;
-
 /**
  * Contains some static methods that are about files.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 30.08.2016
+ * <br>Erstellt am 30.08.2016
  */
 public final class FileUtils {
    private static URI sourceLocation;
@@ -52,7 +50,6 @@ public final class FileUtils {
     *
     * @throws IllegalStateException if the caller class cannot be found.
     */
-   @CallerSensitive
    public static URI locateSource() throws IllegalStateException {
       String callingClassName = null;
 
@@ -83,9 +80,11 @@ public final class FileUtils {
    /**
     * Reads the files content.
     *
+    * @param file The file to read the content from
+    *
     * @return The conent of the file
     *
-    * @throws IOException
+    * @throws IOException If an I/O error occurs
     */
    public static String getContentOf(File file) throws IOException {
       ByteArrayOutputStream out = new ByteArrayOutputStream(DMath.cutToInt(file.length()));
@@ -98,6 +97,7 @@ public final class FileUtils {
     *
     * @param file the file to read
     * @param out The OutputStream to write the read data to
+    *
     * @throws IOException if there are problems reading the file
     */
    public static void writeContentOf(File file, OutputStream out) throws IOException {
@@ -118,7 +118,7 @@ public final class FileUtils {
     * @param source The source file to be copied.
     * @param target The target file of the copying process. If it does not exist it is created.
     *
-    * @throws IOException
+    * @throws IOException If an I/O error occures
     */
    public static void copy(File source, File target) throws IOException {
       if (source.isDirectory()) {

@@ -7,7 +7,7 @@ import javafx.stage.Window;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 27.10.2016
+ * <br>Erstellt am 27.10.2016
  */
 public class WindowEventSourceAdapter implements EventSource {
    private final Window window;

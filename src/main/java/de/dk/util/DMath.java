@@ -10,7 +10,7 @@ import java.util.Random;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 10.11.2016
+ * <br>Erstellt am 10.11.2016
  */
 public final class DMath {
    private static Random rnd;
@@ -24,8 +24,8 @@ public final class DMath {
    /**
     * Divides the dividend by the divisor and even supports division by zero operations.
     *
-    * @param dividend
-    * @param divisor
+    * @param dividend The dividend to divide through <code>divisor</code>
+    * @param divisor The divisor to divide <code>dividend</code> through
     *
     * @return The result of the division. If the divisor is <code>0</code>
     * the highest possible value is returned.
@@ -50,8 +50,8 @@ public final class DMath {
    /**
     * Divides the dividend by the divisor and even supports division by zero operations.
     *
-    * @param dividend
-    * @param divisor
+    * @param dividend The dividend to divide through <code>divisor</code>
+    * @param divisor The divisor to divide <code>dividend</code> through
     *
     * @return The result of the division. If the divisor is <code>0</code>
     * the highest possible value is returned.
@@ -63,8 +63,8 @@ public final class DMath {
    /**
     * Divides the dividend by the divisor and even supports division by zero operations.
     *
-    * @param dividend
-    * @param divisor
+    * @param dividend The dividend to divide through <code>divisor</code>
+    * @param divisor The divisor to divide <code>dividend</code> through
     *
     * @return The result of the division. If the divisor is <code>0</code>
     * the highest possible value is returned.
@@ -76,8 +76,8 @@ public final class DMath {
    /**
     * Divides the dividend by the divisor and even supports division by zero operations.
     *
-    * @param dividend
-    * @param divisor
+    * @param dividend The dividend to divide through <code>divisor</code>
+    * @param divisor The divisor to divide <code>dividend</code> through
     *
     * @return The result of the division. If the divisor is <code>0</code>
     * the highest possible value is returned.
@@ -124,7 +124,7 @@ public final class DMath {
 
    /**
     * Converts the long value to an int value. If the long value is too big or too small to fit into an int -
-    * in other words: If <code>l < Integer.MIN_VALUE || l > Integer.MAX_VALUE</code>
+    * in other words: If <code>l &lt; Integer.MIN_VALUE || l &gt; Integer.MAX_VALUE</code>
     * it will be converted to the next possible int value
     * (<code>Integer.MIN_VALUE</code> or <code>Integer.MAX_VALUE</code>.
     *
@@ -137,7 +137,7 @@ public final class DMath {
 
    /**
     * Keeps a value in a specific range.
-    * Returns a value that is >= the min-value and <= the max-value
+    * Returns a value that is &gt;= the min-value and &lt;= the max-value
     *
     * @param value An int-value
     * @param min The minimum to be returned
@@ -156,7 +156,7 @@ public final class DMath {
 
    /**
     * Keeps a value in a specific range.
-    * Returns a value that is >= the min-value and <= the max-value
+    * Returns a value that is &gt;= the min-value and &lt;= the max-value
     *
     * @param value An int-value
     * @param min The minimum to be returned
@@ -172,7 +172,7 @@ public final class DMath {
 
    /**
     * Keeps a value in a specific range.
-    * Returns a value that is >= the min-value and <= the max-value
+    * Returns a value that is &gt;= the min-value and &lt;= the max-value
     *
     * @param value A float-value
     * @param min The minimum to be returned
@@ -188,7 +188,7 @@ public final class DMath {
 
    /**
     * Keeps a value in a specific range.
-    * Returns a value that is >= the min-value and <= the max-value
+    * Returns a value that is &gt;= the min-value and &lt;= the max-value
     *
     * @param value A double-value
     * @param min The minimum to be returned
@@ -204,7 +204,7 @@ public final class DMath {
 
    /**
     * Blurs an int-value randomly with a specific maximum deviation.
-    * For examlpe:<br/>
+    * For examlpe:<br>
     * A value of 100 and a percentage of 10 passed to this method
     * would return any int-value between 90 and 110.
     *
@@ -220,7 +220,7 @@ public final class DMath {
 
    /**
     * Blurs a float-value randomly with a specific maximum deviation.
-    * For examlpe:<br/>
+    * For examlpe:<br>
     * A value of 100 and a percentage of 10 passed to this method
     * would return any float-value between 90 and 110.
     *
@@ -236,7 +236,7 @@ public final class DMath {
 
    /**
     * Blurs a double-value randomly with a specific maximum deviation.
-    * For examlpe:<br/>
+    * For examlpe:<br>
     * A value of 100 and a percentage of 10 passed to this method
     * would return any double-value between 90 and 110.
     *

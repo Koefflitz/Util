@@ -1,5 +1,6 @@
 package de.dk.util.game;
 
+import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
 
 /**
@@ -7,7 +8,7 @@ import java.util.function.UnaryOperator;
  * Provides getters and setters for some of its properties, e.g. its magnitude or angle.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 02.02.2017
+ * <br>Erstellt am 02.02.2017
  */
 public class IntVector {
    public int x = 1;
@@ -26,13 +27,14 @@ public class IntVector {
     * Creates a new vector by angle and magnitude.
     *
     * @param angle The angle-value goes from the plus-x-axis(0° or 360°) anti-clockwise over the minus-x-axis(180°).
-    *           For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()),
-    *           this method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
-    *           this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
-    *           this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
-    *           this method will return 270.
+    * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()),
+    * this method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
+    * this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
+    * this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
+    * this method will return 270.
     * @param magnitude The magnitude (length) of the Vector.
-    * @return The created Vector.
+    *
+    * @return The new Vector.
     */
    public static IntVector newVector(float angle, float magnitude) {
       IntVector v = new IntVector(1, 1);
@@ -42,10 +44,11 @@ public class IntVector {
    }
 
    /**
-    * Creates a vector which is pointing straight up. The vectors x-value is 0, while the y-value gets the value of the parameter.
+    * Creates a vector which is pointing straight up. The vectors x-value is 0,
+    * while the y-value gets the value of the parameter.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The created vector.
+    * @return The new vector.
     */
    public static IntVector up(int magnitude) {
       return new IntVector(0, magnitude);
@@ -56,7 +59,8 @@ public class IntVector {
     * while the y-value gets the negative value of the parameter.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The created vector.
+    *
+    * @return The new vector.
     */
    public static IntVector down(int magnitude) {
       return new IntVector(0, -magnitude);
@@ -67,7 +71,8 @@ public class IntVector {
     * while the x-value gets the negative value of the parameter.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The created vector.
+    *
+    * @return The new vector.
     */
    public static IntVector left(int magnitude) {
       return new IntVector(-magnitude, 0);
@@ -78,7 +83,8 @@ public class IntVector {
     * while the x-value gets the value of the parameter.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The created vector.
+    *
+    * @return The new vector.
     */
    public static IntVector right(int magnitude) {
       return new IntVector(magnitude, 0);
@@ -87,7 +93,9 @@ public class IntVector {
    /**
     * Creates a vector, which is rotated 180 degrees to the parameter-vector.
     *
-    * @return The vector with the exact opposite direction of the parameter-vector.
+    * @param v The vector to reverse
+    *
+    * @return A vector with the exact opposite direction of <code>v</code>
     */
    public static IntVector reverse(IntVector v) {
       return new IntVector(-v.x, -v.y);
@@ -96,7 +104,10 @@ public class IntVector {
    /**
     * Creates a new vector, which is the sum of the parameter-vectors.
     *
-    * @return The created vector.
+    * @param a The vector to be added to <code>b</code>
+    * @param b The vector to be added to <code>a</code>
+    *
+    * @return The new vector.
     */
    public static IntVector add(IntVector a, IntVector b) {
       if (a == null || b == null)
@@ -108,7 +119,10 @@ public class IntVector {
    /**
     * Creates a new vector, which is the difference of the parameter-vectors.
     *
-    * @return The created vector.
+    * @param a The vector to subtract <code>b</code> from
+    * @param b The vector to be subtracted from <code>a</code>
+    *
+    * @return The new vector.
     */
    public static IntVector subtract(IntVector a, IntVector b) {
       if (a == null || b == null)
@@ -120,7 +134,10 @@ public class IntVector {
    /**
     * Creates a new vector, whose magnitude is the product of the parameter-vector and the amount.
     *
-    * @return The created vector.
+    * @param v The vector to be multiplied
+    * @param amount The amount to multiply with
+    *
+    * @return The new vector.
     */
    public static IntVector multiply(IntVector v, float amount) {
       if (v == null)
@@ -132,7 +149,10 @@ public class IntVector {
    /**
     * Creates a new vector, whose magnitude is the quotient of the parameter-vector and the amount.
     *
-    * @return The created vector.
+    * @param v The vector to be divided
+    * @param amount the amount to divide through
+    *
+    * @return The new vector.
     */
    public static IntVector divide(IntVector v, float amount) {
       if (amount != 0)
@@ -144,11 +164,14 @@ public class IntVector {
    /**
     * Calculates the angle between two vectors. Always calculates the smaller angle.
     *
+    * @param a The first vector
+    * @param b The second vector
+    *
     * @return The angle between the two vectors.
     */
-   public static float getAngleBetween(IntVector v1, IntVector v2) {
-      float a1 = v1.getAngle();
-      float a2 = v2.getAngle();
+   public static float getAngleBetween(IntVector a, IntVector b) {
+      float a1 = a.getAngle();
+      float a2 = b.getAngle();
       float angle = Math.abs(a1 - a2);
       if (angle <= 180)
          return angle;
@@ -163,6 +186,7 @@ public class IntVector {
     * Adds a vector to this vector.
     *
     * @param v The vector that should be added to this vector.
+    *
     * @return this vector
     */
    public IntVector add(IntVector v) {
@@ -177,6 +201,7 @@ public class IntVector {
     * Subtracts a vector from this vector.
     *
     * @param v The vector that should be subtracted from this vector.
+    *
     * @return this vector
     */
    public IntVector subtract(IntVector v) {
@@ -191,6 +216,7 @@ public class IntVector {
     * Multiplies the magnitude of this vector by the specified amount.
     *
     * @param amount The amount by which the magnitude should be multiplied.
+    *
     * @return this vector
     */
    public IntVector multiply(float amount) {
@@ -202,20 +228,23 @@ public class IntVector {
    /**
     * Divides the magnitude of this vector by the specified amount.
     *
-    * @param amount
-    * @return this vector
+    * @param divisor The amount to divide through
+    *
+    * @return this vector to go on
     */
-   public IntVector divide(float amount) {
-      if (amount != 0) {
-         this.x /= amount;
-         this.y /= amount;
+   public IntVector divide(float divisor) {
+      if (divisor != 0) {
+         this.x /= divisor;
+         this.y /= divisor;
       }
       return this;
    }
 
    /**
-    * Rotates this vector by 180 degrees. So that it points to the exact opposite direction.
-    * @return this vector
+    * Rotates this vector by 180 degrees,
+    * so that it points to the exact opposite direction.
+    *
+    * @return this vector to go on
     */
    public IntVector reverse() {
       this.x = -x;
@@ -231,10 +260,11 @@ public class IntVector {
    }
 
    /**
-    * Sets the magnitude (length) of this vector.
+    * Set the magnitude (length) of this vector.
     *
     * @param magnitude The new magnitude of this vector.
-    * @return this vector
+    *
+    * @return this vector to go on
     */
    public IntVector setMagnitude(float magnitude) {
       float mag = getMagnitude();
@@ -250,20 +280,22 @@ public class IntVector {
     *
     * @param op The magnitude manipulation operator
     *
-    * @return This vector
+    * @return This vector to go on
     */
    public IntVector manipulateMagnitude(UnaryOperator<Float> op) {
       return setMagnitude(op.apply(getMagnitude()));
    }
 
    /**
-    * @returns the angle from the +x-level to the Vector. The angle-value goes from the plus-x-axis(0° or 360°)
-    *          anti-clockwise over the minus-x-axis(180°).
-    *          For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()), this
-    *          method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
-    *          this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
-    *          this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
-    *          this method will return 270.
+    * Calculates the angle from the +x-level to the Vector. The angle-value goes from the plus-x-axis(0° or 360°)
+    * anti-clockwise over the minus-x-axis(180°).
+    * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()), this
+    * method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
+    * this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
+    * this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
+    * this method will return 270.
+    *
+    * @return The angle of this vector
     */
    public float getAngle() {
       if (getMagnitude() == 0)
@@ -289,12 +321,13 @@ public class IntVector {
     * The angle-value goes from the plus-x-axis(0°) anti-clockwise over the plus-y-axis(90°) and the minus-x-axis(180°)...
     *
     * @param angle Examples: If the Vector should be parallel to the x-axis and should have a positive x-value(Vector.right()),
-    *        enter 0 as parameter to this method. If the Vector should be parallel to the y-axis and should have a positive
- *           y-value(Vector.up()), enter 90 as parameter to this method.
- *           If the Vector should be parallel to the x-axis and should have a negative x-value(Vector.left()),
- *           enter 180 as parameter to this method. If the Vector should be parallel to the
- *           y-axis and should have a negative y-value(Vector.down()), enter 270 as parameter to this method.
-    * @return this vector
+    * enter 0 as parameter to this method. If the Vector should be parallel to the y-axis and should have a positive
+    * y-value(Vector.up()), enter 90 as parameter to this method.
+    * If the Vector should be parallel to the x-axis and should have a negative x-value(Vector.left()),
+    * enter 180 as parameter to this method. If the Vector should be parallel to the
+    * y-axis and should have a negative y-value(Vector.down()), enter 270 as parameter to this method.
+    *
+    * @return this vector to go on
     */
    public IntVector setAngle(float angle) {
       float magnitude = getMagnitude();
@@ -346,7 +379,7 @@ public class IntVector {
     *
     * @param op The angle manipulation operator
     *
-    * @return This vector
+    * @return This vector to go on
     */
    public IntVector manipulateAngle(UnaryOperator<Float> op) {
       return setAngle(op.apply(getAngle()));
@@ -354,8 +387,10 @@ public class IntVector {
 
    /**
     * Takes over the x- and the y-value of the given vector.
+    *
     * @param v The Vector of which the values are taken over.
-    * @return this vector
+    *
+    * @return this vector to go on
     */
    public IntVector setValue(IntVector v) {
       this.x = v.x;
@@ -369,7 +404,7 @@ public class IntVector {
     * @param x the x coordinate
     * @param y the y coordinate
     *
-    * @return this vector
+    * @return this vector to go on
     */
    public IntVector set(int x, int y) {
       this.x = x;
@@ -383,10 +418,21 @@ public class IntVector {
     * @param opX The x manipulation
     * @param opY The y manipulation
     *
-    * @return This vector
+    * @return This vector to go on
     */
-   public IntVector manipulate(UnaryOperator<Integer> opX, UnaryOperator<Integer> opY) {
-      return set(opX.apply(x), opY.apply(y));
+   public IntVector manipulate(IntUnaryOperator opX, IntUnaryOperator opY) {
+      return set(opX.applyAsInt(x), opY.applyAsInt(y));
+   }
+
+   /**
+    * Manipulates the x and the y value with the same function.
+    *
+    * @param op The operator to manipulate the x and y value
+    *
+    * @return this vector to go on
+    */
+   public IntVector manipulate(IntUnaryOperator op) {
+      return set(op.applyAsInt(x), op.applyAsInt(y));
    }
 
    @Override

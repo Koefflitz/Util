@@ -17,7 +17,7 @@ public interface UnsafeSupplier<T, E extends Exception> {
     *
     * @return a result
     *
-    * @throws E
+    * @throws E if an exception occurs
     */
    public T get() throws E;
 }

@@ -15,24 +15,24 @@ import de.dk.util.game.Vector;
  * The base for the interpolation is a pulse of 60 executions per second.
  * That means that the {@link Pulse#interpolate(float)} method of a pulse with a pulse rate of 60 executions per second
  * won't change the value.
- * </br></br>
+ * <br><br>
  * A Pulse controller can be used in different ways:
- * </br>
+ * <br>
  * 1. You can start a new pulse by using this implementation of the {@link Runnable} interface.
  * By calling the run method a new pulse is initiated.
  * The run method will block until the pulsecontroller is stopped.
  * A stopped pulse can always be started again by calling the <code>run()</code> method.
- * </br></br>
+ * <br><br>
  * 2. You can join the pulse controller to an existing pulse
  * by using the {@link Pulse#join(PulseController)} method.
- * The pulserate of the joint controller will stay the same so that it is independent from the parent pulse.</br>
- * It is recommended that the pulse rate of the parent pulse >= the pulse rate of its children.
- * </br></br>
+ * The pulserate of the joint controller will stay the same so that it is independent from the parent pulse.<br>
+ * It is recommended that the pulse rate of the parent pulse &gt;= the pulse rate of its children.
+ * <br><br>
  * 3. You can execute this pulse by manually calling the {@link PulseController#update(Pulse)} method every pulse cycle
  * passing the current timestamp.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 11.11.2016
+ * <br>Erstellt am 11.11.2016
  *
  * @see Pulse
  * @see FrameCounter

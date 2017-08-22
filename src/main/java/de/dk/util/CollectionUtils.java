@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 10.11.2016
+ * <br>Erstellt am 10.11.2016
  */
 public final class CollectionUtils {
 
@@ -68,7 +68,10 @@ public final class CollectionUtils {
 
    /**
     * Converts an {@link Enumeration} to an {@link Iterable}.
+    *
     * @param enumeration the enumeration to be converted
+    * @param <T> The type of the elements
+    *
     * @return the iterable equivalent to the enumeration
     */
    public static <T> Iterable<T> toIterable(Enumeration<T> enumeration) {
@@ -80,6 +83,9 @@ public final class CollectionUtils {
     *
     * @param a A map
     * @param b Another map
+    * @param combiner The combiner of the values
+    * @param <K> The type of the keys
+    * @param <V> The type of the values
     *
     * @return a map that contains all the key of map a and b and the combined values.
     */
@@ -108,6 +114,7 @@ public final class CollectionUtils {
     *
     * @param a A map
     * @param b Another map
+    * @param <K> The type of the keys
     *
     * @return a map that contains all the key of map a and b and the combined values.
     */
@@ -120,6 +127,8 @@ public final class CollectionUtils {
     *
     * @param a Some collection
     * @param b Some other collection
+    * @param <T> The type of the elements
+    *
     * @return A List that contains all the elements of both collections.
     */
    public static <T> List<T> join(Collection<? extends T> a, Collection<? extends T> b) {

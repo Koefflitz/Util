@@ -245,7 +245,8 @@ public abstract class Connection implements Runnable, Sender {
     * {@link Connection#close(long)} method.
     *
     * @throws IOException If an I/O error occurs when closing this socket
-    * @throws InterruptedException
+    * @throws InterruptedException If the thread is interrupted while waiting
+    * to close
     */
    public void close() throws IOException, InterruptedException {
       close(0);

@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 21.11.2016
+ * <br>Erstellt am 21.11.2016
  */
 public interface ObjectControl<T, V> {
    public void update();

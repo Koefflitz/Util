@@ -27,6 +27,8 @@ public class ArgumentModel implements Iterable<String> {
     *
     * @param arguments The arguments mapped by their names
     * @param options The options mapped by their key characters
+    * @param longOptions The long options mapped by their long keys
+    * @param commands The commands mapped by their names
     */
    public ArgumentModel(LinkedHashMap<String, ExpectedPlainArgument> arguments,
                         Map<Character, ExpectedOption> options,

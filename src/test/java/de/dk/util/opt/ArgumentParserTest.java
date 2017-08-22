@@ -306,7 +306,7 @@ public class ArgumentParserTest {
                                                    .buildAndGet();
       expectedException.expect(MissingArgumentException.class);
       try {
-         parser.parseArguments(0, 1, ARG_VALUE0);
+         parser.parseArguments(ARG_VALUE0);
       } catch (MissingOptionValueException
                | UnknownArgumentException
                | IllegalArgumentException

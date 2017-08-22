@@ -74,7 +74,7 @@ public class CharIterator implements Iterator<Character> {
     * @throws IOException if an IOException is thrown while reading the file
     * @throws NullPointerException if the given <code>file</code> is <code>null</code>.
     */
-   public static CharIterator from(File file) throws IOException {
+   public static CharIterator from(File file) throws IOException, NullPointerException {
       return new CharIterator(FileUtils.getContentOf(Objects.requireNonNull(file)));
    }
 
@@ -112,6 +112,8 @@ public class CharIterator implements Iterator<Character> {
 
    /**
     * Moves forward until the next character, that is not a whitespace character.
+    *
+    * @return The skipped whitespace.
     */
    public String skipNextWhiteSpaces() {
       String result = "";
@@ -396,6 +398,8 @@ public class CharIterator implements Iterator<Character> {
     * @throws IllegalStateException if this iterator or the given <code>iterator</code> has already been closed
     * @throws IllegalArgumentException if the given <code>iterator</code> has another content than this
     * @throws NullPointerException if the given <code>iterator</code> is <code>null</code>.
+    *
+    * @return This iterator to go on.
     */
    public CharIterator moveTo(CharIterator iterator) {
       Objects.requireNonNull(iterator);
@@ -447,8 +451,10 @@ public class CharIterator implements Iterator<Character> {
     * Includes also the already passed characters.
     *
     * @return The string this iterator iterates over.
+    *
+    * @throws IllegalStateException if this iterator has already been closed.
     */
-   public String getContent() {
+   public String getContent() throws IllegalStateException {
       if (closed)
          throw new IllegalStateException("This iterator was already closed.");
 
@@ -462,7 +468,7 @@ public class CharIterator implements Iterator<Character> {
     *
     * @throws IllegalStateException if this iterator has been closed
     */
-   public String getRemainingString() {
+   public String getRemainingString() throws IllegalStateException {
       if (closed)
          throw new IllegalStateException("This iterator was already closed.");
 
@@ -476,7 +482,7 @@ public class CharIterator implements Iterator<Character> {
     *
     * @throws IllegalStateException if this iterator has been closed
     */
-   public Substring getRemainingSubstring() {
+   public Substring getRemainingSubstring() throws IllegalStateException {
       return new Substring(getRemainingString(), index);
    }
 
@@ -505,7 +511,7 @@ public class CharIterator implements Iterator<Character> {
     *
     * @throws IllegalStateException if this iterator has already been closed
     */
-   public int getIndex() {
+   public int getIndex() throws IllegalStateException {
       if (closed)
          throw new IllegalStateException("This iterator has already been closed.");
       return index;
@@ -521,6 +527,12 @@ public class CharIterator implements Iterator<Character> {
       return closed;
    }
 
+   /**
+    * Closes this iterator.
+    * A once closed CharIterator cannot be opened again.
+    * Many methods of this object throw an <code>IllegalStateException</code>
+    * if it has been closed.
+    */
    public void close() {
       this.index = content.length;
       this.content = null;

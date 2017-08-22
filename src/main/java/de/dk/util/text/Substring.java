@@ -53,7 +53,7 @@ public class Substring {
 
    /**
     * Inserts this substring at the <code>beginIndex</code> into the given <code>string</code>.
-    * All characters with an index that is >= the <code>beginIndex</code>
+    * All characters with an index that is &gt;= the <code>beginIndex</code>
     * of this substring will be shifted to the right.
     *
     * @param string the string to insert this substring into
@@ -78,7 +78,7 @@ public class Substring {
     *
     * @return the <code>string</code> with this substring in it
     *
-    * @throws StringIndexOutOfBoundsException if the substrings <code>beginIndex</code> is > the strings length
+    * @throws StringIndexOutOfBoundsException if the substrings <code>beginIndex</code> is &gt; the strings length
     */
    public String overwriteTo(String string) {
       if (string.length() < beginIndex)

@@ -10,7 +10,7 @@ import de.dk.util.function.UnsafeSupplier;
  * Some static utility methods, that can sometimes be useful.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 30.08.2016
+ * <br>Erstellt am 30.08.2016
  */
 public final class Util {
 
@@ -18,6 +18,8 @@ public final class Util {
 
    /**
     * This method is equivalent to <code>flag ? 1 : -1</code>.
+    *
+    * @param flag The <code>boolean</code> to be converted to an <code>int</code>
     *
     * @return the value 1 if <code>true</code> is passed, otherwise -1.
     */
@@ -50,7 +52,9 @@ public final class Util {
    }
 
    /**
-    * This method is equivalent to flag >= 0.
+    * This method is equivalent to flag &gt;= 0.
+    *
+    * @param flag The integer value to be converted to <code>boolean</code>
     *
     * @return <code>true</code> if the value is greater than or equal 0.
     * Otherwise <code>false</code>.
@@ -85,6 +89,13 @@ public final class Util {
 
    /**
     * Compares 2 objects by their {@link #toString()} method.
+    *
+    * @param a The first object to be compared
+    * @param b The second object to be compared
+    *
+    * @return a negative integer, zero, or a positive integer as the
+    * first argument is less than, equal to, or greater than the
+    * second.
     *
     * @see Comparator
     */

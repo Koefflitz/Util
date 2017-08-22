@@ -20,7 +20,10 @@ public interface UnsafeFunction<T, R, E extends Exception> {
     * Applies this function to the given argument.
     *
     * @param t the function argument
+    *
     * @return the function result
+    *
+    * @throws E if an exception occurs
     */
    public R apply(T t) throws E;
 

@@ -23,6 +23,8 @@ public final class MapUtils {
     *
     * @param values The values to be put into a map
     * @param keyProvider The provider of the keys to each value
+    * @param <K> The type of the keys
+    * @param <V> The type of the values
     *
     * @return a map containing all the <code>values</code> mapped by the key given by the <code>keyProvider</code>
     */
@@ -37,6 +39,9 @@ public final class MapUtils {
     * @param values The values to be put into the <code>map</code>
     * @param keyProvider The provider of the keys to each value
     * @param map the concrete map to put the values into
+    * @param <M> The type of the map
+    * @param <K> The type of the keys
+    * @param <V> The type of the values
     *
     * @return the <code>map</code> containing all the <code>values</code>
     * mapped by the key given by the <code>keyProvider</code>
@@ -57,6 +62,9 @@ public final class MapUtils {
     *
     * @param source The map from which the entries should be transferred
     * @param target The map to which the entries should be transferred
+    * @param <K> The type of the keys
+    * @param <V> The type of the values
+    *
     * @return the <code>target</code> map
     */
    public static <K, V> Map<K, V> transfer(Map<? extends K, ? extends V> source, Map<K, V> target) {
@@ -70,6 +78,8 @@ public final class MapUtils {
     * @param source The map from which the entries should be transferred
     * @param target The map to which the entries should be transferred
     * @param overwrite Whether the entries of the <code>target</code> map should be overwritten by the source entries.
+    * @param <K> The type of the keys
+    * @param <V> The type of the values
     *
     * @return the <code>target</code> map
     */

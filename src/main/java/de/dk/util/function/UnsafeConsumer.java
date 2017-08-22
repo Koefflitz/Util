@@ -19,7 +19,7 @@ public interface UnsafeConsumer<T, E extends Exception> {
     *
     * @param value the input argument
     *
-    * @throws E
+    * @throws E if an exception occurs
     */
    public void accept(T value) throws E;
 

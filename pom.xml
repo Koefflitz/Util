@@ -62,7 +62,7 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<configuration>
-							<failOnError>false</failOnError>
+							<failOnError>true</failOnError>
 							<excludePackageNames>*.spielwiese.*</excludePackageNames>
 						</configuration>
 						<goals>

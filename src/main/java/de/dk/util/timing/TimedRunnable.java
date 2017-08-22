@@ -12,6 +12,8 @@ public interface TimedRunnable {
     * Does stuff and definetely returns before the specified timeout is reached.
     *
     * @param timeout The timeout in millis
+    *
+    * @throws InterruptedException if the thread is interrupted.
     */
    public void run(long timeout) throws InterruptedException;
 }

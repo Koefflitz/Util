@@ -39,7 +39,7 @@ public class MemoryValue {
     * @param bytes The number of bytes, that represent the value of this MemoryValue object
     *
     * @throws IllegalArgumentException If a value, that cannot be expressed in MemoryUnits is passed,
-    * e.g. 0.00001 or <code>bytes < 0</code>.
+    * e.g. 0.00001 or <code>bytes &lt; 0</code>.
     */
    public MemoryValue(double bytes) throws IllegalArgumentException {
       this(bytes, MemoryUnit.BYTE);

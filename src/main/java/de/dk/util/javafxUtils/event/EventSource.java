@@ -6,7 +6,7 @@ import javafx.event.EventType;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 27.10.2016
+ * <br>Erstellt am 27.10.2016
  */
 public interface EventSource {
    public <T extends Event> void addEventHandler(EventType<T> eventType,

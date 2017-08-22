@@ -45,7 +45,7 @@ public interface UnsafeUnaryOperator<T, E extends Exception> extends UnsafeFunct
     * If evaluation of either function throws an exception, it is relayed to
     * the caller of the composed function.
     *
-    * @param after the function to apply after this function is applied
+    * @param before the function to apply after this function is applied
     *
     * @return A composed <code>UnsafeUnaryOperator</code> that first applies this function to
     * its input, and then applies the {@code after} function to the result.

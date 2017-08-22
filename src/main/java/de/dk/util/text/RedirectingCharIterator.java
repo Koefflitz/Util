@@ -162,6 +162,8 @@ public class RedirectingCharIterator extends CharIterator {
     *
     * @param redirecting Set this to <code>true</code> if all read chars should be redirected
     * to the specified printstream. <code>false</code> to disable the printing.
+    *
+    * @return this iterator to go on.
     */
    public RedirectingCharIterator setRedirecting(boolean redirecting) {
       this.redirecting = redirecting;

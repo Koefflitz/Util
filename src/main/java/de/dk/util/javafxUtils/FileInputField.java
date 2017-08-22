@@ -10,7 +10,7 @@ import javafx.stage.FileChooser;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 12.12.2016
+ * <br>Erstellt am 12.12.2016
  */
 public class FileInputField extends HBox {
    private TextField txtPath;

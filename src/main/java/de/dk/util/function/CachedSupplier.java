@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  * A <code>Supplier</code> that caches the value supplied by the underlying supplier.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 20.10.2016
+ * <br>Erstellt am 20.10.2016
  */
 public class CachedSupplier<T> implements Supplier<T> {
    private T buffer;

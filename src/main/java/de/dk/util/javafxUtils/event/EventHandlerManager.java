@@ -11,7 +11,7 @@ import javafx.stage.Window;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 04.10.2016
+ * <br>Erstellt am 04.10.2016
  */
 public class EventHandlerManager {
    private final EventSource target;

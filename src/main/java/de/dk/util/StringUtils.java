@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * Contains utility methods for converting and validating Strings.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 30.08.2016
+ * <br>Erstellt am 30.08.2016
  */
 public final class StringUtils {
 
@@ -122,6 +122,12 @@ public final class StringUtils {
    /**
     * Checks whether the string is <code>null</code>, empty or
     * contains only whitespaces.
+    *
+    * @param string The string to be checked if blank
+    *
+    * @return <code>true</code> if the string is either <code>null</code>,
+    * has a length of 0 or contains only whitespace characters
+    * <code>false</code> otherwiese
     */
    public static boolean isBlank(String string) {
       return string == null || string.trim().isEmpty();
@@ -129,6 +135,11 @@ public final class StringUtils {
 
    /**
     * Checks whether the char is whitespace.
+    *
+    * @param c The char to be checked for whitespace
+    *
+    * @return <code>true</code> if <code>c</code> is a whitespace character.
+    * <code>false</code> otherwise
     */
    public static boolean isBlank(char c) {
       return isBlank("" + c);

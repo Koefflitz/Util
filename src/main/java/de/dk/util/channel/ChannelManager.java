@@ -126,6 +126,7 @@ public class ChannelManager implements Receiver {
     * @param type The type of the new channel
     * @param timeout The timeout in milliseconds for the request
     * @param initialMsg An optional initial message to send with the request
+    * @param <T> The type of the messages that go through the channel
     *
     * @return The new established channel.
     * The channel will be in <code>OPEN</code> state and ready for communication.
@@ -152,6 +153,7 @@ public class ChannelManager implements Receiver {
     *
     * @param type The type of the new channel
     * @param timeout The timeout in milliseconds for the request
+    * @param <T> The type of the messages that go through the channel
     *
     * @return The new established channel.
     * The channel will be in <code>OPEN</code> state and ready for communication.
@@ -176,6 +178,7 @@ public class ChannelManager implements Receiver {
     *
     * @param type The type of the new channel
     * @param initialMsg An optional initial message to send with the request
+    * @param <T> The type of the messages that go through the channel
     *
     * @return A future to represent the establishment of the new channel.
     */
@@ -192,6 +195,7 @@ public class ChannelManager implements Receiver {
     * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Object)} method getting called.
     *
     * @param type The type of the new channel
+    * @param <T> The type of the messages that go through the channel
     *
     * @return A future to represent the establishment of the new channel.
     */
@@ -354,6 +358,7 @@ public class ChannelManager implements Receiver {
     * the next supertype handler will be looked for and so on...
     *
     * @param handler The handler to handle channel requests of the handlers type
+    * @param <P> The type of the messages of the channel that the handler handles
     */
    public <P> void addHandler(ChannelHandler<P> handler) {
       handlers.put(handler.getType(), handler);

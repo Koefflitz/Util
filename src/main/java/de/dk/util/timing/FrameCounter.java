@@ -11,7 +11,7 @@ import java.util.function.IntConsumer;
  * of how many frames were executed in that second.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 11.11.2016
+ * <br>Erstellt am 11.11.2016
  *
  * @see PulseController
  */

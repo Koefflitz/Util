@@ -6,7 +6,7 @@ import javafx.scene.layout.Region;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 01.12.2016
+ * <br>Erstellt am 01.12.2016
  */
 public class ObjectTextControlAdapter<C extends Region
                                                 & ObjectTextControl<O>

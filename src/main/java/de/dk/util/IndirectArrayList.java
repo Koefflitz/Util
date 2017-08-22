@@ -8,7 +8,7 @@ import java.util.function.UnaryOperator;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 20.09.2016
+ * <br>Erstellt am 20.09.2016
  */
 public class IndirectArrayList<E> extends ArrayList<E> {
    private static final long serialVersionUID = 498580618217277102L;

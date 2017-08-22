@@ -7,7 +7,7 @@ import javafx.scene.Node;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 27.10.2016
+ * <br>Erstellt am 27.10.2016
  */
 public class NodeEventSourceAdapter implements EventSource {
    private Node node;

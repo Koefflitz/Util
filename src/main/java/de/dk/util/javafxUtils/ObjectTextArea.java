@@ -6,7 +6,7 @@ import javafx.scene.control.TextArea;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 05.12.2016
+ * <br>Erstellt am 05.12.2016
  */
 public class ObjectTextArea<T> extends TextArea implements ObjectTextControl<T> {
    private ObjectControlAdapter<T> adapter;

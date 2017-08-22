@@ -7,7 +7,7 @@ import java.util.Observer;
 import java.util.function.Consumer;
 
 /**
- * 15.10.2015 </br> Class to do collision detection for rectangles. Possible to add collision-{@link Observer}s to a collider.
+ * 15.10.2015 <br> Class to do collision detection for rectangles. Possible to add collision-{@link Observer}s to a collider.
  *
  * @param <G> Type of the origin-object that causes the collision. Must implement the {@link GameObject}-interface.
  * @param <C> Type of the objects that the origin-object collides with. Must implement the {@link GameObject}-interface too.
@@ -31,7 +31,7 @@ public class Collider<G extends GameObject, C extends GameObject> {
     * @param force The force-{@link Vector} of the origin-object.
     * @param collisionObjects The {@link Collection} of game-objects which the origin-object could collide with.
     * @param correctForce <code>true</code> if the force of the origin-object should be corrected
-    * so that it is not intersecting any other game-object.</br>
+    * so that it is not intersecting any other game-object.<br>
     * <code>false</code> if the origin-object is going straight through the other game-objects.
     */
    public void collisionDetection(Vector force, Collection<? extends C> collisionObjects, boolean correctForce) {

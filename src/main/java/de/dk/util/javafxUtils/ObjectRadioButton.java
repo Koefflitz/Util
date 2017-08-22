@@ -6,7 +6,7 @@ import javafx.scene.control.RadioButton;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 06.12.2016
+ * <br>Erstellt am 06.12.2016
  */
 public class ObjectRadioButton<T> extends RadioButton implements ObjectControl<T, Boolean> {
    private T object;

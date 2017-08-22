@@ -11,7 +11,7 @@ import javafx.scene.input.KeyEvent;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 29.08.2016
+ * <br>Erstellt am 29.08.2016
  */
 public class NumberTextField extends TextField
                              implements EventHandler<KeyEvent>,

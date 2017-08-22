@@ -19,7 +19,7 @@ public interface Sender {
     *
     * @param msg The message to be send.
     *
-    * @throws IOException
+    * @throws IOException If an I/O error occurs
     */
    public void send(Serializable msg) throws IOException;
 }

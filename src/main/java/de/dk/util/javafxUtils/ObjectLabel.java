@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 22.11.2016
+ * <br>Erstellt am 22.11.2016
  */
 public class ObjectLabel<T> extends Label implements ObjectTextControl<T> {
    private ObjectControlAdapter<T> adapter;

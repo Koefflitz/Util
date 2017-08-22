@@ -9,7 +9,7 @@ import javafx.event.EventType;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 04.10.2016
+ * <br>Erstellt am 04.10.2016
  */
 public class TypedEventHandler<T extends Event> {
    private EventType<T> type;

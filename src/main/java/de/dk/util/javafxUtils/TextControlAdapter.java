@@ -9,7 +9,7 @@ import javafx.scene.layout.Region;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 01.12.2016
+ * <br>Erstellt am 01.12.2016
  */
 public class TextControlAdapter<R extends Region> implements TextControl {
    private static final Map<String, Class<?>[]> METHODS = new HashMap<>();

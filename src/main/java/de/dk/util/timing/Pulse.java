@@ -7,7 +7,7 @@ import de.dk.util.game.Vector;
  * A pulsehandler attached to a {@link PulseController} will receive a Pulse object in each pulsecylce.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 14.11.2016
+ * <br>Erstellt am 14.11.2016
  *
  * @see PulseController
  */

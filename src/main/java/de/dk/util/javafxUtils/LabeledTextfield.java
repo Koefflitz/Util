@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
  * A {@link VBox} extension that contains a Label and a Textfield.
  *
  * @author David Koettlitz
- * <br/>Erstellt am 29.08.2016
+ * <br>Erstellt am 29.08.2016
  */
 public class LabeledTextfield extends VBox {
    private Label label;

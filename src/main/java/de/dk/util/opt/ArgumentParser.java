@@ -65,6 +65,8 @@ public class ArgumentParser {
    /**
     * Parses the given <code>args</code> and returns the results as an argument model.
     *
+    * @param offset The offset to start from.
+    * The offset is equivalent to the index of the first argument.
     * @param args The arguments to parse
     *
     * @return An argument model containing the results.
@@ -76,11 +78,11 @@ public class ArgumentParser {
     * e.g. If an option <code>[-f --foo]</code> is just intended as a simple flag, that doesn't expect any value
     * is given like <code>--foo=bar</code>
     */
-   public ArgumentModel parseArguments(int offset, int length, String... args) throws MissingArgumentException,
+   public ArgumentModel parseArguments(int offset, String... args) throws MissingArgumentException,
                                                                                       MissingOptionValueException,
                                                                                       UnknownArgumentException,
                                                                                       UnexpectedOptionValueException {
-      return parseArguments(ArrayIterator.of(offset, length, args));
+      return parseArguments(ArrayIterator.of(offset, args.length - offset, args));
    }
 
    /**

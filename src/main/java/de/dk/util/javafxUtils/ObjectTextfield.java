@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 
 /**
  * @author David Koettlitz
- * <br/>Erstellt am 21.11.2016
+ * <br>Erstellt am 21.11.2016
  */
 public class ObjectTextfield<T> extends TextField implements ObjectTextControl<T> {
    private ObjectControlAdapter<T> adapter;
