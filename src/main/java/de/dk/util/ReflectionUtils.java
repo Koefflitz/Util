@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
+import de.dk.util.function.UnsafeFunction;
+
 /**
  * @author David Koettlitz
  * <br/>Erstellt am 10.11.2016

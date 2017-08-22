@@ -3,6 +3,9 @@ package de.dk.util;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
+import de.dk.util.function.UnsafeConsumer;
+import de.dk.util.function.UnsafeSupplier;
+
 /**
  * Some static utility methods, that can sometimes be useful.
  *
