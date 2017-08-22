@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dk.util.net.Connection;
 import de.dk.util.net.Connector;
 import de.dk.util.net.SimpleConnection;
 import de.dk.util.net.TestObject;
@@ -28,8 +29,8 @@ import de.dk.util.net.TestObject;
 public class ChannelTest {
    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelTest.class);
 
-   private SimpleConnection serverConnection;
-   private SimpleConnection clientConnection;
+   private Connection serverConnection;
+   private Connection clientConnection;
 
    private ChannelManager serverManager;
    private ChannelManager clientManager;

@@ -17,6 +17,7 @@ import de.dk.util.channel.ChannelHandler;
 import de.dk.util.channel.ChannelManager;
 import de.dk.util.channel.Sender;
 import de.dk.util.net.ConnectionListener.ConnectionListenerChain;
+import de.dk.util.net.Receiver.ReceiverChain;
 
 /**
  * A class to represent a TCP connection based on a {@link Socket}.
@@ -41,7 +42,7 @@ public abstract class Connection implements Runnable, Sender {
    protected final InputStream in;
    protected final OutputStream out;
 
-   private Receiver receiver;
+   private final ReceiverChain receivers = new ReceiverChain();
    private final ConnectionListenerChain listeners = new ConnectionListenerChain();
 
    protected final AtomicBoolean running = new AtomicBoolean(false);
@@ -58,9 +59,9 @@ public abstract class Connection implements Runnable, Sender {
     */
    public Connection(Socket socket, Receiver receiver) throws IOException {
       this.socket = Objects.requireNonNull(socket);
-      this.in = socket.getInputStream();
       this.out = socket.getOutputStream();
-      this.receiver = receiver;
+      this.in = socket.getInputStream();
+      addReceiver(receiver);
    }
 
    /**
@@ -127,27 +128,24 @@ public abstract class Connection implements Runnable, Sender {
       }
 
       while (!socket.isClosed()) {
-         Object[] objects;
+         Object object;
          try {
-            objects = readObject();
+            object = readObject();
          } catch (ReadingException e) {
-            listeners.readingError(e);
+            LOGGER.error("Error reading an incoming message from " + socket.getInetAddress(), e);
             continue;
          } catch (IOException e) {
             break;
          }
 
-         if (objects == null)
+         if (object == null)
             break;
 
-         if (receiver != null) {
-            for (Object object : objects) {
-               try {
-                  receiver.receive(object);
-               } catch (IllegalArgumentException e) {
-                  LOGGER.warn("The object " + object + " could not be received.", e);
-               }
-            }
+         try {
+            for (Receiver receiver : receivers)
+               receiver.receive(object);
+         } catch (IllegalArgumentException e) {
+            LOGGER.warn("The object " + object + " could not be received.", e);
          }
       }
 
@@ -171,7 +169,7 @@ public abstract class Connection implements Runnable, Sender {
     * @throws IOException If the socket is closed while reading
     * @throws ReadingException If no object can be read
     */
-   protected abstract Object[] readObject() throws IOException, ReadingException;
+   protected abstract Object readObject() throws IOException, ReadingException;
 
    /**
     * Attaches a channel manager to this connection.
@@ -185,8 +183,8 @@ public abstract class Connection implements Runnable, Sender {
     * @throws UnknownHostException If the idGenerator for the channel manager could not be created
     */
    public ChannelManager attachChannelManager(ChannelHandler<?>... handlers) throws UnknownHostException {
-      ChannelManager manager = new ChannelManager(new InetAddressChannelIdGenerator(), this, handlers);
-      setReceiver(manager);
+      ChannelManager manager = new ChannelManager(new InetAddressIdGenerator(), this, handlers);
+      addReceiver(manager);
       return manager;
    }
 
@@ -247,12 +245,14 @@ public abstract class Connection implements Runnable, Sender {
     * {@link Connection#close(long)} method.
     *
     * @throws IOException If an I/O error occurs when closing this socket
+    * @throws InterruptedException
     */
-   public void close() throws IOException {
-      if (socket.isClosed())
-         return;
+   public void close() throws IOException, InterruptedException {
+      close(0);
+   }
 
-      socket.close();
+   public boolean isClosed() {
+      return socket.isClosed();
    }
 
    /**
@@ -279,8 +279,13 @@ public abstract class Connection implements Runnable, Sender {
     *
     * @param receiver The receiver of the incoming messages
     */
-   public void setReceiver(Receiver receiver) {
-      this.receiver = receiver;
+   public void addReceiver(Receiver receiver) {
+      if (receiver != null)
+         receivers.add(receiver);
+   }
+
+   public void removeReceiver(Receiver receiver) {
+      receivers.remove(receiver);
    }
 
    /**
@@ -289,7 +294,7 @@ public abstract class Connection implements Runnable, Sender {
     * @return The currently attached receiver
     */
    public Receiver getReceiver() {
-      return receiver;
+      return receivers;
    }
 
    /**

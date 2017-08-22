@@ -17,7 +17,7 @@ public class SerializerTest {
    private static final int NUMBER = 8;
    private static final String CONTENT = "Milkflip!";
 
-   private Serializer serializer;
+   private SimpleSerializer serializer;
 
    public SerializerTest() {
 
@@ -25,7 +25,7 @@ public class SerializerTest {
 
    @Before
    public void initSerialization() {
-      this.serializer = new Serializer();
+      this.serializer = new SimpleSerializer();
    }
 
    @Test

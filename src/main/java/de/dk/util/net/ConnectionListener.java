@@ -16,13 +16,6 @@ public interface ConnectionListener {
    public void closed();
 
    /**
-    * This method is called if an error occured while reading an incoming method of the connection.
-    *
-    * @param e The thrown reading exception
-    */
-   public void readingError(ReadingException e);
-
-   /**
     * Sums up many listeners in a {@link List} of listeners.
     * This is just a wrapper class to sum up many listeners.
     *
@@ -39,13 +32,6 @@ public interface ConnectionListener {
          ConnectionListener[] listeners = toArray(new ConnectionListener[size()]);
          for (ConnectionListener l : listeners)
             l.closed();
-      }
-
-      @Override
-      public void readingError(ReadingException e) {
-         ConnectionListener[] listeners = toArray(new ConnectionListener[size()]);
-         for (ConnectionListener l : listeners)
-            l.readingError(e);
       }
    }
 }

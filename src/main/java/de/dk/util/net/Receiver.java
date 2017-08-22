@@ -1,5 +1,7 @@
 package de.dk.util.net;
 
+import java.util.LinkedList;
+
 import de.dk.util.channel.ChannelManager;
 
 /**
@@ -20,4 +22,17 @@ public interface Receiver {
     * @throws IllegalArgumentException If the message could not be handled
     */
    public void receive(Object msg) throws IllegalArgumentException;
+
+   public static class ReceiverChain extends LinkedList<Receiver> implements Receiver {
+      private static final long serialVersionUID = 4570474656007106847L;
+
+      @Override
+      public void receive(Object msg) throws IllegalArgumentException {
+         Receiver[] receivers = toArray(new Receiver[size()]);
+         for (Receiver receiver : receivers) {
+            receiver.receive(msg);
+         }
+      }
+
+   }
 }

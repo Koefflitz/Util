@@ -47,8 +47,8 @@ public class ConnectionTest {
       connector.connect();
       this.clientConnection = connector.getClientConnection();
       this.serverConnection = connector.getServerConnection();
-      clientConnection.setReceiver(clientReceiver);
-      serverConnection.setReceiver(serverReceiver);
+      clientConnection.addReceiver(clientReceiver);
+      serverConnection.addReceiver(serverReceiver);
    }
 
    @Test
