@@ -158,7 +158,7 @@ public class ArgumentModel implements Iterable<String> {
      *
      * @param name The name of the command
      *
-     * @return The parsed argument model of the command
+     * @return The parsed argument model of the command or <code>null</code> if not present
      */
     public ArgumentModel getCommandValue(String name) {
        if (commands == null)

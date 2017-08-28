@@ -254,7 +254,8 @@ public class ArgumentParserBuilder {
     * @return This argumentparser builder to go on
     */
    protected ArgumentParserBuilder addOption(ExpectedOption option) {
-      options.put(option.getKey(), option);
+      if (option.getKey() != ExpectedOption.NO_KEY || option.getLongKey() == null)
+         options.put(option.getKey(), option);
       if (option.getLongKey() != null)
          longOptions.put(option.getLongKey(), option);
 
