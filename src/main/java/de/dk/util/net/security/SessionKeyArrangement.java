@@ -32,7 +32,7 @@ public class SessionKeyArrangement {
    private Sender sender;
 
    public SessionKeyArrangement(Sender sender,
-                             ObjectInputStream in) throws NullPointerException {
+                                ObjectInputStream in) throws NullPointerException {
       this.sender = sender;
       this.in = in;
    }

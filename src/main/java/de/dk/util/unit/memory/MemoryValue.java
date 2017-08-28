@@ -224,6 +224,17 @@ public class MemoryValue {
    }
 
    /**
+    * Set the value and the unit.
+    *
+    * @param value The value to be set
+    * @param unit The untit to be set
+    */
+   public void set(double value, MemoryUnit unit) {
+      this.unit = unit;
+      this.value = value;
+   }
+
+   /**
     * Get the actual value of this object.
     *
     * @return The actual value of this object.

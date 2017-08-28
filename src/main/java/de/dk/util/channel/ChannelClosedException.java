@@ -8,7 +8,7 @@ import java.io.IOException;
  * @author David Koettlitz
  * <br>Erstellt am 13.07.2017
  *
- * @see ChannelManager
+ * @see Multiplexer
  * @see Channel
  */
 public class ChannelClosedException extends IOException {

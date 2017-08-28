@@ -2,14 +2,14 @@ package de.dk.util.channel;
 
 /**
  * An instance for handling requests for new channels and closes of channels of a specific type.
- * A <code>ChannelHandler</code> can be registered at a {@link ChannelManager}
+ * A <code>ChannelHandler</code> can be registered at a {@link Multiplexer}
  * and will be informed whenever a request to open a channel of the type that matches this <code>ChannelHandler</code>
  * is received or when such a <code>Channel</code> is closed.
  *
  * @author David Koettlitz
  * <br>Erstellt am 14.07.2017
  *
- * @see ChannelManager
+ * @see Multiplexer
  */
 public interface ChannelHandler<T> {
    /**

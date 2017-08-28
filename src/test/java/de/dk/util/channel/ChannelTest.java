@@ -32,8 +32,8 @@ public class ChannelTest {
    private Connection serverConnection;
    private Connection clientConnection;
 
-   private ChannelManager serverManager;
-   private ChannelManager clientManager;
+   private Multiplexer serverMultiplexer;
+   private Multiplexer clientMultiplexer;
 
    private TestChannelHandler<Foo> serverFooHandler;
    private TestChannelHandler<Bar> serverBarHandler;
@@ -56,18 +56,18 @@ public class ChannelTest {
    private static <T> void testClose(Channel<T> active,
                                      Channel<T> passive,
                                      TestChannelHandler<T> passiveHandler,
-                                     ChannelManager activeManager,
-                                     ChannelManager passiveManager) {
+                                     Multiplexer activeMultiplexer,
+                                     Multiplexer passiveMultiplexer) {
       close(active);
       assertTrue(active.isClosed());
-      assertNull("Channel should be removed from handler", activeManager.getChannel(active.getId()));
+      assertNull("Channel should be removed from handler", activeMultiplexer.getChannel(active.getId()));
       try {
          passiveHandler.waitForClose(passive, TIMEOUT);
       } catch (InterruptedException e) {
          fail(e.getMessage());
       }
       assertTrue(passive.isClosed());
-      assertNull("Channel should be removed from handler", passiveManager.getChannel(passive.getId()));
+      assertNull("Channel should be removed from handler", passiveMultiplexer.getChannel(passive.getId()));
    }
 
    private static <T extends TestObject> void testMessage(T message,
@@ -93,11 +93,11 @@ public class ChannelTest {
       this.clientConnection = connector.getClientConnection();
       this.serverConnection = connector.getServerConnection();
       try {
-         this.clientManager = clientConnection.attachChannelManager((this.clientFooHandler = new TestChannelHandler<>(Foo.class)),
-                                                                    (this.clientBarHandler = new TestChannelHandler<>(Bar.class)));
+         this.clientMultiplexer = clientConnection.attachMultiplexer((this.clientFooHandler = new TestChannelHandler<>(Foo.class)),
+                                                                     (this.clientBarHandler = new TestChannelHandler<>(Bar.class)));
 
-         this.serverManager = serverConnection.attachChannelManager((this.serverFooHandler = new TestChannelHandler<>(Foo.class)),
-                                                                    (this.serverBarHandler = new TestChannelHandler<>(Bar.class)));
+         this.serverMultiplexer = serverConnection.attachMultiplexer((this.serverFooHandler = new TestChannelHandler<>(Foo.class)),
+                                                                     (this.serverBarHandler = new TestChannelHandler<>(Bar.class)));
       } catch (UnknownHostException e) {
          fail(e.getMessage());
       }
@@ -154,8 +154,8 @@ public class ChannelTest {
 
       TestChannelHandler<SubFoo> clientSubFooHandler = new TestChannelHandler<>(SubFoo.class);
       TestChannelHandler<SubFoo> serverSubFooHandler = new TestChannelHandler<>(SubFoo.class);
-      clientManager.addHandler(clientSubFooHandler);
-      serverManager.addHandler(serverSubFooHandler);
+      clientMultiplexer.addHandler(clientSubFooHandler);
+      serverMultiplexer.addHandler(serverSubFooHandler);
 
       TestChannelListener<SubFoo> clientSubFooListener = new TestChannelListener<>();
       TestChannelListener<SubFoo> serverSubFooListener = new TestChannelListener<>();
@@ -180,8 +180,8 @@ public class ChannelTest {
       serverFooChannel.addListener(serverFooListener);
       serverBarChannel.addListener(serverBarListener);
 
-      testClose(clientFooChannel, serverFooChannel, serverFooHandler, clientManager, serverManager);
-      testClose(serverBarChannel, clientBarChannel, clientBarHandler, serverManager, clientManager);
+      testClose(clientFooChannel, serverFooChannel, serverFooHandler, clientMultiplexer, serverMultiplexer);
+      testClose(serverBarChannel, clientBarChannel, clientBarHandler, serverMultiplexer, clientMultiplexer);
    }
 
    private <T extends TestObject> Channel<T> establishChannel(Class<T> type,
@@ -189,7 +189,7 @@ public class ChannelTest {
                                                               TestChannelHandler<T> handler) {
       Channel<T> channel = null;
       try {
-         channel = clientManager.establishNewChannel(type, TIMEOUT);
+         channel = clientMultiplexer.establishNewChannel(type, TIMEOUT);
       } catch (IOException | ChannelDeclinedException | InterruptedException | TimeoutException e) {
          fail(e.getMessage());
       }

@@ -19,12 +19,12 @@ import de.dk.util.net.Connection;
 import de.dk.util.net.Receiver;
 
 /**
- * The <code>ChannelManager</code> class is the core of the channeling API.
- * A <code>ChannelManager</code> manages all the established channels,
+ * The <code>Multiplexer</code> class is the core of the multiplexing API.
+ * A <code>Multiplexer</code> manages all the established channels,
  * the opening and closing procedures of a channel through the attached {@link ChannelHandler}s and
  * redirects the received messages to the channels.
  *
- * A <code>ChannelManager</code> needs <code>ChannelHandler</code>s to establish new channels.
+ * A <code>Multiplexer</code> needs <code>ChannelHandler</code>s to establish new channels.
  * The <code>ChannelHandler</code>s are instances to handle requests to open a channel.
  *
  * @author David Koettlitz
@@ -35,8 +35,8 @@ import de.dk.util.net.Receiver;
  * @see ChannelListener
  * @see Connection
  */
-public class ChannelManager implements Receiver {
-   private static final Logger LOGGER = LoggerFactory.getLogger(ChannelManager.class);
+public class Multiplexer implements Receiver {
+   private static final Logger LOGGER = LoggerFactory.getLogger(Multiplexer.class);
 
    private static final String RECEIVE_METHOD_NAME = "receive";
    private static final String NEW_CHANNEL_METHOD_NAME = "newChannelRequested";
@@ -49,16 +49,16 @@ public class ChannelManager implements Receiver {
    private final Map<Long, NewChannelRequest<?>> requests = new ConcurrentHashMap<>();
 
    /**
-    * Creates a new channel manager. If you are working with the {@linkplain de.dk.util.net} package
-    * you can also call the {@link Connection#attachChannelManager(ChannelHandler...)} method
+    * Creates a new multiplexer. If you are working with the {@linkplain de.dk.util.net} package
+    * you can also call the {@link Connection#attachMultiplexer(ChannelHandler...)} method
     * to create a new channel manager.
     *
     * @param idGenerator The id generator to generate the ids of the channels
     * @param sender The sender for the channels to send messages with
     * @param handlers The channel handlers to handle new channel requests and closing of channels
-    * (channel handlers can also be added later using the {@link ChannelManager#addHandler(ChannelHandler)} method
+    * (channel handlers can also be added later using the {@link Multiplexer#addHandler(ChannelHandler)} method
     */
-   public ChannelManager(IDGenerator idGenerator, Sender sender, ChannelHandler<?>... handlers) {
+   public Multiplexer(IDGenerator idGenerator, Sender sender, ChannelHandler<?>... handlers) {
       this.idGenerator = idGenerator;
       this.sender = Objects.requireNonNull(sender);
       if (handlers != null) {
@@ -399,7 +399,7 @@ public class ChannelManager implements Receiver {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      ChannelManager other = (ChannelManager) obj;
+      Multiplexer other = (Multiplexer) obj;
       if (this.handlers == null) {
          if (other.handlers != null)
             return false;
@@ -415,7 +415,7 @@ public class ChannelManager implements Receiver {
 
    @Override
    public String toString() {
-      String string = "ChannelManager {\n\tchannelcount=" + channels.size() + ",\n"
+      String string = "Multiplexer {\n\tchannelcount=" + channels.size() + ",\n"
                                        + "\thandlerTypes=[";
 
       Iterator<Class<?>> iterator = handlers.keySet().iterator();

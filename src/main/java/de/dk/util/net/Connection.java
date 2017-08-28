@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dk.util.channel.ChannelHandler;
-import de.dk.util.channel.ChannelManager;
+import de.dk.util.channel.Multiplexer;
 import de.dk.util.channel.Sender;
 import de.dk.util.net.ConnectionListener.ConnectionListenerChain;
 import de.dk.util.net.Receiver.ReceiverChain;
@@ -32,7 +32,7 @@ import de.dk.util.net.Receiver.ReceiverChain;
  * @author David Koettlitz
  * <br>Erstellt am 13.07.2017
  *
- * @see ChannelManager
+ * @see Multiplexer
  * @see ConnectionListener
  * @see SimpleConnection
  */
@@ -173,20 +173,20 @@ public abstract class Connection implements Runnable, Sender, Closeable {
    protected abstract Object readObject() throws IOException, ReadingException;
 
    /**
-    * Attaches a channel manager to this connection.
-    * The previously set receiver will be removed and replaced by the channel manager.
-    * It is now possible to communicate through channels provided by the channel manager.
+    * Attaches a multiplexer to this connection.
+    * The previously set receiver will be removed and replaced by the multiplexer.
+    * It is now possible to communicate through channels provided by the multiplexer.
     *
-    * @param handlers The channel handlers for the channel manager
+    * @param handlers The channel handlers for the multiplexer
     *
-    * @return The new created and attached channel manager
+    * @return The new created and attached multiplexer
     *
-    * @throws UnknownHostException If the idGenerator for the channel manager could not be created
+    * @throws UnknownHostException If the idGenerator for the multiplexer could not be created
     */
-   public ChannelManager attachChannelManager(ChannelHandler<?>... handlers) throws UnknownHostException {
-      ChannelManager manager = new ChannelManager(new InetAddressIdGenerator(), this, handlers);
-      addReceiver(manager);
-      return manager;
+   public Multiplexer attachMultiplexer(ChannelHandler<?>... handlers) throws UnknownHostException {
+      Multiplexer multiplexer = new Multiplexer(new InetAddressIdGenerator(), this, handlers);
+      addReceiver(multiplexer);
+      return multiplexer;
    }
 
    /**

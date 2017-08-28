@@ -21,7 +21,7 @@ import de.dk.util.channel.ChannelPacket.ChannelPacketType;
  * @author David Koettlitz
  * <br>Erstellt am 13.07.2017
  *
- * @see ChannelManager
+ * @see Multiplexer
  */
 public class Channel<T> {
    private static final Logger LOGGER = LoggerFactory.getLogger(Channel.class);
@@ -29,29 +29,29 @@ public class Channel<T> {
    private final long id;
    private final ChannelListenerChain<T> listeners = new ChannelListenerChain<>();
    private final Sender sender;
-   private final ChannelManager manager;
+   private final Multiplexer multiplexer;
    private Queue<T> preSentMessages = new LinkedList<>();
 
    private ChannelState state = OPENING;
 
    /**
-    * Creates a new channel with the given id, sender and the channel manager that manages this channel.
-    * It is recommended to use a channnel manager to create new channels.
+    * Creates a new channel with the given id, sender and the multiplexer that manages this channel.
+    * It is recommended to use a multiplexer to create new channels.
     *
     * @param id The id of this channel (should be unique)
     * @param sender The sender via which messages are sent (cannot be <code>null</code>)
-    * @param manager The ChannelManager that manages this channel
+    * @param multiplexer The multiplexer that manages this channel
     *
     * @throws NullPointerException If the given <code>sender</code> is <code>null</code>
     */
-   public Channel(long id, Sender sender, ChannelManager manager) throws NullPointerException {
+   public Channel(long id, Sender sender, Multiplexer multiplexer) throws NullPointerException {
       this.id = id;
       this.sender = Objects.requireNonNull(sender);
-      this.manager = manager;
+      this.multiplexer = multiplexer;
    }
 
    /**
-    * This method is usually called by the channel manager when a packet with this channelId arrived.
+    * This method is usually called by the multiplexer when a packet with this channelId arrived.
     * This method can manually be called to fake an arrival of a packet for this channel.
     *
     * @param packet The arrived packet
@@ -162,8 +162,8 @@ public class Channel<T> {
       } finally {
          state = CLOSED;
 
-         if (manager != null)
-            manager.channelClosed(id);
+         if (multiplexer != null)
+            multiplexer.channelClosed(id);
       }
    }
 
@@ -221,7 +221,7 @@ public class Channel<T> {
       final int prime = 31;
       int result = 1;
       result = prime * result + (int) (this.id ^ (this.id >>> 32));
-      result = prime * result + ((this.manager == null) ? 0 : this.manager.hashCode());
+      result = prime * result + ((this.multiplexer == null) ? 0 : this.multiplexer.hashCode());
       result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
       return result;
    }
@@ -237,10 +237,10 @@ public class Channel<T> {
       Channel<?> other = (Channel<?>) obj;
       if (this.id != other.id)
          return false;
-      if (this.manager == null) {
-         if (other.manager != null)
+      if (this.multiplexer == null) {
+         if (other.multiplexer != null)
             return false;
-      } else if (!this.manager.equals(other.manager))
+      } else if (!this.multiplexer.equals(other.multiplexer))
          return false;
       if (this.state != other.state)
          return false;

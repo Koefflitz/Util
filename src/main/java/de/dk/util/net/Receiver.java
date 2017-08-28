@@ -2,7 +2,7 @@ package de.dk.util.net;
 
 import java.util.LinkedList;
 
-import de.dk.util.channel.ChannelManager;
+import de.dk.util.channel.Multiplexer;
 
 /**
  * This is the interface to receive the read messages from a {@link Connection}
@@ -11,7 +11,7 @@ import de.dk.util.channel.ChannelManager;
  * <br>Erstellt am 13.07.2017
  *
  * @see Connection
- * @see ChannelManager
+ * @see Multiplexer
  */
 public interface Receiver {
    /**
