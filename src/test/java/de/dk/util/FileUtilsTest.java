@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.junit.After;
@@ -42,16 +42,17 @@ public class FileUtilsTest {
       } catch (IOException e) {
          fail(e.getMessage());
       }
-      FileWriter writer = null;
+
+      FileOutputStream out = null;
       try {
-         writer = new FileWriter(file);
-         writer.write(FILE_CONTENT);
+         out = new FileOutputStream(file);
+         out.write(FILE_CONTENT.getBytes());
       } catch (IOException e) {
          fail(e.getMessage());
       } finally {
          try {
-            if (writer != null)
-               writer.close();
+            if (out != null)
+               out.close();
          } catch (IOException e) {
             LOGGER.warn("Filewriter could not be closed: " + e.getMessage());
          }
@@ -98,7 +99,7 @@ public class FileUtilsTest {
       File file = new File(workingDir, "testfile.txt");
       writeTo(file);
       try {
-         assertEquals(FILE_CONTENT, getContentOf(file));
+         assertEquals(FILE_CONTENT, new String(getContentOf(file)));
       } catch (IOException e) {
          fail(e.getMessage());
       }
@@ -129,7 +130,7 @@ public class FileUtilsTest {
       }
 
       try {
-         assertEquals(FILE_CONTENT, getContentOf(target));
+         assertEquals(FILE_CONTENT, new String(getContentOf(target)));
       } catch (IOException e) {
          fail(e.getMessage());
       }
@@ -163,8 +164,8 @@ public class FileUtilsTest {
       assertTrue(resultFSub.exists());
 
       try {
-         assertEquals(FILE_CONTENT, getContentOf(resultF));
-         assertEquals(FILE_CONTENT, getContentOf(resultFSub));
+         assertEquals(FILE_CONTENT, new String(getContentOf(resultF)));
+         assertEquals(FILE_CONTENT, new String(getContentOf(resultFSub)));
       } catch (IOException e) {
          fail(e.getMessage());
       }

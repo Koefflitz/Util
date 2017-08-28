@@ -86,10 +86,14 @@ public final class FileUtils {
     *
     * @throws IOException If an I/O error occurs
     */
-   public static String getContentOf(File file) throws IOException {
+   public static byte[] getContentOf(File file) throws IOException {
+      long length = file.length();
+      if (length > Integer.MAX_VALUE)
+         throw new IOException("File too large (" + length + "bytes).");
+
       ByteArrayOutputStream out = new ByteArrayOutputStream(DMath.cutToInt(file.length()));
       writeContentOf(file, out);
-      return out.toString();
+      return out.toByteArray();
    }
 
    /**
