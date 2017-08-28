@@ -2,7 +2,6 @@ package de.dk.util.net.security;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -17,26 +16,22 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import de.dk.util.channel.Sender;
-import de.dk.util.net.Coder;
 
-public class SecureCoderBuilder {
-   private static final String DEFAULT_SYMMETRIC_ALGORITHM = "AES";
-   private static final String DEFAULT_ASYMMETRIC_ALGORITHM = "RSA";
+public class SessionKeyArrangement {
+   public static final String DEFAULT_SYMMETRIC_ALGORITHM = "AES";
+   public static final String DEFAULT_ASYMMETRIC_ALGORITHM = "RSA";
 
-   private Cipher symCipher;
    private Cipher asymCipher;
    private PrivateKey privateKey;
    private PublicKey ownPublicKey;
    private PublicKey otherPublicKey;
    private boolean genSessionKey;
-   private KeyGenerator sessionKeyGen;;
-
-   private SecretKey sessionKey;
+   private KeyGenerator sessionKeyGen;
 
    private ObjectInputStream in;
    private Sender sender;
 
-   public SecureCoderBuilder(Sender sender,
+   public SessionKeyArrangement(Sender sender,
                              ObjectInputStream in) throws NullPointerException {
       this.sender = sender;
       this.in = in;
@@ -59,25 +54,16 @@ public class SecureCoderBuilder {
       return packet.getPublicKey();
    }
 
-   public Future<Coder> asyncBuild() {
-      FutureTask<Coder> task = new FutureTask<>(() -> build());
+   public Future<SecretKey> arrangeAsync() {
+      FutureTask<SecretKey> task = new FutureTask<>(() -> arrange());
       Thread thread = new Thread(task);
       thread.start();
       return task;
    }
 
-   public Coder build() throws IOException, IllegalStateException {
+   public SecretKey arrange() throws IOException, IllegalStateException {
       if (ownPublicKey == null)
          throw new IllegalStateException("Public key was not set.");
-
-      try {
-         if (symCipher == null)
-            symCipher = Cipher.getInstance(sessionKey.getAlgorithm());
-         if (asymCipher == null)
-            asymCipher = Cipher.getInstance(DEFAULT_ASYMMETRIC_ALGORITHM);
-      } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-         throw new IOException("Could not initialize cipher.", e);
-      }
 
       try {
          sender.send(new PublicKeyPacket(ownPublicKey));
@@ -87,27 +73,29 @@ public class SecureCoderBuilder {
 
       this.otherPublicKey = readOtherPublicKey(in);
 
-      SecretKey sessionKey;
-
-      if (genSessionKey) {
-         try {
-            if (sessionKeyGen == null)
-               sessionKeyGen = KeyGenerator.getInstance(DEFAULT_SYMMETRIC_ALGORITHM);
-
-            sessionKey = sessionKeyGen.generateKey();
-         } catch (NoSuchAlgorithmException e) {
-            throw new IOException("Could not generate the session key", e);
-         }
-         sendSessionKey(sessionKey, sender);
-      } else {
-         sessionKey = readSessionKey(in);
-      }
-
       try {
-         return new CipherCoderAdapter(symCipher, sessionKey);
-      } catch (GeneralSecurityException e) {
-         throw new IOException(e);
+         if (asymCipher == null)
+            asymCipher = Cipher.getInstance(DEFAULT_ASYMMETRIC_ALGORITHM);
+      } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+         throw new IOException("Could not initialize cipher.", e);
       }
+
+      if (!genSessionKey)
+         return readSessionKey(in);
+
+      SecretKey result;
+      try {
+         if (sessionKeyGen == null)
+            sessionKeyGen = KeyGenerator.getInstance(DEFAULT_SYMMETRIC_ALGORITHM);
+
+         result = sessionKeyGen.generateKey();
+
+      } catch (NoSuchAlgorithmException e) {
+         throw new IOException("Could not generate the session key", e);
+      }
+      sendSessionKey(result, sender);
+
+      return result;
    }
 
    private SecretKey readSessionKey(ObjectInputStream in) throws IOException {
@@ -156,38 +144,28 @@ public class SecureCoderBuilder {
       }
    }
 
-   public SecureCoderBuilder setSymmetricCipher(Cipher symCipher) {
-      this.symCipher = symCipher;
-      return this;
-   }
-
-   public SecureCoderBuilder setAsymmetricCipher(Cipher asymCipher) {
+   public SessionKeyArrangement setAsymmetricCipher(Cipher asymCipher) {
       this.asymCipher = asymCipher;
       return this;
    }
 
-   public SecureCoderBuilder setPublicKey(PublicKey publicKey) {
+   public SessionKeyArrangement setPublicKey(PublicKey publicKey) {
       this.ownPublicKey = publicKey;
       return this;
    }
 
-   public SecureCoderBuilder setPrivateKey(PrivateKey privateKey) {
+   public SessionKeyArrangement setPrivateKey(PrivateKey privateKey) {
       this.privateKey = privateKey;
       return this;
    }
 
-   public SecureCoderBuilder setSessionKey(SecretKey sessionKey) {
-      this.sessionKey = sessionKey;
-      return this;
-   }
-
-   public SecureCoderBuilder setSessionKeyGen(KeyGenerator sessionKeyGen) {
+   public SessionKeyArrangement setSessionKeyGen(KeyGenerator sessionKeyGen) {
       this.sessionKeyGen = sessionKeyGen;
       this.genSessionKey |= sessionKeyGen != null;
       return this;
    }
 
-   public SecureCoderBuilder setGenerateSessionKey(boolean generateSessionKey) {
+   public SessionKeyArrangement setGenerateSessionKey(boolean generateSessionKey) {
       this.genSessionKey = generateSessionKey;
       return this;
    }

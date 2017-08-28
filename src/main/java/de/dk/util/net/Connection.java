@@ -1,5 +1,6 @@
 package de.dk.util.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +36,7 @@ import de.dk.util.net.Receiver.ReceiverChain;
  * @see ConnectionListener
  * @see SimpleConnection
  */
-public abstract class Connection implements Runnable, Sender {
+public abstract class Connection implements Runnable, Sender, Closeable {
    private static final Logger LOGGER = LoggerFactory.getLogger(Connection.class);
 
    protected final Socket socket;
@@ -245,11 +246,14 @@ public abstract class Connection implements Runnable, Sender {
     * {@link Connection#close(long)} method.
     *
     * @throws IOException If an I/O error occurs when closing this socket
-    * @throws InterruptedException If the thread is interrupted while waiting
-    * to close
     */
-   public void close() throws IOException, InterruptedException {
-      close(0);
+   @Override
+   public void close() throws IOException {
+      try {
+         close(0);
+      } catch (InterruptedException e) {
+         throw new IOException("Interrupted while waiting for connection to close", e);
+      }
    }
 
    public boolean isClosed() {
