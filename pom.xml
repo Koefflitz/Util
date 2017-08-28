@@ -4,7 +4,7 @@
 
 	<groupId>de.dk</groupId>
 	<artifactId>util</artifactId>
-	<version>00.00.01</version>
+	<version>00.00.02</version>
 	<packaging>jar</packaging>
 
 	<name>Util</name>
