@@ -39,6 +39,7 @@ import de.dk.util.game.Vector;
  */
 public class PulseController implements Runnable, Pulse {
    public static final long SECOND_IN_NANOS = 1000000000L;
+   public static final float DEFAULT_CPS = 60;
    public static final float DEFAULT_INTERVALL = SECOND_IN_NANOS / 60f;
 
    private float cps;
@@ -48,39 +49,77 @@ public class PulseController implements Runnable, Pulse {
    private Consumer<Pulse> handler;
    private FrameCounter frameCounter;
 
+   private Thread thread;
    private long lastTime;
    private long frameTime;
    private long now;
    private boolean running = false;
 
    /**
-    * Creates a new pulsecontroller that calls a handler every pulse cycle with a specified FPS rate.
+    * Creates a new pulsecontroller that calls a handler every pulse cycle with a specified cps rate.
     *
     * @param handler The handler to be notified each pulse cycle.
-    * @param cps The number of pulse cycles to be initiated per second.
+    * @param cps The number of calls to be initiated per second.
     *
     * @throws NullPointerException if the given <code>handler</code> is <code>null</code>.
     */
    public PulseController(Consumer<Pulse> handler, float cps) throws NullPointerException {
       this.handler = Objects.requireNonNull(handler);
       setCps(cps);
-      reset();
    }
 
    /**
-    * Creates a new pulsecontroller that calls a handler every pulse cycle with a default FPS rate of 60.
+    * Creates a new pulsecontroller that calls a handler every pulse cycle with a default cps rate of 60.
     *
     * @param handler The handler to be called every pulse cycle.
     *
     * @throws NullPointerException if the given <code>handler</code> is <code>null</code>.
     */
    public PulseController(Consumer<Pulse> handler) throws NullPointerException {
-      this(handler, 60);
+      this(handler, DEFAULT_CPS);
+   }
+
+   /**
+    * Create a new PulseController that is its own handler.
+    * For calling this constructor, the {@link #execute(Pulse)} method has to be overridden.
+    * Otherwise the {@link #execute(Pulse)} method will throw an exception.
+    *
+    * @param cps The calls of the handler (in this case this) per second
+    */
+   protected PulseController(float cps) {
+      this.handler = this::execute;
+      setCps(cps);
+   }
+
+   /**
+    * Create a new PulseController that is its own handler.
+    * For calling this constructor, the {@link #execute(Pulse)} method has to be overridden.
+    * Otherwise the {@link #execute(Pulse)} method will throw an exception.
+    */
+   protected PulseController() {
+      this(DEFAULT_CPS);
+   }
+
+   /**
+    * Starts this pulse controller on a new thread.
+    * This method returns when the thread is started.
+    *
+    * @throws IllegalStateException If this pulse contoller is already running.
+    */
+   public void start() throws IllegalStateException {
+      if (running)
+         throw new IllegalStateException("Already running.");
+
+      new Thread(this).start();
    }
 
    @Override
    public void run() {
+      if (running)
+         throw new IllegalStateException("Already running.");
+
       running = true;
+      this.thread = Thread.currentThread();
       while (running)
          update();
 
@@ -88,19 +127,10 @@ public class PulseController implements Runnable, Pulse {
    }
 
    /**
-    * Stops the pulse run by this PulseController.
-    * If it is not running, this call has no effect.
-    * A stopped pulse can always be started again by calling the <code>run()</code> method.
-    */
-   public void stop() {
-      running = false;
-   }
-
-   /**
     * Update the pulse this calls the handler if the specified interval time has passed.
     * Also all the PulseControllers that are joined to this are updated.
     */
-   public synchronized void update() {
+   public void update() {
       this.now = System.nanoTime();
       update(this);
    }
@@ -127,6 +157,24 @@ public class PulseController implements Runnable, Pulse {
 
          lastTime = interval == 0 ? pulse.now() : lastTime + interval;
       }
+   }
+
+   protected void execute(Pulse pulse) {
+      throw new IllegalStateException("If this method is called, it has to be overridden.");
+   }
+
+   /**
+    * Stops the pulse run by this PulseController.
+    * If it is not running, this call has no effect.
+    * A stopped pulse can always be started again by calling the {@link #run()} method.
+    *
+    * @throws InterruptedException If this thread is interrupted
+    * while waiting for the running thread to terminate.
+    */
+   public void stop() throws InterruptedException {
+      running = false;
+      if (thread != null && thread != Thread.currentThread())
+         thread.join();
    }
 
    @Override
