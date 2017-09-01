@@ -11,8 +11,8 @@ import java.util.function.UnaryOperator;
  * <br>Erstellt am 02.02.2017
  */
 public class IntVector {
-   public int x = 1;
-   public int y = 1;
+   protected int x = 1;
+   protected int y = 1;
 
    public IntVector(int x, int y) {
       this.x = x;
@@ -410,6 +410,24 @@ public class IntVector {
       this.x = x;
       this.y = y;
       return this;
+   }
+
+   /**
+    * Get the x value of this vector.
+    *
+    * @return The x value
+    */
+   public int x() {
+      return x;
+   }
+
+   /**
+    * Get the y value of this vector.
+    *
+    * @return The y value
+    */
+   public int y() {
+      return y;
    }
 
    /**

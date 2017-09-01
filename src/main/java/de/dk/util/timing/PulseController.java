@@ -184,7 +184,7 @@ public class PulseController implements Runnable, Pulse {
 
    @Override
    public Vector interpolate(Vector v) {
-      return new Vector(interpolate(v.x), interpolate(v.y));
+      return new Vector(interpolate(v.x()), interpolate(v.y()));
    }
 
    @Override

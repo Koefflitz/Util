@@ -10,8 +10,8 @@ import java.util.function.UnaryOperator;
  * <br>Erstellt am 14.11.2016
  */
 public class Vector {
-   public float x = 1;
-   public float y = 1;
+   protected float x = 1;
+   protected float y = 1;
 
    public Vector(float x, float y) {
       this.x = x;
@@ -414,6 +414,44 @@ public class Vector {
     */
    public Vector set(float x, float y) {
       this.x = x;
+      this.y = y;
+      return this;
+   }
+
+   /**
+    * Get the x value of this vector.
+    *
+    * @return The x value
+    */
+   public float x() {
+      return x;
+   }
+
+   /**
+    * Get the y value of this vector.
+    *
+    * @return The y value
+    */
+   public float y() {
+      return y;
+   }
+
+   /**
+    * Set the x value of this vector.
+    *
+    * @return This Vector to go on
+    */
+   public Vector x(float x) {
+      this.x = x;
+      return this;
+   }
+
+   /**
+    * Set the y value of this vector.
+    *
+    * @return This Vector to go on
+    */
+   public Vector y(float y) {
       this.y = y;
       return this;
    }

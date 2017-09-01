@@ -67,7 +67,7 @@ public final class DMath {
     * @param divisor The divisor to divide <code>dividend</code> through
     *
     * @return The result of the division. If the divisor is <code>0</code>
-    * the highest possible value is returned.
+    * {@link Float#MAX_VALUE} is returned.
     */
    public static float divideSafely(float dividend, float divisor) {
       return divisor == 0 ? Float.MAX_VALUE : dividend / divisor;
