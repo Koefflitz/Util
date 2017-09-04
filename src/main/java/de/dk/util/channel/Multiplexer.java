@@ -46,6 +46,7 @@ public class Multiplexer implements Receiver {
    private final Sender sender;
    private final Map<Long, Channel<?>> channels = new ConcurrentHashMap<>();
    private final Map<Class<?>, ChannelHandler<?>> handlers = new ConcurrentHashMap<>();
+   private final Map<Long, ChannelHandler<?>> channelAssociatedHandlers = new ConcurrentHashMap<>();
    private final Map<Long, NewChannelRequest<?>> requests = new ConcurrentHashMap<>();
 
    /**
@@ -92,7 +93,7 @@ public class Multiplexer implements Receiver {
 
    private static void invokeClosed(ChannelHandler<?> handler, Channel<?> channel) {
       try {
-         Method receiveMethod = Channel.class.getDeclaredMethod(CLOSED_METHOD, Channel.class);
+         Method receiveMethod = ChannelHandler.class.getDeclaredMethod(CLOSED_METHOD, Channel.class);
          receiveMethod.invoke(handler, channel);
       } catch (NoSuchMethodException
                | SecurityException
@@ -288,7 +289,7 @@ public class Multiplexer implements Receiver {
          // Nothing to do here
       }
       channels.remove(id);
-      ChannelHandler<?> handler = handlers.get(id);
+      ChannelHandler<?> handler = channelAssociatedHandlers.get(id);
       if (handler != null)
          invokeClosed(handler, channel);
    }
@@ -310,6 +311,7 @@ public class Multiplexer implements Receiver {
             LOGGER.debug("Accepting new channel request");
             response = new ChannelPacket(channel.getId(), ChannelPacketType.OK);
             channels.put(channel.getId(), channel);
+            channelAssociatedHandlers.put(channel.getId(), handler);
          } catch (ChannelDeclinedException | IOException e) {
             LOGGER.debug("Refusing new channel request");
             response = new ChannelRefusedPacket(request.channelId, e);
@@ -415,13 +417,19 @@ public class Multiplexer implements Receiver {
 
    @Override
    public String toString() {
-      String string = "Multiplexer {\n\tchannelcount=" + channels.size() + ",\n"
-                                       + "\thandlerTypes=[";
+      StringBuilder builder = new StringBuilder("Multiplexer {\n");
+      builder.append("\tchannelcount=")
+             .append(channels.size())
+             .append(",\n\thandlerTypes=[");
 
       Iterator<Class<?>> iterator = handlers.keySet().iterator();
-      for (Class<?> type = iterator.next(); iterator.hasNext(); type = iterator.next())
-         string += "\t\t" + type.getName() + (iterator.hasNext() ? ",\n" : "\n\t]");
+      for (Class<?> type = iterator.next(); iterator.hasNext(); type = iterator.next()) {
+         builder.append("\t\t")
+                .append(type.getName())
+                .append(iterator.hasNext() ? ",\n" : "\n\t]");
+      }
 
-      return string + "\n}";
+      return builder.append("\n}")
+                    .toString();
    }
 }

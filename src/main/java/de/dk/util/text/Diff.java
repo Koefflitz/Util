@@ -147,20 +147,20 @@ public class Diff {
 
    private String match(CharIterator a, CharIterator b, SubstringBuilder diff) {
       CharIterator ba = a.branch();
-      String match = "";
+      StringBuilder match = new StringBuilder();
       while (ba.hasNext() && b.hasNext()) {
          char ca = ba.peek();
          char cb = b.peek();
          if (ca != cb)
             break;
 
-         match += ca;
+         match.append(ca);
          ba.next();
          b.next();
       }
-      if (matcher.test(match)) {
+      if (matcher.test(match.toString())) {
          a.moveTo(ba);
-         return match;
+         return match.toString();
       }
       diff.append(match);
       return null;

@@ -194,7 +194,7 @@ public class Channel<T> {
     * @return <code>true</code> if this channel is closed.
     * <code>false</code> otherwise
     */
-   public boolean isClosed() {
+   public synchronized boolean isClosed() {
       return state == CLOSED;
    }
 
@@ -203,7 +203,7 @@ public class Channel<T> {
     *
     * @return The state of this channel
     */
-   public ChannelState getState() {
+   public synchronized ChannelState getState() {
       return state;
    }
 

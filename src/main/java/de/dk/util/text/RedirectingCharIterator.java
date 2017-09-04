@@ -169,4 +169,27 @@ public class RedirectingCharIterator extends CharIterator {
       this.redirecting = redirecting;
       return this;
    }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + (this.redirecting ? 1231 : 1237);
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      RedirectingCharIterator other = (RedirectingCharIterator) obj;
+      if (this.redirecting != other.redirecting)
+         return false;
+      return true;
+   }
+
 }

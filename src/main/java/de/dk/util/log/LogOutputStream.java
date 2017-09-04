@@ -1,6 +1,7 @@
 package de.dk.util.log;
 
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 public class LogOutputStream extends OutputStream {
    private final Logger logger;
    private Level level;
+   private Charset charset;
 
    private final DynamicByteArray buffer = new DynamicByteArray();
 
@@ -18,9 +20,23 @@ public class LogOutputStream extends OutputStream {
 
    private boolean lineBreakCharDetected = false;
 
-   public LogOutputStream(Logger logger, Level level) {
+   public LogOutputStream(Logger logger, Level level, Charset charset) {
       this.logger = logger;
       this.level = level;
+      this.charset = charset == null ? defaultCharset() : charset;
+   }
+
+
+   public LogOutputStream(Logger logger, Level level) {
+      this(logger, level, null);
+   }
+
+   private static Charset defaultCharset() {
+      final String defaultCharset = "UTF-8";
+      if (Charset.isSupported(defaultCharset))
+         return Charset.forName(defaultCharset);
+      else
+         return Charset.defaultCharset();
    }
 
    @Override
@@ -51,7 +67,7 @@ public class LogOutputStream extends OutputStream {
       if (buffer.isEmpty())
          return;
 
-      level.logWith(logger, new String(buffer.getData()));
+      level.logWith(logger, new String(buffer.getData(), charset));
       buffer.clear();
    }
 
@@ -67,6 +83,16 @@ public class LogOutputStream extends OutputStream {
    public void setLevel(Level level) {
       this.level = level;
    }
+
+   public Charset getCharset() {
+      return charset;
+   }
+
+
+   public void setCharset(Charset charset) {
+      this.charset = charset;
+   }
+
 
    public boolean isFlushAtLineBreak() {
       return flushAtLineBreak;

@@ -6,7 +6,7 @@ import java.util.Objects;
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
  */
-public class ExpectedPlainArgument implements ExpectedArgument {
+public class ExpectedPlainArgument implements ExpectedArgument, Cloneable {
    private final int index;
    private final String name;
    private boolean mandatory;
@@ -82,7 +82,13 @@ public class ExpectedPlainArgument implements ExpectedArgument {
 
    @Override
    public ExpectedPlainArgument clone() {
-      return new ExpectedPlainArgument(index, name, mandatory, description);
+      try {
+         return (ExpectedPlainArgument) super.clone();
+      } catch (CloneNotSupportedException e) {
+         String msg = "Error cloning this ExpectedPlainArgument. "
+                      + "This error should never occur.";
+         throw new Error(msg, e);
+      }
    }
 
    @Override

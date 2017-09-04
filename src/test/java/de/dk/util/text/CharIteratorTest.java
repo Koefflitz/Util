@@ -31,8 +31,9 @@ public class CharIteratorTest {
 
    }
 
-   private static String wrapToStringMeta(String content) {
-      return "CharIterator {\n" + content + "\n}";
+   private static StringBuilder wrapToStringMeta(StringBuilder content) {
+      return content.insert(0, "CharIterator {\n")
+                    .append("\n}");
    }
 
    @Before
@@ -98,49 +99,60 @@ public class CharIteratorTest {
 
    @Test
    public void testToString() {
-      String expected = line0 + '\n'
-                        + "^\n"
-                        + line1;
-      assertEquals(wrapToStringMeta(expected), iterator.toString());
+      StringBuilder builder = new StringBuilder();
+      builder.append(line0)
+             .append("\n^\n")
+             .append(line1);
+      assertEquals(wrapToStringMeta(builder).toString(), iterator.toString());
 
       iterator.next();
-      expected = line0 + '\n'
-                 + " ^\n"
-                 + line1;
+      builder.setLength(0);
+      builder.append(line0)
+             .append("\n ^\n")
+             .append(line1);
 
       iterator.readUntilBefore('\n');
-      expected = line0 + '\n'
-                 + "<\n"
-                 + line1;
-      assertEquals(wrapToStringMeta(expected), iterator.toString());
+      builder.setLength(0);
+      builder.append(line0)
+             .append("\n<\n")
+             .append(line1);
+      assertEquals(wrapToStringMeta(builder).toString(), iterator.toString());
 
       assertEquals("\n", "" + iterator.next());
-      expected = line0 + '\n'
-                 + line1 + '\n'
-                 + "^";
-      assertEquals(wrapToStringMeta(expected), iterator.toString());
+      builder.setLength(0);
+      builder.append(line0)
+             .append('\n')
+             .append(line1)
+             .append("\n^");
+      assertEquals(wrapToStringMeta(builder).toString(), iterator.toString());
 
       iterator.readToEnd();
-      expected = line0 + '\n'
-                 + line1 + '\n';
+      builder.setLength(0);
+      builder.append(line0)
+             .append('\n')
+             .append(line1)
+             .append('\n');
       for (int i = 0; i < line1.length(); i++)
-         expected += ' ';
+         builder.append(' ');
 
-      expected += '>';
-      assertEquals(wrapToStringMeta(expected), iterator.toString());
+      builder.append('>');
+      assertEquals(wrapToStringMeta(builder).toString(), iterator.toString());
    }
 
    @Test
    public void testReadFastToEnd() {
-      String bigContent = "";
-      for (int i = 0; i < 1024; i++)
-         bigContent += content + '\n';
+      StringBuilder builder = new StringBuilder();
+      for (int i = 0; i < 1024; i++) {
+         builder.append(content)
+                .append('\n');
+      }
 
-      CharIterator tmp = new CharIterator(bigContent);
+      CharIterator tmp = new CharIterator(builder.toString());
       long slow = TimeUtils.time(tmp::readToEnd);
-      tmp = new CharIterator(bigContent);
+      tmp = new CharIterator(builder.toString());
       long fast = TimeUtils.time(tmp::readFastToEnd);
-      assertTrue("readToEnd needed " + slow + "ns, while readFastToEnd needed " + fast + "ns", fast < slow);
+      assertTrue("readToEnd needed " + slow + "ns, while readFastToEnd needed " + fast + "ns",
+                 fast < slow);
 
       assertEquals(content, iterator.readFastToEnd());
       assertTrue(iterator.isClosed());

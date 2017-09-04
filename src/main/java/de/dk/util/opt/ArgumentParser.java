@@ -322,15 +322,20 @@ public class ArgumentParser {
     * @return The syntax string
     */
    public synchronized String syntax() {
-      String synopsis = "";
+      StringBuilder builder = new StringBuilder();
       for (ExpectedArgument arg : allArguments) {
-         if (arg.isMandatory())
-            synopsis += arg.fullName() + " ";
-         else
-            synopsis += "[" + arg.fullName() + "] ";
+         if (arg.isMandatory()) {
+            builder.append(arg.fullName())
+                   .append(" ");
+         } else {
+            builder.append('[')
+                   .append(arg.fullName())
+                   .append("] ");
+         }
       }
 
-      return synopsis.trim();
+      return builder.toString()
+                   .trim();
    }
 
 }

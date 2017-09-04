@@ -9,7 +9,7 @@ import java.util.function.UnaryOperator;
  * @author David Koettlitz
  * <br>Erstellt am 14.11.2016
  */
-public class Vector {
+public class Vector implements Cloneable {
    protected float x = 1;
    protected float y = 1;
 
@@ -439,6 +439,8 @@ public class Vector {
    /**
     * Set the x value of this vector.
     *
+    * @param x The x value to set
+    *
     * @return This Vector to go on
     */
    public Vector x(float x) {
@@ -448,6 +450,8 @@ public class Vector {
 
    /**
     * Set the y value of this vector.
+    *
+    * @param y The y value to set
     *
     * @return This Vector to go on
     */
@@ -481,7 +485,13 @@ public class Vector {
 
    @Override
    public Vector clone() {
-      return new Vector(x, y);
+      try {
+         return (Vector) super.clone();
+      } catch (CloneNotSupportedException e) {
+         String msg = "Error cloning this vector. "
+                      + "This error should never occur.";
+         throw new Error(msg, e);
+      }
    }
 
    @Override

@@ -88,7 +88,6 @@ public class Collider<G extends Collidable, C extends Collidable> {
    /**
     * Looking for collisions with an other game-object.
     *
-    * @param velocity The force-{@link Vector} of the origin-object.
     * @param obj The game-object which the origin-object could collide with.
     * @param correctVelocity <code>true</code> if the force of the origin-object should be corrected
     * so that it is not intersecting any other game-object.<br>

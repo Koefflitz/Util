@@ -1,4 +1,4 @@
-package de.dk.util;
+package de.dk.util.function;
 
 /**
  * @author David Koettlitz

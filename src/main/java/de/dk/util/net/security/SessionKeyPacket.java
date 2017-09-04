@@ -1,6 +1,5 @@
 package de.dk.util.net.security;
 
-
 public class SessionKeyPacket implements SecurityPacket {
    private static final long serialVersionUID = -103001753017194083L;
 

@@ -231,7 +231,7 @@ public class PulseController implements Runnable, Pulse {
     *
     * @param frameCounter A framecounter to count the actual executed pulse cycles per second.
     */
-   public void setFrameCounter(FrameCounter frameCounter) {
+   public synchronized void setFrameCounter(FrameCounter frameCounter) {
       this.frameCounter = frameCounter;
    }
 
@@ -258,11 +258,14 @@ public class PulseController implements Runnable, Pulse {
     */
    public synchronized void setInterval(long interval) {
       this.interval = interval;
-      this.cps = interval == 0 ? Float.MAX_VALUE : SECOND_IN_NANOS / interval;
+      if (interval == 0)
+         this.cps = Float.MAX_VALUE;
+      else
+         this.cps = (float) SECOND_IN_NANOS / interval;
    }
 
    @Override
-   public long getInterval() {
+   public synchronized long getInterval() {
       return interval;
    }
 
@@ -278,7 +281,7 @@ public class PulseController implements Runnable, Pulse {
    }
 
    @Override
-   public float getCps() {
+   public synchronized float getCps() {
       return cps;
    }
 

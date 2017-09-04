@@ -48,6 +48,20 @@ public final class DMath {
    }
 
    /**
+    * Get the number with only the digits after the decimal point.
+    * The digits before the decimal point are cleared.
+    *
+    * @param value The <code>double</code> value to get the digits
+    * after the decimal point from.
+    *
+    * @return The digits of <code>value</code> after the decimal point.
+    * The returned value will always be <br> <code>&lt; 1 && &gt; -1</code>.
+    */
+   public static double getAfterPoint(double value) {
+      return value - (int) value;
+   }
+
+   /**
     * Divides the dividend by the divisor and even supports division by zero operations.
     *
     * @param dividend The dividend to divide through <code>divisor</code>

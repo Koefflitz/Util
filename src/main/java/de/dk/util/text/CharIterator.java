@@ -116,14 +116,14 @@ public class CharIterator implements Iterator<Character> {
     * @return The skipped whitespace.
     */
    public String skipNextWhiteSpaces() {
-      String result = "";
+      StringBuilder builder = new StringBuilder();
       while (hasNext()) {
          if (StringUtils.isBlank(peek()))
-            result += next();
+            builder.append(next());
          else
-            return result;
+            return builder.toString();
       }
-      return result;
+      return builder.toString();
    }
 
    /**
@@ -152,21 +152,21 @@ public class CharIterator implements Iterator<Character> {
       if (!hasNext())
          throw new IllegalStateException("This iterator was already closed.");
 
-      String line = "";
+      StringBuilder builder = new StringBuilder();
       for (char c = next(); hasNext(); c = next()) {
          if (c == '\n')
-            return line;
+            return builder.toString();
 
          if (c == '\r') {
             if (peek() == '\n')
                next();
 
-            return line;
+            return builder.toString();
          }
 
-         line += c;
+         builder.append(c);
       }
-      return line;
+      return builder.toString();
    }
 
    /**
@@ -180,15 +180,15 @@ public class CharIterator implements Iterator<Character> {
       if (!hasNext())
          throw new IllegalStateException("This iterator was already closed.");
 
-      String line = "";
+      StringBuilder builder = new StringBuilder();
       CharIterator tmp = branch();
       for (char c = tmp.next(); tmp.hasNext(); c = tmp.next()) {
          if (c == '\n' || c == '\r')
-            return line;
+            return builder.toString();
 
-         line += c;
+         builder.append(c);
       }
-      return line;
+      return builder.toString();
    }
 
    /**
@@ -205,16 +205,16 @@ public class CharIterator implements Iterator<Character> {
       if (!hasNext())
          throw new IllegalStateException("This iterator was already closed.");
 
-      String read = "";
+      StringBuilder builder = new StringBuilder();
       boolean quote = false;
       for (char c = next(); hasNext(); c = next()) {
          if (!quote && limit.test(c))
-            return read;
+            return builder.toString();
 
-         read += c;
+         builder.append(c);
          quote = c == '"' ^ quote;
       }
-      return read;
+      return builder.toString();
    }
 
    /**
@@ -231,17 +231,17 @@ public class CharIterator implements Iterator<Character> {
       if (!hasNext())
          throw new IllegalStateException("This iterator was already closed.");
 
-      String read = "";
+      StringBuilder builder = new StringBuilder();
       boolean quote = false;
       for (char c = peek(); hasNext(); c = peek()) {
          if (!quote && limit.test(c))
-            return read;
+            return builder.toString();
 
-         read += c;
+         builder.append(c);
          next();
          quote = c == '"' ^ quote;
       }
-      return read;
+      return builder.toString();
    }
 
    /**
@@ -285,19 +285,20 @@ public class CharIterator implements Iterator<Character> {
       if (!hasNext())
          throw new NoSuchElementException("The iterator was already at the end");
 
-      String read = "";
-      String readPattern = "";
+      StringBuilder builder = new StringBuilder();
+      StringBuilder readPattern = new StringBuilder();
       boolean quote = false;
 
       for (char c = next(); hasNext(); c = next()) {
          if (!quote && (c == pattern.charAt(readPattern.length()))) {
-            readPattern += c;
+            readPattern.append(c);
             if (readPattern.length() == pattern.length())
-               return read;
+               return builder.toString();
 
          } else {
-            read += readPattern + c;
-            readPattern = "";
+            builder.append(readPattern)
+                   .append(c);
+            readPattern.setLength(0);
          }
          quote = c == '"' ^ quote;
       }
@@ -567,16 +568,18 @@ public class CharIterator implements Iterator<Character> {
    @Override
    public String toString() {
       if (closed)
-         return null;
+         return "CharIterator { closed }";
 
-      String result = "CharIterator {\n";
+      StringBuilder builder = new StringBuilder("CharIterator {\n");
       if (!hasNext()) {
-         result += getContent() + "\n";
+         builder.append(getContent())
+                .append('\n');
          String lastLine = StringUtils.getLastLineOf(getContent());
          for (int i = 0; i < lastLine.length(); i++)
-            result += ' ';
+            builder.append(' ');
 
-         return result + ">\n}";
+         return builder.append(">\n}")
+                       .toString();
       }
 
       String before = getAlreadyReadString();
@@ -584,16 +587,19 @@ public class CharIterator implements Iterator<Character> {
       int lineIndex = peek() == '\n' ? 0 : StringUtils.getLastLineOf(before).length();
       String lineend = StringUtils.getFirstLineOf(remaining);
 
-      result += before + lineend + "\n";
+      builder.append(before)
+             .append(lineend)
+             .append('\n');
       for (int i = 0; i < lineIndex; i++) {
          char c = before.charAt(before.length() - (lineIndex - i));
-         result += c == '\t' ? '\t' : ' ';
+         builder.append(c == '\t' ? '\t' : ' ');
       }
 
-      result += peek() == '\n' ? '<' : '^';
+      builder.append(peek() == '\n' ? '<' : '^');
       if (remaining.length() > lineend.length())
-         result += remaining.substring(lineend.length());
+         builder.append(remaining.substring(lineend.length()));
 
-      return result + "\n}";
+      return builder.append("\n}")
+                    .toString();
    }
 }

@@ -2,24 +2,9 @@ package de.dk.util.timing;
 
 import java.util.concurrent.TimeoutException;
 
-import de.dk.util.UnsafeRunnable;
-
 public final class TimeUtils {
 
    private TimeUtils() {}
-
-   /**
-    * Stops the time that it takes to get a {@link StackOverflowError}.
-    *
-    * @return The elapsed time until the {@link StackOverflowError} was thrown in nanoseconds.
-    */
-   public static long stackOverflowTimer() {
-      return timeTillThrow(TimeUtils::overflow);
-   }
-
-   private static void overflow() throws StackOverflowError {
-      overflow();
-   }
 
    /**
     * Processes the time to run the {@link Runnable}.
@@ -30,20 +15,6 @@ public final class TimeUtils {
    public static long time(Runnable r) {
       long nanos = System.nanoTime();
       r.run();
-      return System.nanoTime() - nanos;
-   }
-
-   /**
-    * Processes the time to run the {@link Runnable}.
-    *
-    * @param r The runnable to be timed.
-    * @return The time the runnable took to run in nanoseconds.
-    */
-   public static long timeTillThrow(UnsafeRunnable<?> r) {
-      long nanos = System.nanoTime();
-      try {
-         r.run();
-      } catch (Throwable e) {}
       return System.nanoTime() - nanos;
    }
 
@@ -71,20 +42,18 @@ public final class TimeUtils {
       for (TimedRunnable runnable : runnables) {
          runnable.run(timeout);
          long delta = System.currentTimeMillis() - start;
-         if ((timeout -= delta) <= 0)
+         if (delta >= timeout)
             throw new TimeoutException();
-
-         start += delta;
       }
       return timeout;
    }
 
    /**
     * Runs all of the specified <code>runnables</code> parallel
-    * in maximal <code>timeout</code> milliseconds using <code>threadCount</code> threads. The <code>timeout</code>
-    * is the timeout for all of the <code>runnables</code> together, not each!
-    * If all of the <code>runnables</code> could be run within the given <code>timeout</code>
-    * the remaining time of the timeout is returned.
+    * in maximal <code>timeout</code> milliseconds using <code>threadCount</code> threads.
+    * The <code>timeout</code> is the timeout for all of the <code>runnables</code> together,
+    * not each! If all of the <code>runnables</code> could be run within the given
+    * <code>timeout</code> the remaining time of the timeout is returned.
     * Othwerwise a <code>TimeoutException</code> is thrown
     *
     * @param timeout The time in which all of the <code>runnables</code> have to be finished running.
@@ -96,11 +65,12 @@ public final class TimeUtils {
     *
     * @throws TimeoutException If the <code>runnables</code> didn't finish running
     * within the specified <code>timeout</code>
-    *
     * @throws InterruptedException If the invoking thread is interrupted while executing
     */
-   public static long runParallel(long timeout, int threadCount, TimedRunnable... runnables) throws InterruptedException,
-                                                                                                    TimeoutException {
+   public static long runParallel(long timeout,
+                                  int threadCount,
+                                  TimedRunnable... runnables) throws InterruptedException,
+                                                                     TimeoutException {
       long start = System.currentTimeMillis();
       TimedExecutor executor = new TimedExecutor(timeout, threadCount, runnables);
       executor.setStartTime(start);

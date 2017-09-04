@@ -6,7 +6,7 @@ import java.util.Objects;
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
  */
-public class Command implements ExpectedArgument {
+public class Command implements ExpectedArgument, Cloneable {
    private String name;
    private boolean mandatory;
    private final int index;
@@ -28,20 +28,6 @@ public class Command implements ExpectedArgument {
    Command(int index, String name) throws NullPointerException {
       this.index = index;
       this.name = Objects.requireNonNull(name);
-   }
-
-   private Command(String name,
-                   boolean mandatory,
-                   int index,
-                   String description,
-                   ArgumentModel value,
-                   ArgumentParser parser) {
-      this.name = name;
-      this.mandatory = mandatory;
-      this.index = index;
-      this.description = description;
-      this.value = value;
-      this.parser = parser;
    }
 
    @Override
@@ -109,7 +95,13 @@ public class Command implements ExpectedArgument {
 
    @Override
    public Command clone() {
-      return new Command(name, mandatory, index, description, value, parser);
+      try {
+         return (Command) super.clone();
+      } catch (CloneNotSupportedException e) {
+         String msg = "Error cloning this Command. "
+                      + "This error should never occur.";
+         throw new Error(msg, e);
+      }
    }
 
    @Override

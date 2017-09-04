@@ -21,11 +21,14 @@ public class MissingArgumentException extends ArgumentParseException {
    }
 
    private static String createMessage(List<? extends ExpectedArgument> missingArguments) {
-      String msg = "Missing Arguments:";
-      for (ExpectedArgument arg : missingArguments)
-         msg += " <" + arg.getName() + ">";
+      StringBuilder builder = new StringBuilder("Missing Arguments:");
+      for (ExpectedArgument arg : missingArguments) {
+         builder.append(" <")
+                .append(arg.getName())
+                .append('>');
+      }
 
-      return msg;
+      return builder.toString();
    }
 
    public List<? extends ExpectedArgument> getMissingArguments() {

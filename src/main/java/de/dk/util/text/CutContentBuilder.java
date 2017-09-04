@@ -1,5 +1,6 @@
 package de.dk.util.text;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  */
 public class CutContentBuilder {
    private String value;
-   private List<Substring> outtakes;
+   private final List<Substring> outtakes = new LinkedList<>();
 
    public CutContentBuilder(String value) {
       this.value = Objects.requireNonNull(value);

@@ -163,6 +163,31 @@ public class IncreasingRandomIntValue extends RandomIntValue {
    }
 
    @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + (this.decreasing ? 1231 : 1237);
+      result = prime * result + Float.floatToIntBits(this.increase);
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      IncreasingRandomIntValue other = (IncreasingRandomIntValue) obj;
+      if (this.decreasing != other.decreasing)
+         return false;
+      if (Float.floatToIntBits(this.increase) != Float.floatToIntBits(other.increase))
+         return false;
+      return true;
+   }
+
+   @Override
    public String toString() {
       return "IncreasingRandomIntValue { "
              + "minValue=" + minValue

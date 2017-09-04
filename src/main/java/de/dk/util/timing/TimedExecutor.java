@@ -33,10 +33,8 @@ public class TimedExecutor {
          for (Thread thread : threads) {
             thread.join(timeout);
             long delta = System.currentTimeMillis() - startTime;
-            if ((timeout -= delta) <= 0)
+            if (delta >= timeout)
                throw new TimeoutException();
-
-            startTime += delta;
          }
       } catch (TimeoutException | InterruptedException e) {
          for (Thread thread : threads)
@@ -44,23 +42,40 @@ public class TimedExecutor {
 
          throw e;
       }
-      return timeout;
+      return timeout - (System.currentTimeMillis() - startTime);
    }
 
    public void run() {
-      TimedRunnable next;
-      synchronized (tasks) {
-         if (index >= tasks.length)
+      TimedRunnable task;
+      while ((task = next()) != null) {
+         synchronized (tasks) {
+            if (index >= tasks.length)
+               return;
+
+            task = tasks[index++];
+         }
+
+         try {
+            task.run(0);
+         } catch (InterruptedException e) {
             return;
-
-         next = tasks[index++];
+         }
       }
+   }
 
-      try {
-         next.run(0);
-      } catch (InterruptedException e) {
-         return;
-      }
+   private synchronized TimedRunnable next() {
+      if (index >= tasks.length)
+         return null;
+
+      return tasks[index++];
+   }
+
+   public long getTimeout() {
+      return timeout;
+   }
+
+   public void setTimeout(long timeout) {
+      this.timeout = timeout;
    }
 
    public void setStartTime(long startTime) {

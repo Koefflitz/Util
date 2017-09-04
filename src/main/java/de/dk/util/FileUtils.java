@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 
 /**
  * Contains some static methods that are about files.
@@ -128,7 +129,12 @@ public final class FileUtils {
       if (source.isDirectory()) {
          File result = new File(target, source.getName());
          result.mkdirs();
-         for (File f : source.listFiles())
+         File[] children = source.listFiles();
+         if (children == null) {
+            String msg = "Could not access content of " + source.getAbsolutePath();
+            throw new IOException(msg);
+         }
+         for (File f : children)
             copy(f, result);
       } else {
          FileOutputStream out;
@@ -151,13 +157,19 @@ public final class FileUtils {
     * the directorys content will be deleted recursively.
     *
     * @param file The file to be deleted.
+    * @throws IOException If an I/O error occurs
     */
-   public static void delete(File file) {
+   public static void delete(File file) throws IOException {
       if (file.isDirectory()) {
-         for (File f : file.listFiles())
+         File[] children = file.listFiles();
+         if (children == null) {
+            String msg = "Could not access content of " + file.getAbsolutePath();
+            throw new IOException(msg);
+         }
+         for (File f : children)
             delete(f);
       }
-      file.delete();
+      Files.delete(file.toPath());
    }
 
    /**

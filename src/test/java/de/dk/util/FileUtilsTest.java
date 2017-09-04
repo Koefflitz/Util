@@ -87,7 +87,11 @@ public class FileUtilsTest {
       File subFile = new File(subDir, "test.txt");
       writeTo(file);
       writeTo(subFile);
-      delete(workingDir);
+      try {
+         delete(workingDir);
+      } catch (IOException e) {
+         fail(e.getMessage());
+      }
       assertFalse(file.exists());
       assertFalse(subFile.exists());
       assertFalse(subDir.exists());
@@ -175,10 +179,12 @@ public class FileUtilsTest {
    public void cleanUp() {
       if (workingDir == null) {
          LOGGER.warn("Working dir was null when intended to delete it.");
-      } else {
-         delete(workingDir);
-         if (workingDir.exists())
-            LOGGER.warn("Could not delete working dir: " + workingDir.getAbsolutePath());
+      } else if (workingDir.exists()) {
+         try {
+            delete(workingDir);
+         } catch (IOException e) {
+            LOGGER.warn("Could not delete working dir: " + workingDir.getAbsolutePath(), e);
+         }
       }
    }
 

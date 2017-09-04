@@ -10,7 +10,7 @@ import java.util.function.UnaryOperator;
  * @author David Koettlitz
  * <br>Erstellt am 02.02.2017
  */
-public class IntVector {
+public class IntVector implements Cloneable {
    protected int x = 1;
    protected int y = 1;
 
@@ -455,7 +455,13 @@ public class IntVector {
 
    @Override
    public IntVector clone() {
-      return new IntVector(x, y);
+      try {
+         return (IntVector) super.clone();
+      } catch (CloneNotSupportedException e) {
+         String msg = "Error cloning this vector. "
+                      + "This error should never occur.";
+         throw new Error(msg, e);
+      }
    }
 
    @Override

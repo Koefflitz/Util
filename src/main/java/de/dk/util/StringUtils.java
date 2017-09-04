@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,7 +32,7 @@ public final class StringUtils {
       if (string.length() <= 1)
          return string;
 
-      String result = "";
+      StringBuilder builder = new StringBuilder();
       boolean ignore = false;
       for (int i = 0; i < string.length(); i++) {
          char c = string.charAt(i);
@@ -41,10 +42,11 @@ public final class StringUtils {
          }
 
          ignore = c == filter;
-         result += ignore ? "" : c;
+         if (!ignore)
+            builder.append(c);
       }
 
-      return result;
+      return builder.toString();
    }
 
    /**
@@ -153,14 +155,14 @@ public final class StringUtils {
     * @return the first line of the <code>text</code>
     */
    public static String getFirstLineOf(String text) {
-      String line = "";
+      StringBuilder builder = new StringBuilder();
       for (char c : text.toCharArray()) {
          if (c == '\n' || c == '\r')
-            return line;
+            return builder.toString();
 
-         line += c;
+         builder.append(c);
       }
-      return line;
+      return builder.toString();
    }
 
    /**
@@ -309,7 +311,10 @@ public final class StringUtils {
       }
 
       @Override
-      public Character next() {
+      public Character next() throws NoSuchElementException {
+         if (!hasNext())
+            throw new NoSuchElementException();
+
          return value[index++];
       }
    }

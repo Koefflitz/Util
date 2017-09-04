@@ -56,10 +56,10 @@ public enum MemoryUnit {
     * <code>false</code> otherwise, e.g. -1 or 0.000001
     */
    public static boolean isValidMemoryUnitValue(double bytes) {
-      if (bytes >= 1)
-         return true;
+      if (bytes < 0)
+         return false;
 
-      return DMath.isInteger(bytes * 8);
+      return DMath.isInteger(DMath.getAfterPoint(bytes) * 8);
    }
 
    /**

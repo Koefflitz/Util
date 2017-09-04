@@ -6,7 +6,7 @@ import de.dk.util.StringUtils;
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
  */
-public class ExpectedOption implements ExpectedArgument {
+public class ExpectedOption implements ExpectedArgument, Cloneable {
    public final static char NO_KEY = '\0';
 
    private final int index;
@@ -19,26 +19,6 @@ public class ExpectedOption implements ExpectedArgument {
 
    private String value;
    private boolean present;
-
-   private ExpectedOption(int index,
-                          String name,
-                          char key,
-                          String longKey,
-                          boolean mandatory,
-                          boolean expectsValue,
-                          String description,
-                          String value,
-                          boolean present) {
-      this.index = index;
-      this.name = name;
-      this.key = key;
-      this.longKey = longKey;
-      this.mandatory = mandatory;
-      this.expectsValue = expectsValue;
-      this.description = description;
-      this.value = value;
-      this.present = present;
-   }
 
    public ExpectedOption(int index,
                          String name,
@@ -169,7 +149,13 @@ public class ExpectedOption implements ExpectedArgument {
 
    @Override
    public ExpectedOption clone() {
-      return new ExpectedOption(index, name, key, longKey, mandatory, expectsValue, description, value, present);
+      try {
+         return (ExpectedOption) super.clone();
+      } catch (CloneNotSupportedException e) {
+         String msg = "Error cloning this ExpectedOption. "
+                      + "This error should never occur.";
+         throw new Error(msg, e);
+      }
    }
 
    @Override

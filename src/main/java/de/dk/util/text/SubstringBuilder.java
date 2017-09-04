@@ -261,16 +261,6 @@ public class SubstringBuilder implements CharSequence {
       return builder.length();
    }
 
-   @Override
-   public boolean equals(Object obj) {
-      return builder.equals(obj);
-   }
-
-   @Override
-   public int hashCode() {
-      return builder.hashCode();
-   }
-
    public int capacity() {
       return builder.capacity();
    }
