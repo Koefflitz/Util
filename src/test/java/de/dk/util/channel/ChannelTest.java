@@ -169,16 +169,14 @@ public class ChannelTest {
 
    @Test
    public void testClose() {
-      TestChannelListener<Foo> clientFooListener = new TestChannelListener<>();
-      TestChannelListener<Bar> clientBarListener = new TestChannelListener<>();
-      Channel<Foo> clientFooChannel = establishChannel(Foo.class, clientFooListener, clientFooHandler);
-      Channel<Bar> clientBarChannel = establishChannel(Bar.class, clientBarListener, clientBarHandler);
+      Channel<Foo> clientFooChannel = establishChannel(Foo.class,
+                                                       new TestChannelListener<>(),
+                                                       clientFooHandler);
+      Channel<Bar> clientBarChannel = establishChannel(Bar.class,
+                                                       new TestChannelListener<>(),
+                                                       clientBarHandler);
       Channel<Foo> serverFooChannel = serverFooHandler.getChannel(clientFooChannel.getId());
       Channel<Bar> serverBarChannel = serverBarHandler.getChannel(clientBarChannel.getId());
-      TestChannelListener<Foo> serverFooListener = new TestChannelListener<>();
-      TestChannelListener<Bar> serverBarListener = new TestChannelListener<>();
-      serverFooChannel.addListener(serverFooListener);
-      serverBarChannel.addListener(serverBarListener);
 
       testClose(clientFooChannel, serverFooChannel, serverFooHandler, clientMultiplexer, serverMultiplexer);
       testClose(serverBarChannel, clientBarChannel, clientBarHandler, serverMultiplexer, clientMultiplexer);

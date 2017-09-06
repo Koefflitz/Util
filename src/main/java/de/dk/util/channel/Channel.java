@@ -163,7 +163,7 @@ public class Channel<T> {
          state = CLOSED;
 
          if (multiplexer != null)
-            multiplexer.channelClosed(id);
+            multiplexer.channelClosed(this);
       }
    }
 
@@ -218,12 +218,13 @@ public class Channel<T> {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + (int) (this.id ^ (this.id >>> 32));
-      result = prime * result + ((this.multiplexer == null) ? 0 : this.multiplexer.hashCode());
-      result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
-      return result;
+//      final int prime = 31;
+//      int result = 1;
+//      result = prime * result + (int) (this.id ^ (this.id >>> 32));
+//      result = prime * result + ((this.multiplexer == null) ? 0 : this.multiplexer.hashCode());
+//      result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
+//      return result;
+      return super.hashCode();
    }
 
    @Override
@@ -249,6 +250,7 @@ public class Channel<T> {
 
    @Override
    public String toString() {
-      return "channel { id=" + id + " }";
+//      return "channel { id=" + id + ", state=" + state + " }";
+      return "channel { hash=" + super.hashCode() + ", state=" + state + " }";
    }
 }

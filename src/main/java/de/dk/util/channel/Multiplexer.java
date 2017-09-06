@@ -243,7 +243,13 @@ public class Multiplexer implements Receiver {
          channelRefused((ChannelRefusedPacket) packet);
          break;
       case CLOSE:
-         channelClosed(packet.channelId);
+         Channel<?> channel = channels.get(packet.channelId);
+         if (channel == null) {
+            LOGGER.warn("ChannelClosedPacket with id " + packet.channelId
+                        + " received, but no channel with that id was found.");
+            break;
+         }
+         channelClosed(channel);
          break;
       }
    }
@@ -251,6 +257,7 @@ public class Multiplexer implements Receiver {
    private void channelAccepted(long channelId) {
       NewChannelRequest<?> request = requests.remove(channelId);
       if (request != null) {
+         addChannel(request.getChannel(), getHandlerFor(request.getType()));
          channels.put(request.getChannel().getId(), request.getChannel());
          request.accepted();
       } else {
@@ -276,20 +283,14 @@ public class Multiplexer implements Receiver {
          request.refused(packet);
    }
 
-   protected void channelClosed(long id) {
-      Channel<?> channel = channels.get(id);
-      if (channel == null) {
-         LOGGER.warn("ChannelClosedPacket with id " + id + " received, but no channel with that id was found.");
-         return;
-      }
-
+   protected synchronized void channelClosed(Channel<?> channel) {
       try {
          channel.setState(ChannelState.CLOSED);
       } catch (ChannelClosedException e) {
          // Nothing to do here
       }
-      channels.remove(id);
-      ChannelHandler<?> handler = channelAssociatedHandlers.get(id);
+      channels.remove(channel.getId());
+      ChannelHandler<?> handler = channelAssociatedHandlers.get(channel.getId());
       if (handler != null)
          invokeClosed(handler, channel);
    }
@@ -310,8 +311,7 @@ public class Multiplexer implements Receiver {
             invokeNewChannel(handler, channel, request.getInitialMessage());
             LOGGER.debug("Accepting new channel request");
             response = new ChannelPacket(channel.getId(), ChannelPacketType.OK);
-            channels.put(channel.getId(), channel);
-            channelAssociatedHandlers.put(channel.getId(), handler);
+            addChannel(channel, handler);
          } catch (ChannelDeclinedException | IOException e) {
             LOGGER.debug("Refusing new channel request");
             response = new ChannelRefusedPacket(request.channelId, e);
@@ -337,6 +337,11 @@ public class Multiplexer implements Receiver {
       return getHandlerFor((Class<?>) type.getSuperclass());
    }
 
+   protected void addChannel(Channel<?> channel, ChannelHandler<?> handler) {
+      channels.put(channel.getId(), channel);
+      channelAssociatedHandlers.put(channel.getId(), handler);
+   }
+
    /**
     * Get the channel with the given <code>id</code>.
     *
@@ -345,7 +350,7 @@ public class Multiplexer implements Receiver {
     * @return The channel with the given <code>id</code> if present -
     * <code>null</code> otherwise
     */
-   public Channel<?> getChannel(long id) {
+   public synchronized Channel<?> getChannel(long id) {
       return channels.get(id);
    }
 

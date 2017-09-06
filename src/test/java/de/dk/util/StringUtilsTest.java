@@ -3,10 +3,11 @@ package de.dk.util;
 import static de.dk.util.StringUtils.filter;
 import static de.dk.util.StringUtils.getCommonPrefixesOf;
 import static de.dk.util.StringUtils.getCommonPrefixesOfParallel;
-import static de.dk.util.StringUtils.getIndicesOf;
 import static de.dk.util.StringUtils.getIndicesAfter;
+import static de.dk.util.StringUtils.getIndicesOf;
 import static de.dk.util.StringUtils.getLastLineOf;
 import static de.dk.util.StringUtils.getLineUntil;
+import static de.dk.util.StringUtils.indent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -141,6 +142,20 @@ public class StringUtilsTest {
 
       assertEquals(expectedEnd, getIndicesAfter(pattern, string));
       assertEquals(0, getIndicesAfter(pattern, a).size());
+   }
+
+   @Test
+   public void testIndent() {
+      String a = "abc";
+      assertEquals('\t' + a, indent(a, 1));
+      String b = a + '\n' + a;
+      assertEquals("\t\t" + a + "\n\t\t" + a, indent(b, 2));
+      String c = b + '\n' + a + '\n';
+      assertEquals("\t\t\t" + a + "\n\t\t\t" + a + "\n\t\t\t" + a + "\n", indent(c, 3));
+
+      assertEquals(' ' + a, indent(a, 1, 1));
+      assertEquals("    " + a + "\n    " + a, indent(b, 2, 2));
+      assertEquals("   " + a + "\n   " + a + "\n   " + a + "\n", indent(c, 1, 3));
    }
 
    @Test

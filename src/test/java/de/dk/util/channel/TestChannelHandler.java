@@ -11,8 +11,6 @@ public class TestChannelHandler<P> implements ChannelHandler<P> {
    private final Class<P> packetType;
    private final Map<Long, Channel<P>> channels = new HashMap<>();
 
-   private Map<Long, Channel<P>> closingChannels = new HashMap<>();
-
    private boolean accept = true;
 
    public TestChannelHandler(Class<P> packetType) {
@@ -30,25 +28,16 @@ public class TestChannelHandler<P> implements ChannelHandler<P> {
    @Override
    public void channelClosed(Channel<P> channel) {
       channels.remove(channel.getId());
-      Channel<P> waitingChannel;
-      synchronized (closingChannels) {
-         waitingChannel = closingChannels.remove(channel.getId());
-      }
-      if (waitingChannel != null) {
-         synchronized (waitingChannel) {
-            waitingChannel.notify();
-         }
+      synchronized (channel) {
+         channel.notify();
       }
    }
 
-   public void waitForClose(Channel<P> channel, long timeout) throws InterruptedException {
-      synchronized (closingChannels) {
+   public synchronized void waitForClose(Channel<P> channel, long timeout) throws InterruptedException {
+      synchronized (channel) {
          if (channel.isClosed())
             return;
 
-         closingChannels.put(channel.getId(), channel);
-      }
-      synchronized (channel) {
          channel.wait(timeout);
       }
    }

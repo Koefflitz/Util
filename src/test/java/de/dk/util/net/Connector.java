@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  */
 public class Connector<C extends Connection> {
    public static final int PORT = 10000;
-   public static final long TIMEOUT = 4096;
+   public static final long TIMEOUT = 0;
 
    private final Supplier<C> clientConnectionSupplier;
    private final Function<Socket, C> serverConnectionSupplier;

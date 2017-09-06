@@ -93,17 +93,14 @@ public class ConnectionTest {
       TestObject packet = new TestObject(msg);
       try {
          sender.send(packet);
-         try {
-            synchronized (receiver) {
-               receiver.wait(TIMEOUT);
-            }
-         } catch (InterruptedException e) {
-            fail(e.getMessage());
-         }
       } catch (IOException e) {
          fail(e.getMessage());
       }
-      assertEquals(packet, receiver.getAndThrowAwayPacket());
+      try {
+         assertEquals(packet, receiver.nextPacket(TIMEOUT));
+      } catch (InterruptedException e) {
+         fail(e.getMessage());
+      }
    }
 
    @Test

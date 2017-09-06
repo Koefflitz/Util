@@ -74,6 +74,10 @@ class NewChannelRequest<P> implements Callable<Channel<P>> {
       return channel;
    }
 
+   protected Class<P> getType() {
+      return type;
+   }
+
    private static enum State {
       WAITING,
       ACCEPTED,

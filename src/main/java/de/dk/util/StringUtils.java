@@ -136,6 +136,100 @@ public final class StringUtils {
    }
 
    /**
+    * Intends each line of <code>string</code> by <code>tabCount</code>
+    * tabs. A tab is here not a tab character <code>\t</code>,
+    * but a series of blanks.
+    *
+    * @param string The String to be intended
+    * @param tabCount The amount of tabs to intend each line
+    * @param tabSize The amount of spaces, that one tab consists of
+    *
+    * @return A String that is equivalent to <code>string</code>, but
+    * is intended by <code>tabCount</code> tabs.
+    *
+    * @throws IllegalArgumentException If <code>tabCount &lt; 0</code> or <code>tabSize &lt; 0</code>.
+    */
+   public static String indent(String string,
+                               int tabCount,
+                               int tabSize) throws IllegalArgumentException {
+      if (tabCount == 0 || tabSize == 0)
+         return string;
+      if (tabSize < 0)
+         throw new IllegalArgumentException("Invalid tabSize: " + tabSize);
+
+      StringBuilder tabBuilder = new StringBuilder();
+      StringBuilder tabsBuilder = new StringBuilder();
+
+      for (int i = 0; i < tabSize; i++)
+         tabBuilder.append(' ');
+
+      String tab = tabBuilder.toString();
+
+      for (int i = 0; i < tabCount; i++)
+         tabsBuilder.append(tab);
+
+      String tabs = tabsBuilder.toString();
+
+      return insertBeforeLines(string, tabs);
+   }
+
+   /**
+    * Indents each line of <code>string</code> with <code>tabCount</code>
+    * tab characters.
+    *
+    * @param string The string to be intended
+    * @param tabCount The amount of tabs to insert into each line
+    * of <code>string</code>
+    *
+    * @return A String that is equivalent to <code>string</code>, but
+    * is intended by <code>tabCount</code> tabs.
+    *
+    * @throws IllegalArgumentException If <code>tabCount &lt; 0</code>
+    */
+   public static String indent(String string, int tabCount) throws IllegalArgumentException {
+      if (tabCount == 0)
+         return string;
+      if (string == null)
+         return null;
+      if (tabCount < 0)
+         throw new IllegalArgumentException("Cannot insert " + tabCount + " tabs.");
+
+      StringBuilder tabBuilder = new StringBuilder();
+      for (int i = 0; i < tabCount; i++)
+         tabBuilder.append('\t');
+
+      return insertBeforeLines(string, tabBuilder.toString());
+   }
+
+   /**
+    * Inserts <code>insert</code> before each line of <code>string</code>.
+    *
+    * @param string The String to insert something into
+    * @param insert The String to insert into the <code>string</code>
+    *
+    * @return A String that is equivalent to <code>string</code>, but has <code>insert</code>
+    * at each start of line.<br>
+    * Note: the returned String will have unix line endings (\n) only!
+    * All dos line endings will be converted!
+    */
+   public static String insertBeforeLines(String string, String insert) {
+      if (string == null)
+         return null;
+      if (insert == null || insert.length() == 0)
+         return string;
+
+      String result = Arrays.stream(string.split("(\\n|\\r\\n)"))
+                            .map(s -> insert + s)
+                            .reduce((a, b) -> a + '\n' + b)
+                            .orElse("");
+
+      if (string.endsWith("\n"))
+         result += '\n';
+
+      return result;
+   }
+
+   /**
     * Checks whether the char is whitespace.
     *
     * @param c The char to be checked for whitespace

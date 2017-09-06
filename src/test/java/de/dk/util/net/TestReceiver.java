@@ -17,7 +17,13 @@ public class TestReceiver implements Receiver {
       notify();
    }
 
-   public Object getAndThrowAwayPacket() {
+   public Object nextPacket(long timeout) throws InterruptedException {
+      if (object == null) {
+         synchronized (this) {
+            wait(timeout);
+         }
+      }
+
       Object object = this.object;
       this.object = null;
       return object;

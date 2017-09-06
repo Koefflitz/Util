@@ -55,7 +55,7 @@ public final class DMath {
     * after the decimal point from.
     *
     * @return The digits of <code>value</code> after the decimal point.
-    * The returned value will always be <br> <code>&lt; 1 && &gt; -1</code>.
+    * The returned value will always be <br> <code>&lt; 1 &amp;&amp; &gt; -1</code>.
     */
    public static double getAfterPoint(double value) {
       return value - (int) value;
