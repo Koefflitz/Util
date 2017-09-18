@@ -3,6 +3,8 @@ package de.dk.util.unit.memory;
 import java.text.DecimalFormat;
 import java.util.function.BinaryOperator;
 
+import de.dk.util.DMath;
+
 /**
  * Represents a memory value with a memory unit.
  *
@@ -291,6 +293,11 @@ public class MemoryValue {
 
    @Override
    public String toString() {
-      return "" + value + unit;
+      String value;
+      if (DMath.getAfterPoint(this.value) == 0)
+         value = "" + (int) this.value;
+      else
+         value = "" + this.value;
+      return value + unit;
    }
 }

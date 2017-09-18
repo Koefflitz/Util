@@ -339,7 +339,8 @@ public class Multiplexer implements Receiver {
 
    protected void addChannel(Channel<?> channel, ChannelHandler<?> handler) {
       channels.put(channel.getId(), channel);
-      channelAssociatedHandlers.put(channel.getId(), handler);
+      if (handler != null)
+         channelAssociatedHandlers.put(channel.getId(), handler);
    }
 
    /**
