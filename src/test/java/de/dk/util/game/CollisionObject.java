@@ -34,7 +34,6 @@ public class CollisionObject implements Collidable {
       this.height = height;
    }
 
-   @Override
    public Vector getVelocity() {
       return velocity;
    }

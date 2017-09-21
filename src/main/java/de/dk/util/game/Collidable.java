@@ -8,7 +8,6 @@ package de.dk.util.game;
  */
 public interface Collidable {
    public Vector getPosition();
-   public Vector getVelocity();
    public int getWidth();
    public int getHeight();
 

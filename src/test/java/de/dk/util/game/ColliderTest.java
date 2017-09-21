@@ -44,7 +44,7 @@ public class ColliderTest {
       other.setWidth(2);
       other.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other), true);
+      collider.collisionDetection(Arrays.asList(other), object.getVelocity(), true);
 
       assertEquals(1, collisions.size());
       Collision<CollisionObject, CollisionObject> collision = collisions.iterator()
@@ -69,7 +69,7 @@ public class ColliderTest {
       other.setWidth(2);
       other.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other), true);
+      collider.collisionDetection(Arrays.asList(other), object.getVelocity(), true);
 
       assertEquals(1, collisions.size());
       Collision<CollisionObject, CollisionObject> collision = collisions.iterator()
@@ -94,7 +94,7 @@ public class ColliderTest {
       other.setWidth(2);
       other.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other), true);
+      collider.collisionDetection(Arrays.asList(other), object.getVelocity(), true);
 
       assertEquals(1, collisions.size());
       Collision<CollisionObject, CollisionObject> collision = collisions.iterator()
@@ -119,7 +119,7 @@ public class ColliderTest {
       other.setWidth(2);
       other.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other), true);
+      collider.collisionDetection(Arrays.asList(other), object.getVelocity(), true);
 
       assertEquals(1, collisions.size());
       Collision<CollisionObject, CollisionObject> collision = collisions.iterator()
@@ -150,7 +150,7 @@ public class ColliderTest {
       other2.setWidth(2);
       other2.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other, other2), false);
+      collider.collisionDetection(Arrays.asList(other, other2), object.getVelocity(), false);
 
       assertEquals(2, collisions.size());
       Iterator<Collision<CollisionObject, CollisionObject>> iter = collisions.iterator();
@@ -181,7 +181,7 @@ public class ColliderTest {
       other.setWidth(2);
       other.setHeight(2);
 
-      collider.collisionDetection(Arrays.asList(other), true);
+      collider.collisionDetection(Arrays.asList(other), object.getVelocity(), true);
 
       assertTrue(collisions.isEmpty());
    }

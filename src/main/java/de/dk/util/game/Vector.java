@@ -43,50 +43,82 @@ public class Vector implements Cloneable {
    }
 
    /**
-    * Creates a vector which is pointing straight up. The vectors x-value is 0,
-    * while the y-value gets the value of the parameter.
+    * Creates a vector which is pointing straight up <code>(0, magnitude)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The new vector.
+    * @return A vector pointing up.
     */
    public static Vector up(float magnitude) {
       return new Vector(0, magnitude);
    }
 
    /**
-    * Creates a vector which is pointing straight down. The vectors x-value is 0,
-    * while the y-value gets the negative value of the parameter.
+    * Creates a vector which is pointing straight down <code>(0, -magnitude)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing down.
     */
    public static Vector down(float magnitude) {
       return new Vector(0, -magnitude);
    }
 
    /**
-    * Creates a vector which is pointing straight left. The vectors y-value is 0,
-    * while the x-value gets the negative value of the parameter.
+    * Creates a vector which is pointing straight left <code>(-magnitude, 0)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing left.
     */
    public static Vector left(float magnitude) {
       return new Vector(-magnitude, 0);
    }
 
    /**
-    * Creates a vector which is pointing straight right. The vectors y-value is 0,
-    * while the x-value gets the value of the parameter.
+    * Creates a vector which is pointing straight right <code>(magnitude, 0)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing right.
     */
    public static Vector right(float magnitude) {
       return new Vector(magnitude, 0);
+   }
+
+   /**
+    * Creates a vector which is pointing straight up <code>(0, 1)</code>.
+    *
+    * @return A vector pointing up.
+    */
+   public static Vector up() {
+      return up(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight down <code>(0, -1)</code>.
+    *
+    * @return A vector pointing down.
+    */
+   public static Vector down() {
+      return down(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight left <code>(-1, 0)</code>.
+    *
+    * @return A vector pointing left.
+    */
+   public static Vector left() {
+      return left(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight right <code>(1, 0)</code>.
+    *
+    * @return A vector pointing right.
+    */
+   public static Vector right() {
+      return right(1);
    }
 
    /**
@@ -470,6 +502,28 @@ public class Vector implements Cloneable {
     */
    public Vector manipulate(UnaryOperator<Float> opX, UnaryOperator<Float> opY) {
       return set(opX.apply(x), opY.apply(y));
+   }
+
+   /**
+    * Manupilates the x value of this vector.
+    *
+    * @param op The x manipulation
+    *
+    * @return This vector to go on
+    */
+   public Vector manipulateX(UnaryOperator<Float> op) {
+      return x(op.apply(x()));
+   }
+
+   /**
+    * Manupilates the y value of this vector.
+    *
+    * @param op The y manipulation
+    *
+    * @return This vector to go on
+    */
+   public Vector manipulateY(UnaryOperator<Float> op) {
+      return y(op.apply(y()));
    }
 
    /**
