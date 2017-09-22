@@ -20,10 +20,7 @@ public class NumberTextField extends TextField
    private int maxValue;
 
    private String defaultString;
-   {
-      addEventFilter(KeyEvent.KEY_PRESSED, this);
-      textProperty().addListener(this);
-   }
+   private boolean arrowKeysEnabled;
 
    public NumberTextField() {
       this(null);
@@ -38,9 +35,14 @@ public class NumberTextField extends TextField
    }
 
    public NumberTextField(int value, int min, int max, String defaultString) {
+      this(value, min, max, defaultString, true);
+   }
+
+   public NumberTextField(int value, int min, int max, String defaultString, boolean arrowKeysEnabled) {
       this.minValue = min;
       this.maxValue = max;
       this.defaultString = defaultString;
+      setArrowKeysEnabled(arrowKeysEnabled);
       setValue(value);
    }
 
@@ -125,6 +127,19 @@ public class NumberTextField extends TextField
          setText("" + value);
       else
          setText(defaultString);
+   }
+
+   public void setArrowKeysEnabled(boolean enabled) {
+      if (enabled == this.arrowKeysEnabled)
+         return;
+
+      if (enabled) {
+         addEventFilter(KeyEvent.KEY_PRESSED, this);
+         textProperty().addListener(this);
+      } else {
+         removeEventFilter(KeyEvent.KEY_PRESSED, this);
+         textProperty().removeListener(this);
+      }
    }
 
    public int getMinValue() {
