@@ -87,6 +87,22 @@ public final class Util {
       return result;
    }
 
+   public static Integer[] box(int[] array) {
+      Integer[] result = new Integer[array.length];
+      for (int i = 0; i < result.length; i++)
+         result[i] = array[i];
+
+      return result;
+   }
+
+   public static int[] box(Integer[] array) {
+      int[] result = new int[array.length];
+      for (int i = 0; i < result.length; i++)
+         result[i] = array[i];
+
+      return result;
+   }
+
    /**
     * Compares 2 objects by their {@link #toString()} method.
     *

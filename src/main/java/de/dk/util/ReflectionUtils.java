@@ -1,13 +1,17 @@
 package de.dk.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+import de.dk.util.function.UnsafeConsumer;
 import de.dk.util.function.UnsafeFunction;
 
 /**
@@ -57,6 +61,108 @@ public final class ReflectionUtils {
    }
 
    private ReflectionUtils() {}
+
+   /**
+    * Converts the <code>object</code> into a String
+    * by including the simple class name
+    * and all of its fields including the inherited fields
+    * with their values.<br> Note: Deep reflection is used here.
+    *
+    * @param object The object to be converted into a String
+    *
+    * @return The object as a String
+    *
+    * @throws ExceptionInInitializerError If an error occurs in an initializer
+    * @throws IllegalAccessException If deep reflection is deactivated and the
+    * <code>object</code> contains a private field
+    */
+   public static String toString(Object object) throws ExceptionInInitializerError,
+                                                       IllegalAccessException {
+      return toString(object, new StringBuilder(), 0).toString();
+   }
+
+   private static StringBuilder toString(Object object,
+                                         StringBuilder builder,
+                                         int tabCount) throws ExceptionInInitializerError,
+                                                              IllegalAccessException {
+      if (object == null)
+         return builder.append("null");
+
+      Class<?> type = object.getClass();
+      if (ReflectionUtils.isPrimitive(type)) {
+         if (type.equals(String.class)) {
+            return builder.append('\"')
+                          .append(object.toString())
+                          .append('\"');
+         } else {
+            return builder.append(object.toString());
+         }
+      } else if (type.isArray()) {
+         return arrayToString(object, builder);
+      } else if (type.isEnum()) {
+         return builder.append(object.toString());
+      }
+
+      StringBuilder tabBuilder = new StringBuilder(tabCount * 2);
+      for (int i = 0; i < tabCount; i++)
+         tabBuilder.append("  ");
+
+      builder.append(type.getSimpleName());
+      Collection<Field> fields = ReflectionUtils.getAllFieldsOf(type);
+      if (fields.isEmpty())
+         return builder;
+
+      builder.append(" {\n");
+      Iterator<Field> iter = fields.iterator();
+      while (iter.hasNext()) {
+         Field f = iter.next();
+         f.setAccessible(true);
+         builder.append(tabBuilder.toString())
+                .append("  ")
+                .append(f.getName())
+                .append('=');
+
+         toString(f.get(object), builder, tabCount + 1);
+         if (iter.hasNext()) {
+            builder.append(",\n");
+         }
+      }
+      return builder.append('\n')
+                    .append(tabBuilder.toString())
+                    .append('}');
+   }
+
+   private static StringBuilder arrayToString(Object array,
+                                              StringBuilder builder) throws IllegalAccessException {
+      Class<?> type = array.getClass()
+                           .getComponentType();
+
+      builder.append('[');
+      int length = Array.getLength(array);
+
+      UnsafeConsumer<Object, IllegalAccessException> appender;
+      if (ReflectionUtils.isPrimitive(type)) {
+         if (type.equals(String.class)) {
+            appender = s -> builder.append('\"')
+                                   .append(s.toString())
+                                   .append('\"');
+         } else {
+            appender = p -> builder.append(p.toString());
+         }
+      } else {
+         appender = o -> builder.append(toString(o));
+      }
+      for (int i = 0; i < length; i++) {
+         try {
+            appender.accept(Array.get(array, i));
+         } catch (NullPointerException e) {
+            // Nothing to do here
+         }
+         if (i < length - 1)
+            builder.append(", ");
+      }
+      return builder.append(']');
+   }
 
    /**
     * Finds out recursively whether the class of the <code>sub</code> parameter
@@ -140,12 +246,20 @@ public final class ReflectionUtils {
       throw new IllegalArgumentException("No enum value found for value " + value + " in enum " + type.getName());
    }
 
-   public static <C extends Collection<Field>> C getAllFieldsOf(Class<?> type, C target) {
-      target.addAll(Arrays.asList(type.getDeclaredFields()));
+   /**
+    * Get all of the fields including fields of superclasses of a type.
+    *
+    * @param type The type to get the fields of.
+    *
+    * @return A collection containing all of the fields of <code>type</code>
+    */
+   public static Collection<Field> getAllFieldsOf(Class<?> type) {
+      Collection<Field> result = new LinkedList<>();
+      result.addAll(Arrays.asList(type.getDeclaredFields()));
       if (type.getSuperclass() != null)
-         return getAllFieldsOf(type.getSuperclass(), target);
+         result.addAll(getAllFieldsOf(type.getSuperclass()));
 
-      return target;
+      return result;
    }
 
    public static Field getField(Class<?> type, String fieldName) throws NoSuchFieldException, SecurityException {
