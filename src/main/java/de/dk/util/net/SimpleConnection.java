@@ -38,7 +38,7 @@ public class SimpleConnection extends Connection {
    }
 
    @Override
-   protected Object readObject() throws IOException, ReadingException {
+   public synchronized Object readObject() throws IOException, ReadingException {
       try {
          return in.readObject();
       } catch (ClassNotFoundException e) {

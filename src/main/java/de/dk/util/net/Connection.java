@@ -170,7 +170,7 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     * @throws IOException If the socket is closed while reading
     * @throws ReadingException If no object can be read
     */
-   protected abstract Object readObject() throws IOException, ReadingException;
+   public abstract Object readObject() throws IOException, ReadingException;
 
    /**
     * Attaches a multiplexer to this connection.
@@ -276,6 +276,13 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     */
    public void removeListener(ConnectionListener listener) {
       listeners.remove(listener);
+   }
+
+   /**
+    * Removes all listeners attached to this connection.
+    */
+   public void removeListeners() {
+      listeners.clear();
    }
 
    /**
