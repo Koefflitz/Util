@@ -12,8 +12,10 @@ import java.util.List;
 public interface ConnectionListener {
    /**
     * This method is called after the connection has been closed.
+    *
+    * @param connection The connection that has been closed
     */
-   public void closed();
+   public void closed(Connection connection);
 
    /**
     * Sums up many listeners in a {@link List} of listeners.
@@ -28,10 +30,10 @@ public interface ConnectionListener {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public void closed() {
+      public void closed(Connection connection) {
          ConnectionListener[] listeners = toArray(new ConnectionListener[size()]);
          for (ConnectionListener l : listeners)
-            l.closed();
+            l.closed(connection);
       }
    }
 }

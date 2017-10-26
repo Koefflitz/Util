@@ -1,11 +1,14 @@
 package de.dk.util.channel;
 
+import static de.dk.util.CollectionUtils.toArray;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -49,6 +52,8 @@ public class Multiplexer implements Receiver {
    private final Map<Long, ChannelHandler<?>> channelAssociatedHandlers = new ConcurrentHashMap<>();
    private final Map<Long, NewChannelRequest<?>> requests = new ConcurrentHashMap<>();
 
+   private boolean closed = false;
+
    /**
     * Creates a new multiplexer. If you are working with the {@linkplain de.dk.util.net} package
     * you can also call the {@link Connection#attachMultiplexer(ChannelHandler...)} method
@@ -73,13 +78,13 @@ public class Multiplexer implements Receiver {
                                         Object initialMsg) throws ChannelDeclinedException,
                                                                   IOException {
       try {
-         Method receiveMethod = ChannelHandler.class.getDeclaredMethod(NEW_CHANNEL_METHOD_NAME, Channel.class, Object.class);
+         Method receiveMethod = ChannelHandler.class.getDeclaredMethod(NEW_CHANNEL_METHOD_NAME, Channel.class, Optional.class);
          receiveMethod.invoke(handler, channel, initialMsg);
       } catch (NoSuchMethodException
                | SecurityException
                | IllegalAccessException
                | IllegalArgumentException e) {
-         throw new IOException("Could not invoke newChannelRequest method of the channel handler!", e);
+         throw new IOException("Could not invoke newChannelRequest method of the channel handler.", e);
 
       } catch (InvocationTargetException e) {
          if (e.getTargetException() instanceof ChannelDeclinedException)
@@ -122,7 +127,7 @@ public class Multiplexer implements Receiver {
    /**
     * Establishes a new channel to communicate through.
     * The "other side" will receive a request and the <code>ChannelHandler</code> of the matching <code>type</code>
-    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Object)} method getting called.
+    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Optional)} method getting called.
     *
     * @param type The type of the new channel
     * @param timeout The timeout in milliseconds for the request
@@ -133,6 +138,7 @@ public class Multiplexer implements Receiver {
     * The channel will be in <code>OPEN</code> state and ready for communication.
     *
     * @throws IOException If an I/O error occurs while establishing a new channel
+    * @throws ClosedException if this multiplexer has already been closed
     * @throws ChannelDeclinedException If the "other side" refuses to open the channel
     * @throws InterruptedException If the thread is interrupted while waiting for the channel to be established
     * @throws TimeoutException If the given <code>timeout</code> is reached before a new channel could be established
@@ -140,9 +146,11 @@ public class Multiplexer implements Receiver {
    public <T> Channel<T> establishNewChannel(Class<T> type,
                                              long timeout,
                                              T initialMsg) throws IOException,
+                                                                  ClosedException,
                                                                   ChannelDeclinedException,
                                                                   InterruptedException,
                                                                   TimeoutException {
+      ensureOpen();
       NewChannelRequest<T> request = createRequest(type, initialMsg);
       return request.request(timeout);
    }
@@ -150,7 +158,7 @@ public class Multiplexer implements Receiver {
    /**
     * Establishes a new channel to communicate through.
     * The "other side" will receive a request and the <code>ChannelHandler</code> of the matching <code>type</code>
-    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Object)} method getting called.
+    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Optional)} method getting called.
     *
     * @param type The type of the new channel
     * @param timeout The timeout in milliseconds for the request
@@ -160,12 +168,14 @@ public class Multiplexer implements Receiver {
     * The channel will be in <code>OPEN</code> state and ready for communication.
     *
     * @throws IOException If an I/O error occurs while establishing a new channel
+    * @throws ClosedException if this multiplexer has already been closed
     * @throws ChannelDeclinedException If the "other side" refuses to open the channel
     * @throws InterruptedException If the thread is interrupted while waiting for the channel to be established
     * @throws TimeoutException If the given <code>timeout</code> is reached before a new channel could be established
     */
    public <T> Channel<T> establishNewChannel(Class<T> type,
                                              long timeout) throws IOException,
+                                                                  ClosedException,
                                                                   ChannelDeclinedException,
                                                                   InterruptedException,
                                                                   TimeoutException {
@@ -175,15 +185,18 @@ public class Multiplexer implements Receiver {
    /**
     * Asynchronously establishes a new channel in a background thread.
     * The "other side" will receive a request and the <code>ChannelHandler</code> of the matching <code>type</code>
-    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Object)} method getting called.
+    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Optional)} method getting called.
     *
     * @param type The type of the new channel
     * @param initialMsg An optional initial message to send with the request
     * @param <T> The type of the messages that go through the channel
     *
     * @return A future to represent the establishment of the new channel.
+    *
+    * @throws ClosedException if this multiplexer has already been closed.
     */
-   public <T> Future<Channel<T>> asynchEstablishNewChannel(Class<T> type, T initialMsg) {
+   public <T> Future<Channel<T>> asynchEstablishNewChannel(Class<T> type, T initialMsg) throws ClosedException {
+      ensureOpen();
       NewChannelRequest<T> request = createRequest(type, initialMsg);
       FutureTask<Channel<T>> task = new FutureTask<>(request);
       new Thread(task).start();
@@ -193,14 +206,15 @@ public class Multiplexer implements Receiver {
    /**
     * Asynchronously establishes a new channel in a background thread.
     * The "other side" will receive a request and the <code>ChannelHandler</code> of the matching <code>type</code>
-    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Object)} method getting called.
+    * will receive the request, by the {@link ChannelHandler#newChannelRequested(Channel, Optional)} method getting called.
     *
     * @param type The type of the new channel
     * @param <T> The type of the messages that go through the channel
     *
     * @return A future to represent the establishment of the new channel.
+    * @throws ClosedException if this multiplexer has already been closed.
     */
-   public <T> Future<Channel<T>> asynchEstablishNewChannel(Class<T> type) {
+   public <T> Future<Channel<T>> asynchEstablishNewChannel(Class<T> type) throws ClosedException {
       return asynchEstablishNewChannel(type, null);
    }
 
@@ -213,7 +227,10 @@ public class Multiplexer implements Receiver {
    }
 
    @Override
-   public void receive(Object object) throws IllegalArgumentException {
+   public void receive(Object object) throws IllegalArgumentException, IllegalStateException {
+      if (closed)
+         throw new IllegalStateException("Multiplexer has already been closed.");
+
       if (!(object instanceof Packet))
          throw new IllegalArgumentException("An object was received, that was not a packet: " + object);
 
@@ -267,7 +284,7 @@ public class Multiplexer implements Receiver {
          } else {
             try {
                channel.setState(ChannelState.OPEN);
-            } catch (ChannelClosedException e) {
+            } catch (ClosedException e) {
                // Nothing to do here
             }
          }
@@ -286,7 +303,7 @@ public class Multiplexer implements Receiver {
    protected synchronized void channelClosed(Channel<?> channel) {
       try {
          channel.setState(ChannelState.CLOSED);
-      } catch (ChannelClosedException e) {
+      } catch (ClosedException e) {
          // Nothing to do here
       }
       channels.remove(channel.getId());
@@ -313,7 +330,7 @@ public class Multiplexer implements Receiver {
             response = new ChannelPacket(channel.getId(), ChannelPacketType.OK);
             addChannel(channel, handler);
          } catch (ChannelDeclinedException | IOException e) {
-            LOGGER.debug("Refusing new channel request");
+            LOGGER.debug("Refusing new channel request", e);
             response = new ChannelRefusedPacket(request.channelId, e);
          }
       }
@@ -324,6 +341,11 @@ public class Multiplexer implements Receiver {
          LOGGER.warn("Could not send refuse for NewChannelRequestPacket", e);
          return;
       }
+   }
+
+   private void ensureOpen() throws ClosedException {
+      if (closed)
+         throw new ClosedException("Multiplexer has already been closed.");
    }
 
    private ChannelHandler<?> getHandlerFor(Class<?> type) {
@@ -366,9 +388,8 @@ public class Multiplexer implements Receiver {
     * the next supertype handler will be looked for and so on...
     *
     * @param handler The handler to handle channel requests of the handlers type
-    * @param <P> The type of the messages of the channel that the handler handles
     */
-   public <P> void addHandler(ChannelHandler<P> handler) {
+   public void addHandler(ChannelHandler<?> handler) {
       handlers.put(handler.getType(), handler);
    }
 
@@ -378,7 +399,16 @@ public class Multiplexer implements Receiver {
     * @param handler The handler to be removed
     */
    public void removeHandler(ChannelHandler<?> handler) {
-      handlers.remove(handler.getType());
+      removeHandler(handler.getType());
+   }
+
+   /**
+    * Removes a handler from this channel manager by its type.
+    *
+    * @param type The type of the handler to be removed.
+    */
+   public void removeHandler(Class<?> type) {
+      handlers.remove(type);
    }
 
    /**
@@ -388,6 +418,24 @@ public class Multiplexer implements Receiver {
     */
    public Sender getSender() {
       return sender;
+   }
+
+   /**
+    * Closes this multiplexer and all of its channels.
+    */
+   public synchronized void close() {
+      Channel<?>[] channels = toArray(this.channels.values(), Channel<?>[]::new);
+      for (Channel<?> channel : channels) {
+         try {
+            channel.close();
+         } catch (IOException e) {
+            // Nothing to do here
+         }
+      }
+   }
+
+   public boolean isClosed() {
+      return closed;
    }
 
    @Override

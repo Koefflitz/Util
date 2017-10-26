@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dk.util.Buffer;
 import de.dk.util.channel.ChannelHandler;
 import de.dk.util.channel.Multiplexer;
 import de.dk.util.channel.Sender;
@@ -37,7 +38,7 @@ import de.dk.util.net.Receiver.ReceiverChain;
  * @see SimpleConnection
  */
 public abstract class Connection implements Runnable, Sender, Closeable {
-   private static final Logger LOGGER = LoggerFactory.getLogger(Connection.class);
+   private static final Logger log = LoggerFactory.getLogger(Connection.class);
 
    protected final Socket socket;
    protected final InputStream in;
@@ -49,6 +50,8 @@ public abstract class Connection implements Runnable, Sender, Closeable {
    protected final AtomicBoolean running = new AtomicBoolean(false);
 
    private Thread thread;
+
+   private final Buffer<Object> buffer = new Buffer<>();
 
    /**
     * Creates a connection based on the given <code>socket</code>.
@@ -113,8 +116,14 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     * using this connection as a <code>runnable</code> for the thread.
     */
    public void start() {
-      if (isRunning())
-         return;
+      synchronized (running) {
+         if (isRunning())
+            return;
+         else if (thread != null && thread.isAlive()) {
+            running.set(true);
+            return;
+         }
+      }
 
       this.thread = new Thread(this);
       thread.start();
@@ -128,37 +137,53 @@ public abstract class Connection implements Runnable, Sender, Closeable {
          running.notify();
       }
 
-      while (!socket.isClosed()) {
+      buffer.ifPresent(receivers::receive);
+
+      while (running.get()) {
          Object object;
          try {
             object = readObject();
          } catch (ReadingException e) {
-            LOGGER.error("Error reading an incoming message from " + socket.getInetAddress(), e);
+            log.error("Error reading an incoming message from " + socket.getInetAddress(), e);
             continue;
          } catch (IOException e) {
-            break;
+            try {
+               close();
+            } catch (IOException ex) {
+               log.warn("Error closing the socket " + socket.getInetAddress(), ex);
+            }
+            continue;
          }
 
-         if (object == null)
-            break;
-
-         try {
-            for (Receiver receiver : receivers)
-               receiver.receive(object);
-         } catch (IllegalArgumentException e) {
-            LOGGER.warn("The object " + object + " could not be received.", e);
+         synchronized (running) {
+            if (!isRunning()) {
+               buffer.set(object);
+            } else {
+               try {
+                  receivers.receive(object);
+               } catch (IllegalArgumentException e) {
+                  log.warn("The object " + object + " could not be received.", e);
+               }
+            }
          }
       }
+   }
 
-      if (!socket.isClosed()) {
-         try {
-            socket.close();
-         } catch (IOException e) {
-            LOGGER.warn("Error closing the socket " + socket.getInetAddress(), e);
-         }
-      }
-      running.set(false);
-      listeners.closed();
+   /**
+    * Reads the next object from the sockets inputstream
+    * or returns a buffered object if present.
+    * This method blocks until an object is read or the connection has been closed.
+    *
+    * @return The read or bufferd object
+    *
+    * @throws IOException If the socket is closed while reading
+    * @throws ReadingException If no object can be read
+    */
+   public Object readObject() throws IOException, ReadingException {
+      if (buffer.isPresent())
+         return buffer.pop().get();
+
+      return readObjectImpl();
    }
 
    /**
@@ -170,7 +195,7 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     * @throws IOException If the socket is closed while reading
     * @throws ReadingException If no object can be read
     */
-   public abstract Object readObject() throws IOException, ReadingException;
+   protected abstract Object readObjectImpl() throws IOException, ReadingException;
 
    /**
     * Attaches a multiplexer to this connection.
@@ -186,6 +211,7 @@ public abstract class Connection implements Runnable, Sender, Closeable {
    public Multiplexer attachMultiplexer(ChannelHandler<?>... handlers) throws UnknownHostException {
       Multiplexer multiplexer = new Multiplexer(new InetAddressIdGenerator(), this, handlers);
       addReceiver(multiplexer);
+      addListener(c -> multiplexer.close());
       return multiplexer;
    }
 
@@ -218,6 +244,13 @@ public abstract class Connection implements Runnable, Sender, Closeable {
    }
 
    /**
+    * Stops the connection.
+    */
+   public void stop() {
+      running.set(false);
+   }
+
+   /**
     * Closes this connection. A once closed connection object cannot be reopened again.
     * This method blocks until either the connection has been closed and is not running anymore
     * or the timeout was reached.
@@ -230,12 +263,15 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     * @throws InterruptedException If this thread was interrupted while waiting to stop running
     */
    public void close(long timeout) throws IOException, InterruptedException {
+      stop();
       if (socket.isClosed())
          return;
 
       socket.close();
       if (thread != null && thread != Thread.currentThread())
          thread.join(timeout);
+
+      listeners.closed(this);
    }
 
    /**
@@ -292,12 +328,23 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     * @param receiver The receiver of the incoming messages
     */
    public void addReceiver(Receiver receiver) {
-      if (receiver != null)
-         receivers.add(receiver);
+      if (receiver != null) {
+         synchronized (receivers) {
+            receivers.add(receiver);
+         }
+      }
    }
 
+   /**
+    * Removes the <code>receiver</code> from this connection
+    * to not be called when data is received.
+    *
+    * @param receiver The receiver to be removed
+    */
    public void removeReceiver(Receiver receiver) {
-      receivers.remove(receiver);
+      synchronized (receivers) {
+         receivers.remove(receiver);
+      }
    }
 
    /**
@@ -325,7 +372,7 @@ public abstract class Connection implements Runnable, Sender, Closeable {
     *
     * @return The connected InetAddress
     */
-   public InetAddress getInetAddress() {
+   public InetAddress getAddress() {
       return socket.getInetAddress();
    }
 

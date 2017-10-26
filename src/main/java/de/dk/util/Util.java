@@ -1,6 +1,7 @@
 package de.dk.util;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import de.dk.util.function.UnsafeConsumer;
@@ -32,6 +33,10 @@ public final class Util {
                                                     UnsafeConsumer<? super T, E> action) throws E {
       for (T var = varSupplier.get(); condition.test(var); var = varSupplier.get())
          action.accept(var);
+   }
+
+   public static <T> Consumer<T> noOp() {
+      return t -> {};
    }
 
    /**

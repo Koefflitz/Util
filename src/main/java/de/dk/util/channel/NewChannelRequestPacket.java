@@ -2,6 +2,8 @@ package de.dk.util.channel;
 
 import static de.dk.util.channel.ChannelPacket.ChannelPacketType.NEW;
 
+import java.util.Optional;
+
 /**
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
@@ -26,8 +28,8 @@ public class NewChannelRequestPacket extends ChannelPacket {
       return initialMessage != null;
    }
 
-   public Object getInitialMessage() {
-      return initialMessage;
+   public Optional<Object> getInitialMessage() {
+      return Optional.ofNullable(initialMessage);
    }
 
    public Class<?> getType() {

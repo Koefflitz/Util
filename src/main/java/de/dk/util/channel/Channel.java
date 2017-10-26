@@ -57,10 +57,11 @@ public class Channel<T> {
     * @param packet The arrived packet
     *
     * @throws IllegalArgumentException If the packet has not the same <code>channelId</code> as this channel
-    * @throws ChannelClosedException If this channel has already been closed
+    * @throws ClosedException If this channel has already been closed
     */
    @SuppressWarnings("unchecked")
-   public synchronized void receive(PayloadPacket packet) throws IllegalArgumentException, ChannelClosedException {
+   public synchronized void receive(PayloadPacket packet) throws IllegalArgumentException,
+                                                                 ClosedException {
       if (packet.channelId != this.id)
          throw new IllegalArgumentException("Packet ID does not match this channel id");
 
@@ -80,11 +81,10 @@ public class Channel<T> {
     *
     * @param object The object to be sent
     *
-    * @throws IllegalArgumentException If the packet has not the same <code>channelId</code> as this channel
-    * @throws ChannelClosedException If this channel has already been closed
+    * @throws ClosedException If this channel has already been closed
     * @throws IOException If an I/O error occurs while sending the object
     */
-   public synchronized void send(T object) throws IllegalArgumentException, ChannelClosedException, IOException {
+   public synchronized void send(T object) throws ClosedException, IOException {
       ensureNotClosed();
       if (state == OPEN)
          sender.send(new PayloadPacket(id, object));
@@ -92,7 +92,7 @@ public class Channel<T> {
          preSentMessages.offer(object);
    }
 
-   protected synchronized void send(ChannelPacket packet) throws IOException, ChannelClosedException {
+   protected synchronized void send(ChannelPacket packet) throws IOException, ClosedException {
       ensureNotClosed();
       sender.send(packet);
    }
@@ -108,9 +108,9 @@ public class Channel<T> {
       wait(timeout);
    }
 
-   private void ensureNotClosed() throws ChannelClosedException {
+   private void ensureNotClosed() throws ClosedException {
       if (isClosed())
-         throw new ChannelClosedException("This channel has already been closed.");
+         throw new ClosedException("This channel has already been closed.");
    }
 
    private void sendQueuedMessages() {
@@ -167,12 +167,12 @@ public class Channel<T> {
       }
    }
 
-   protected synchronized void setState(ChannelState state) throws ChannelClosedException {
+   protected synchronized void setState(ChannelState state) throws ClosedException {
       if (state == this.state)
          return;
 
       if (this.state == ChannelState.CLOSED)
-         throw new ChannelClosedException("Channel has already been closed.");
+         throw new ClosedException("Channel has already been closed.");
 
       this.state = state;
       if (state == OPEN) {
@@ -189,7 +189,7 @@ public class Channel<T> {
     * Get the closed state of this channel.
     * Messages can only be delivered through an open channel.
     * If this method returns <code>true</code>, the send and receive methods
-    * of this channel will throw a <code>ChannelClosedException</code>.
+    * of this channel will throw a <code>ClosedException</code>.
     *
     * @return <code>true</code> if this channel is closed.
     * <code>false</code> otherwise
@@ -218,13 +218,11 @@ public class Channel<T> {
 
    @Override
    public int hashCode() {
-//      final int prime = 31;
-//      int result = 1;
-//      result = prime * result + (int) (this.id ^ (this.id >>> 32));
-//      result = prime * result + ((this.multiplexer == null) ? 0 : this.multiplexer.hashCode());
-//      result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
-//      return result;
-      return super.hashCode();
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + (int) (this.id ^ (this.id >>> 32));
+      result = prime * result + ((this.state == null) ? 0 : this.state.hashCode());
+      return result;
    }
 
    @Override
@@ -238,11 +236,6 @@ public class Channel<T> {
       Channel<?> other = (Channel<?>) obj;
       if (this.id != other.id)
          return false;
-      if (this.multiplexer == null) {
-         if (other.multiplexer != null)
-            return false;
-      } else if (!this.multiplexer.equals(other.multiplexer))
-         return false;
       if (this.state != other.state)
          return false;
       return true;
@@ -250,7 +243,6 @@ public class Channel<T> {
 
    @Override
    public String toString() {
-//      return "channel { id=" + id + ", state=" + state + " }";
-      return "channel { hash=" + super.hashCode() + ", state=" + state + " }";
+      return "channel { id=" + id + ", state=" + state + " }";
    }
 }

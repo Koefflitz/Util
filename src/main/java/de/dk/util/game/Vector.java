@@ -1,5 +1,6 @@
 package de.dk.util.game;
 
+import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
 /**
@@ -9,7 +10,9 @@ import java.util.function.UnaryOperator;
  * @author David Koettlitz
  * <br>Erstellt am 14.11.2016
  */
-public class Vector implements Cloneable {
+public class Vector implements Cloneable, Serializable {
+   private static final long serialVersionUID = -6572827884413220031L;
+
    protected float x = 1;
    protected float y = 1;
 

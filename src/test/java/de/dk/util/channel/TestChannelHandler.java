@@ -2,6 +2,7 @@ package de.dk.util.channel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author David Koettlitz
@@ -18,7 +19,7 @@ public class TestChannelHandler<P> implements ChannelHandler<P> {
    }
 
    @Override
-   public void newChannelRequested(Channel<P> channel, P initialMessage) throws ChannelDeclinedException {
+   public void newChannelRequested(Channel<P> channel, Optional<P> initialMessage) throws ChannelDeclinedException {
       if (!accept)
          throw new ChannelDeclinedException("Not accepting channels right now");
 

@@ -11,18 +11,18 @@ import java.io.IOException;
  * @see Multiplexer
  * @see Channel
  */
-public class ChannelClosedException extends IOException {
+public class ClosedException extends IOException {
    private static final long serialVersionUID = 4162162428990881318L;
 
-   public ChannelClosedException(String message) {
+   public ClosedException(String message) {
       super(message);
    }
 
-   public ChannelClosedException(Throwable cause) {
+   public ClosedException(Throwable cause) {
       super(cause);
    }
 
-   public ChannelClosedException(String message, Throwable cause) {
+   public ClosedException(String message, Throwable cause) {
       super(message, cause);
    }
 }

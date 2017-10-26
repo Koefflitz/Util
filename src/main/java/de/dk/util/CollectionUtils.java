@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,6 +77,26 @@ public final class CollectionUtils {
     */
    public static <T> Iterable<T> toIterable(Enumeration<T> enumeration) {
       return () -> new EnumerationIterator<>(enumeration);
+   }
+
+   /**
+    * Converts the <code>collection</code> into an array
+    * using the <code>generator</code> to create the array
+    * without creating a <code>Stream</code> on the collection.
+    *
+    * @param collection The collection to be converted
+    * @param generator The generator to create the empty array
+    * @param <T> The type of the elements
+    *
+    * @return An array with the length of the <code>collection</code>
+    * containing all elements of the <code>collection</code>
+    *
+    * @throws NullPointerException if either <code>collection</code>
+    * or <code>generator</code> is <code>null</code>
+    */
+   public static <T> T[] toArray(Collection<T> collection,
+                                 IntFunction<T[]> generator) throws NullPointerException {
+      return collection.toArray(generator.apply(collection.size()));
    }
 
    /**

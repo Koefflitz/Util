@@ -1,5 +1,7 @@
 package de.dk.util.net;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import de.dk.util.channel.Multiplexer;
@@ -14,6 +16,7 @@ import de.dk.util.channel.Multiplexer;
  * @see Multiplexer
  */
 public interface Receiver {
+
    /**
     * Handles a received message.
     *
@@ -23,15 +26,34 @@ public interface Receiver {
     */
    public void receive(Object msg) throws IllegalArgumentException;
 
-   public static class ReceiverChain extends LinkedList<Receiver> implements Receiver {
+   public static class ReceiverChain extends HashSet<Receiver> implements Receiver {
       private static final long serialVersionUID = 4570474656007106847L;
 
       @Override
       public void receive(Object msg) throws IllegalArgumentException {
          Receiver[] receivers = toArray(new Receiver[size()]);
+         Collection<IllegalArgumentException> exceptions = new LinkedList<>();
+         if (receivers.length == 0)
+            return;
+
+         boolean success = false;
          for (Receiver receiver : receivers) {
-            receiver.receive(msg);
+            try {
+               receiver.receive(msg);
+               success = true;
+            } catch (IllegalArgumentException e) {
+               exceptions.add(e);
+            }
          }
+         if (success)
+            return;
+
+         String errorMsg = "No receiver could handle the received message: " + msg;
+         IllegalArgumentException finalException = new IllegalArgumentException(errorMsg);
+         for (IllegalArgumentException e : exceptions)
+            finalException.addSuppressed(e);
+
+         throw finalException;
       }
 
    }
