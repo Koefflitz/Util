@@ -39,7 +39,7 @@ import de.dk.util.net.Receiver;
  * @see Connection
  */
 public class Multiplexer implements Receiver {
-   private static final Logger LOGGER = LoggerFactory.getLogger(Multiplexer.class);
+   private static final Logger log = LoggerFactory.getLogger(Multiplexer.class);
 
    private static final String RECEIVE_METHOD_NAME = "receive";
    private static final String NEW_CHANNEL_METHOD_NAME = "newChannelRequested";
@@ -90,7 +90,7 @@ public class Multiplexer implements Receiver {
          if (e.getTargetException() instanceof ChannelDeclinedException)
             throw (ChannelDeclinedException) e.getTargetException();
          else {
-            LOGGER.error("The handler of channel with id " + channel.getId() + " threw an exception.", e);
+            log.error("The handler of channel with id " + channel.getId() + " threw an exception.", e);
             throw new IOException("The channel handler threw an exception handling the NewChannelRequestPacket", e);
          }
       }
@@ -104,9 +104,9 @@ public class Multiplexer implements Receiver {
                | SecurityException
                | IllegalAccessException
                | IllegalArgumentException e) {
-         LOGGER.error("Could not invoke receive method of channel!", e);
+         log.error("Could not invoke receive method of channel!", e);
       } catch (InvocationTargetException e) {
-         LOGGER.error("The handler of channel with id " + channel.getId() + " threw an exception.", e);
+         log.error("The handler of channel with id " + channel.getId() + " threw an exception.", e);
       }
    }
 
@@ -118,9 +118,9 @@ public class Multiplexer implements Receiver {
                | SecurityException
                | IllegalAccessException
                | IllegalArgumentException e) {
-         LOGGER.error("Could not invoke receive method of channel!", e);
+         log.error("Could not invoke receive method of channel!", e);
       } catch (InvocationTargetException e) {
-         LOGGER.error("The receiver of channel with the id " + channel.getId() + " threw an exception.", e);
+         log.error("The receiver of channel with the id " + channel.getId() + " threw an exception.", e);
       }
    }
 
@@ -245,7 +245,10 @@ public class Multiplexer implements Receiver {
       if (channel == null)
          throw new IllegalArgumentException("No channel established for packet: " + packet);
 
-      redirectPacket(channel, packet);
+      if (channel.isClosed())
+         log.warn("Packet for closed channel with id " + channel.getId() + " received.");
+      else
+         redirectPacket(channel, packet);
    }
 
    private void handleChannelPacket(ChannelPacket packet) {
@@ -262,7 +265,7 @@ public class Multiplexer implements Receiver {
       case CLOSE:
          Channel<?> channel = channels.get(packet.channelId);
          if (channel == null) {
-            LOGGER.warn("ChannelClosedPacket with id " + packet.channelId
+            log.warn("ChannelClosedPacket with id " + packet.channelId
                         + " received, but no channel with that id was found.");
             break;
          }
@@ -280,7 +283,7 @@ public class Multiplexer implements Receiver {
       } else {
          Channel<?> channel = channels.get(channelId);
          if (channel == null) {
-            LOGGER.warn("Could not handle channelPacket with ChannelPacketType OK and channelId: " + channelId);
+            log.warn("Could not handle channelPacket with ChannelPacketType OK and channelId: " + channelId);
          } else {
             try {
                channel.setState(ChannelState.OPEN);
@@ -295,7 +298,7 @@ public class Multiplexer implements Receiver {
    private void channelRefused(ChannelRefusedPacket packet) {
       NewChannelRequest<?> request = requests.remove(packet.channelId);
       if (request == null)
-         LOGGER.warn("No channel request for id: " + packet.channelId + " registered.");
+         log.warn("No channel request for id: " + packet.channelId + " registered.");
       else
          request.refused(packet);
    }
@@ -315,22 +318,22 @@ public class Multiplexer implements Receiver {
    private void newChannelRequest(NewChannelRequestPacket request) {
       ChannelPacket response;
       Class<?> packetType = request.getType();
-      LOGGER.debug("NewChannelRequestPacket for PacketType: " + packetType.getName() + " received.");
+      log.debug("NewChannelRequestPacket for PacketType: " + packetType.getName() + " received.");
       ChannelHandler<?> handler = getHandlerFor(packetType);
       if (handler == null) {
          String msg = "No ChannelHandler registered for PacketType: " + packetType;
-         LOGGER.info(msg);
-         LOGGER.info("Refusing NewChannelRequestPacket");
+         log.info(msg);
+         log.info("Refusing NewChannelRequestPacket");
          response = new ChannelRefusedPacket(request.channelId, msg);
       } else {
          Channel<?> channel = new Channel<>(request.channelId, sender, this);
          try {
             invokeNewChannel(handler, channel, request.getInitialMessage());
-            LOGGER.debug("Accepting new channel request");
+            log.debug("Accepting new channel request");
             response = new ChannelPacket(channel.getId(), ChannelPacketType.OK);
             addChannel(channel, handler);
          } catch (ChannelDeclinedException | IOException e) {
-            LOGGER.debug("Refusing new channel request", e);
+            log.debug("Refusing new channel request", e);
             response = new ChannelRefusedPacket(request.channelId, e);
          }
       }
@@ -338,7 +341,7 @@ public class Multiplexer implements Receiver {
       try {
          sender.send(response);
       } catch (IOException e) {
-         LOGGER.warn("Could not send refuse for NewChannelRequestPacket", e);
+         log.warn("Could not send refuse for NewChannelRequestPacket", e);
          return;
       }
    }
