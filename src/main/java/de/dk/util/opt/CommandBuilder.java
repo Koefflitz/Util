@@ -69,6 +69,7 @@ public class CommandBuilder implements ArgumentBuilder {
     */
    public ArgumentParserBuilder buildParser() {
       ArgumentParserBuilder childBuilder = new ArgumentParserBuilder(this);
+      childBuilder.setIgnoreUnknown(true);
       return childBuilder;
    }
 

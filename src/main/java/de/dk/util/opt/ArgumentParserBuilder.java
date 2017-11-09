@@ -50,6 +50,7 @@ public class ArgumentParserBuilder {
    private Map<String, Command> commands = new LinkedHashMap<>(0);
 
    private CommandBuilder parentBuilder;
+   private boolean ignoreUnknown;
 
    private int argCount;
 
@@ -78,6 +79,7 @@ public class ArgumentParserBuilder {
     */
    public ArgumentParser buildAndGet() {
       ArgumentParser parser = new ArgumentParser(arguments, options, longOptions, commands);
+      parser.setIgnoreUnknown(ignoreUnknown);
       if (parentBuilder != null)
          parentBuilder.setParser(parser);
 
@@ -260,6 +262,33 @@ public class ArgumentParserBuilder {
          longOptions.put(option.getLongKey(), option);
 
       return this;
+   }
+
+   /**
+    * Set whether unknown/unexpected arguments should be ignored
+    * or an Exception should be thrown.
+    * If set to <code>true</code>, any of the <code>parseArguments</code>
+    * methods will throw an Exception if an unknown/unexpected argument was found.
+    *
+    * @param ignoreUnknown flag if unknown arguments should be ignored or not
+    *
+    * @return This argumentparser builder to go on
+    */
+   public ArgumentParserBuilder setIgnoreUnknown(boolean ignoreUnknown) {
+      this.ignoreUnknown = ignoreUnknown;
+      return this;
+   }
+
+   /**
+    * Set the flag whether unknown/unexpected arguments should be ignored
+    * to <code>true</code>.
+    * If set to <code>true</code>, any of the <code>parseArguments</code>
+    * methods will throw an Exception if an unknown/unexpected argument was found.
+    *
+    * @return This argumentparser builder to go on
+    */
+   public ArgumentParserBuilder ignoreUnknown() {
+      return setIgnoreUnknown(true);
    }
 
    /**

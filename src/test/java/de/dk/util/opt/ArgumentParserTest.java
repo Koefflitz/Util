@@ -163,8 +163,9 @@ public class ArgumentParserTest {
    }
 
    @Test
-   public void testMinusMinus() throws UnknownArgumentException {
+   public void testMinusMinus() throws MissingArgumentException {
       ArgumentParser parser = ArgumentParserBuilder.begin()
+                                                   .ignoreUnknown()
                                                    .addArgument(ARG_NAME0)
                                                    .addArgument(ARG_NAME1)
                                                    .buildArgument(ARG_NAME2)
@@ -179,11 +180,11 @@ public class ArgumentParserTest {
       assertEquals(ARG_VALUE2, result.getArgumentValue(ARG_NAME2));
       assertFalse(result.isOptionPresent(OPT_KEY0));
 
-      expectedException.expect(UnknownArgumentException.class);
+      expectedException.expect(MissingArgumentException.class);
       try {
          result = parser.parseArguments(ARG_VALUE0, ARG_VALUE1, ARG_VALUE2, "-" + OPT_KEY0);
       } catch (MissingOptionValueException
-               | MissingArgumentException
+               | UnknownArgumentException
                | UnexpectedOptionValueException e) {
          fail(e.getMessage());
       }
@@ -328,7 +329,25 @@ public class ArgumentParserTest {
       expectedException.expect(MissingArgumentException.class);
       try {
          parser.parseArguments("-" + OPT_KEY0, OPT_VALUE0);
-      } catch (MissingOptionValueException | UnknownArgumentException | UnexpectedOptionValueException e) {
+      } catch (MissingOptionValueException
+               | UnknownArgumentException
+               | UnexpectedOptionValueException e) {
+         fail(e.getMessage());
+      }
+   }
+
+   @Test
+   public void testUnknownArgument() throws UnknownArgumentException {
+      ArgumentParser parser = ArgumentParserBuilder.begin()
+                                                   .addArgument(ARG_NAME0)
+                                                   .buildAndGet();
+
+      expectedException.expect(UnknownArgumentException.class);
+      try {
+         parser.parseArguments(ARG_VALUE0, "InvalidOne");
+      } catch (MissingArgumentException
+               | MissingOptionValueException
+               | UnexpectedOptionValueException e) {
          fail(e.getMessage());
       }
    }
