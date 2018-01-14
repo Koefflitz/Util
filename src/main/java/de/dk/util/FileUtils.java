@@ -27,9 +27,10 @@ public final class FileUtils {
     *
     * @param source The source to be located
     * @return The URI to the source
-    * @throws IllegalStateException if the URI cannot be parsed (this should not happen
+    *
+    * @throws SecurityException If a security manager permits this action
     */
-   public static URI locateSource(Class<?> source) throws IllegalStateException {
+   public static URI locateSource(Class<?> source) throws SecurityException {
       if (sourceLocation != null)
          return sourceLocation;
 
@@ -39,7 +40,7 @@ public final class FileUtils {
                                 .getLocation()
                                 .toURI();
       } catch (URISyntaxException e) {
-         throw new IllegalStateException(e);
+         throw new InternalError("Internal library provided invalid object.", e);
       }
       return sourceLocation;
    }
@@ -49,9 +50,9 @@ public final class FileUtils {
     *
     * @return The URI to the source
     *
-    * @throws IllegalStateException if the caller class cannot be found.
+    * @throws SecurityException if a security manager doesn't allow this action
     */
-   public static URI locateSource() throws IllegalStateException {
+   public static URI locateSource() throws SecurityException {
       String callingClassName = null;
 
       boolean foundThisMethod = false;
@@ -74,7 +75,7 @@ public final class FileUtils {
       try {
          return locateSource(Class.forName(callingClassName));
       } catch (ClassNotFoundException e) {
-         throw new IllegalStateException(e);
+         throw new InternalError("The method got called by a class, that cannot be found", e);
       }
    }
 
