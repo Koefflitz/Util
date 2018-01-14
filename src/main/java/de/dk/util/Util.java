@@ -17,6 +17,10 @@ public final class Util {
 
    private Util() {}
 
+   public static <T> T lastItemOf(T[] array) {
+      return array[array.length - 1];
+   }
+
    /**
     * This method is equivalent to <code>flag ? 1 : -1</code>.
     *
