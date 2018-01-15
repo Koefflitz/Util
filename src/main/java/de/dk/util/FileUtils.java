@@ -7,8 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 
 /**
@@ -190,6 +192,24 @@ public final class FileUtils {
          return result;
 
       throw new IllegalStateException("Could not create dir at " + tmpPath);
+   }
+
+   /**
+    * Converts the given <code>file</code> into an URL.
+    *
+    * @param file The file to be converted to an URL.
+    *
+    * @return An URL that locates the given <code>file</code>
+    *
+    * @throws IllegalStateException If the URL could not be contructed
+    */
+   public static URL toURL(File file) throws IllegalStateException {
+      try {
+         return file.toURI()
+                    .toURL();
+      } catch (MalformedURLException e) {
+         throw new IllegalStateException(e);
+      }
    }
 
    /**
