@@ -17,6 +17,153 @@ public final class Util {
 
    private Util() {}
 
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static <T> T[] invert(T[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         T element = array[i];
+         array[i] = array[j];
+         array[j--] = element;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static byte[] invertByteArray(byte[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         byte b = array[i];
+         array[i] = array[j];
+         array[j--] = b;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static short[] invertShortArray(short[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         short value = array[i];
+         array[i] = array[j];
+         array[j--] = value;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static int[] invertIntArray(int[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         int value = array[i];
+         array[i] = array[j];
+         array[j--] = value;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static long[] invertLongArray(long[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         long value = array[i];
+         array[i] = array[j];
+         array[j--] = value;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static boolean[] invertBoolArray(boolean[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         boolean value = array[i];
+         array[i] = array[j];
+         array[j--] = value;
+      }
+      return array;
+   }
+
+   /**
+    * Inverts the <code>array</code>.
+    *
+    * @param array The array to be inverted
+    *
+    * @return the inverted array which is the same object as the parameter array
+    */
+   public static char[] invertCharArray(char[] array) {
+      if (array == null)
+         return null;
+
+      int j = array.length - 1;
+      for (int i = 0; i < array.length / 2; i++) {
+         char value = array[i];
+         array[i] = array[j];
+         array[j--] = value;
+      }
+      return array;
+   }
+
+   /**
+    * Get the last item of the <code>array</code>
+    *
+    * @param array The array from which to get the last item
+    *
+    * @return The last item of the given <code>array</code>
+    */
    public static <T> T lastItemOf(T[] array) {
       return array[array.length - 1];
    }

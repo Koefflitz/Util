@@ -62,10 +62,12 @@ public class NumberTextField extends TextField
    public void handle(KeyEvent e) {
       if (e.getCode() == KeyCode.UP) {
          e.consume();
-         setText("" + (getValue() + 1));
+         if (getValue() < Integer.MAX_VALUE)
+            setText("" + (getValue() + 1));
       } else if (e.getCode() == KeyCode.DOWN) {
          e.consume();
-         setText("" + (getValue() - 1));
+         if (getValue() > Integer.MIN_VALUE)
+            setText("" + (getValue() - 1));
       }
    }
 
@@ -77,7 +79,8 @@ public class NumberTextField extends TextField
       try {
          value = Long.parseLong(getText());
       } catch (NumberFormatException e) {
-         value = getDefaultValue();
+         setText(old);
+         return;
       }
       if (value > maxValue)
          setValue(maxValue);

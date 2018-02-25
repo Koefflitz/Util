@@ -3,13 +3,12 @@ package de.dk.util.game;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Observer;
 import java.util.function.Consumer;
 
 import de.dk.util.DMath;
 
 /**
- * Class to do collision detection for rectangles. Possible to add collision-{@link Observer}s to a collider.
+ * Class to do collision detection for rectangles. Possible to add collision-listeners to a collider.
  *
  * @param <G> Type of the object A that causes the collision.
  * Must be a subtype of {@link Collidable}.

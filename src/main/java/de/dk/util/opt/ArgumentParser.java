@@ -177,17 +177,17 @@ public class ArgumentParser {
       return builder.build();
    }
 
-   private void handlePlainArgument(String arg,
-                                    ArgumentModelBuilder builder) throws NoSuchElementException {
+   private static void handlePlainArgument(String arg,
+                                           ArgumentModelBuilder builder) throws NoSuchElementException {
       ExpectedPlainArgument expected;
       expected = builder.nextArg();
       expected.setValue(arg);
    }
 
-   private ExpectedOption handleOption(String arg,
-                                       ArgumentModelBuilder builder) throws MissingOptionValueException,
-                                                                            NoSuchElementException,
-                                                                            UnexpectedOptionValueException {
+   private static ExpectedOption handleOption(String arg,
+                                              ArgumentModelBuilder builder) throws MissingOptionValueException,
+                                                                                   NoSuchElementException,
+                                                                                   UnexpectedOptionValueException {
       ExpectedOption result = null;
 
       // long options e.g. '--longOpt'
