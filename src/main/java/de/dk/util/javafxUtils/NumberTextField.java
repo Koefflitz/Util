@@ -330,7 +330,7 @@ public class NumberTextField extends TextField
     * or in case 0 is out of the range defined by the <code>min</code> and <code>max</code>
     * values it is the <code>min</code> value.
     *
-    * @return the <codeforceDefaultString</code> flag
+    * @return the <code>forceDefaultString</code> flag
     */
    public boolean isForceDefaultString() {
       return forceDefaultString;

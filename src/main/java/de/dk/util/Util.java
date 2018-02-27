@@ -21,6 +21,7 @@ public final class Util {
     * Inverts the <code>array</code>.
     *
     * @param array The array to be inverted
+    * @param <T> The type of the array
     *
     * @return the inverted array which is the same object as the parameter array
     */
@@ -161,6 +162,7 @@ public final class Util {
     * Get the last item of the <code>array</code>
     *
     * @param array The array from which to get the last item
+    * @param <T> The type of the array
     *
     * @return The last item of the given <code>array</code>
     */

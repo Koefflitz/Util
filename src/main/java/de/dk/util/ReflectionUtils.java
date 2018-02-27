@@ -169,7 +169,7 @@ public final class ReflectionUtils {
     * is a subclass of the <code>sup</code> parameter class.
     *
     * @param sub the subclass
-    * @param sup the superclass
+    * @param sup the superclass or superinterface
     *
     * @return <code>true</code> if <code>sub</code> is the subclass of <code>sup</code>.
     */
