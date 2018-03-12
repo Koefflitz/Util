@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Objects;
 
 /**
  * Contains some static methods that are about files.
@@ -210,6 +211,47 @@ public final class FileUtils {
       } catch (MalformedURLException e) {
          throw new IllegalStateException(e);
       }
+   }
+
+   /**
+    * Removes the file extension includung the '.'
+    * and returns the filename without the extension.
+    * In othern words returns a substring of <code>filename</code>
+    * until excluding the last appearance of a '.'.
+    * If the <code>filename</code> doesn't include a '.'
+    * the argument is returned as is.
+    *
+    * @param filename the filename to remove the extension from
+    *
+    * @return The filename without the file extension
+    *
+    * @throws NullPointerException if <code>filename</code> is <code>null</code>
+    */
+   public static String removeExtension(String filename) throws NullPointerException {
+      int dotIndex = Objects.requireNonNull(filename)
+                            .lastIndexOf('.');
+      if (dotIndex == -1)
+         return filename;
+
+      return filename.substring(0, dotIndex);
+   }
+
+   /**
+    * Removes the file extension includung the '.'
+    * and returns the filename without the extension.
+    * In othern words returns a substring of the name of the <code>file</code>
+    * until excluding the last appearance of a '.'.
+    * If the name doesn't include a '.'
+    * the name is returned as is.
+    *
+    * @param file the filename to remove the extension from
+    *
+    * @return The filename without the file extension
+    *
+    * @throws NullPointerException if <code>file</code> is <code>null</code>
+    */
+   public static String getNameWithoutExtension(File file) throws NullPointerException {
+      return removeExtension(Objects.requireNonNull(file).getName());
    }
 
    /**

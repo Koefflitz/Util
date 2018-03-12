@@ -4,6 +4,7 @@ import static de.dk.util.FileUtils.copy;
 import static de.dk.util.FileUtils.createTempDir;
 import static de.dk.util.FileUtils.delete;
 import static de.dk.util.FileUtils.getContentOf;
+import static de.dk.util.FileUtils.removeExtension;
 import static de.dk.util.FileUtils.writeContentOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -173,6 +174,22 @@ public class FileUtilsTest {
       } catch (IOException e) {
          fail(e.getMessage());
       }
+   }
+
+   @Test
+   public void testRemoveExtension() {
+      String expected = "name";
+      String name = "name.txt";
+      assertEquals(expected, removeExtension(name));
+      expected = "name.txt";
+      name = "name.txt.xml";
+      assertEquals(expected, removeExtension(name));
+      expected = "very_very_long-filename_that_could-exist";
+      name = "very_very_long-filename_that_could-exist.longextensiontoo";
+      assertEquals(expected, removeExtension(name));
+      expected = "very_very_long-filename_with_stränge_löttrß.stränge";
+      name = "very_very_long-filename_with_stränge_löttrß.stränge.extensiontoo?";
+      assertEquals(expected, removeExtension(name));
    }
 
    @After
