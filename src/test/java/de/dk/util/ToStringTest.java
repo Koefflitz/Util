@@ -1,7 +1,6 @@
 package de.dk.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -70,11 +69,7 @@ public class ToStringTest {
    }
 
    private static void test(String expected, Object object) {
-      try {
-         assertEquals(expected, ReflectionUtils.toString(object));
-      } catch (IllegalAccessException e) {
-         fail(e.getMessage());
-      }
+      assertEquals(expected, ReflectionUtils.toString(object));
    }
 
    private static class Simple {

@@ -9,9 +9,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-import de.dk.util.function.UnsafeConsumer;
 import de.dk.util.function.UnsafeFunction;
 
 /**
@@ -72,19 +72,15 @@ public final class ReflectionUtils {
     *
     * @return The object as a String
     *
-    * @throws ExceptionInInitializerError If an error occurs in an initializer
-    * @throws IllegalAccessException If deep reflection is deactivated and the
     * <code>object</code> contains a private field
     */
-   public static String toString(Object object) throws ExceptionInInitializerError,
-                                                       IllegalAccessException {
+   public static String toString(Object object) {
       return toString(object, new StringBuilder(), 0).toString();
    }
 
    private static StringBuilder toString(Object object,
                                          StringBuilder builder,
-                                         int tabCount) throws ExceptionInInitializerError,
-                                                              IllegalAccessException {
+                                         int tabCount) {
       if (object == null)
          return builder.append("null");
 
@@ -116,13 +112,17 @@ public final class ReflectionUtils {
       Iterator<Field> iter = fields.iterator();
       while (iter.hasNext()) {
          Field f = iter.next();
-         f.setAccessible(true);
          builder.append(tabBuilder.toString())
-                .append("  ")
-                .append(f.getName())
-                .append('=');
+                                  .append("  ")
+                                  .append(f.getName())
+                                  .append('=');
+         try {
+            f.setAccessible(true);
+            toString(f.get(object), builder, tabCount + 1);
+         } catch (SecurityException | IllegalAccessException e) {
+            builder.append("<not accessible>");
+         }
 
-         toString(f.get(object), builder, tabCount + 1);
          if (iter.hasNext()) {
             builder.append(",\n");
          }
@@ -133,14 +133,14 @@ public final class ReflectionUtils {
    }
 
    private static StringBuilder arrayToString(Object array,
-                                              StringBuilder builder) throws IllegalAccessException {
+                                              StringBuilder builder) {
       Class<?> type = array.getClass()
                            .getComponentType();
 
       builder.append('[');
       int length = Array.getLength(array);
 
-      UnsafeConsumer<Object, IllegalAccessException> appender;
+      Consumer<Object> appender;
       if (ReflectionUtils.isPrimitive(type)) {
          if (type.equals(String.class)) {
             appender = s -> builder.append('\"')
