@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
@@ -18,11 +19,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.0.2</version>
-            <configuration>
-               <excludes>
-                  <exclude>**/spielwiese/**</exclude>
-               </excludes>
-            </configuration>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -36,20 +32,12 @@
                   </goals>
                </execution>
             </executions>
-            <configuration>
-               <excludes>
-                  <exclude>**/spielwiese/**</exclude>
-               </excludes>
-            </configuration>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.6.0</version>
             <configuration>
-               <excludes>
-                  <exclude>**/spielwiese/**</exclude>
-               </excludes>
                <source>1.8</source>
                <target>1.8</target>
             </configuration>
@@ -63,13 +51,23 @@
                   <id>attach-javadocs</id>
                   <configuration>
                      <failOnError>true</failOnError>
-                     <excludePackageNames>*.spielwiese.*</excludePackageNames>
                   </configuration>
                   <goals>
                      <goal>jar</goal>
                   </goals>
                </execution>
             </executions>
+         </plugin>
+         <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.19.1</version>
+            <dependencies>
+               <dependency>
+                  <groupId>org.junit.platform</groupId>
+                  <artifactId>junit-platform-surefire-provider</artifactId>
+                  <version>1.1.0</version>
+               </dependency>
+            </dependencies>
          </plugin>
       </plugins>
    </build>
@@ -87,9 +85,15 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>4.12</version>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-engine</artifactId>
+         <version>5.1.0</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-api</artifactId>
+         <version>5.1.0</version>
          <scope>test</scope>
       </dependency>
    </dependencies>

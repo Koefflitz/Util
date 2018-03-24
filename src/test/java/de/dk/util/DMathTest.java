@@ -3,22 +3,18 @@ package de.dk.util;
 import static de.dk.util.DMath.delimit;
 import static de.dk.util.DMath.isInteger;
 import static de.dk.util.DMath.maxabs;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
  */
 public class DMathTest {
-   @Rule
-   public final ExpectedException expectedException = ExpectedException.none();
-
    public DMathTest() {
 
    }
@@ -39,9 +35,7 @@ public class DMathTest {
       assertEquals(-5, delimit(-5, -10, 0));
       assertEquals(-5, delimit(-4, -10, -5));
       assertEquals(-5, delimit(-6, -5, 0));
-
-      expectedException.expect(IllegalArgumentException.class);
-      delimit(1, 3, 2);
+      assertThrows(IllegalArgumentException.class, () -> delimit(1, 3, 2));
    }
 
    @Test

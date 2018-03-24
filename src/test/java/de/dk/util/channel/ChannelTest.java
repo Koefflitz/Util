@@ -1,19 +1,19 @@
 package de.dk.util.channel;
 
 import static de.dk.util.net.Connector.TIMEOUT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,14 +60,14 @@ public class ChannelTest {
                                      Multiplexer passiveMultiplexer) {
       close(active);
       assertTrue(active.isClosed());
-      assertNull("Channel should be removed from handler", activeMultiplexer.getChannel(active.getId()));
+      assertNull(activeMultiplexer.getChannel(active.getId()), "Channel should be removed from handler");
       try {
          passiveHandler.waitForClose(passive, TIMEOUT);
       } catch (InterruptedException e) {
          fail(e.getMessage());
       }
       assertTrue(passive.isClosed());
-      assertNull("Channel should be removed from handler", passiveMultiplexer.getChannel(passive.getId()));
+      assertNull(passiveMultiplexer.getChannel(passive.getId()), "Channel should be removed from handler");
    }
 
    private static <T extends TestObject> void testMessage(T message,
@@ -86,7 +86,7 @@ public class ChannelTest {
       }
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       Connector<SimpleConnection> connector = Connector.simpleConnector();
       connector.connect();
@@ -99,7 +99,7 @@ public class ChannelTest {
          this.serverMultiplexer = serverConnection.attachMultiplexer((this.serverFooHandler = new TestChannelHandler<>(Foo.class)),
                                                                      (this.serverBarHandler = new TestChannelHandler<>(Bar.class)));
       } catch (UnknownHostException e) {
-         fail(e.getMessage());
+         fail(e);
       }
    }
 
@@ -198,7 +198,7 @@ public class ChannelTest {
       return channel;
    }
 
-   @After
+   @AfterEach
    public void cleanUp() {
       try {
          serverConnection.close(TIMEOUT);

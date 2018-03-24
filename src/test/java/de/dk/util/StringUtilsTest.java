@@ -8,15 +8,14 @@ import static de.dk.util.StringUtils.getIndicesOf;
 import static de.dk.util.StringUtils.getLastLineOf;
 import static de.dk.util.StringUtils.getLineUntil;
 import static de.dk.util.StringUtils.indent;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import de.dk.util.StringUtils.SimpleStringIterator;
 
@@ -25,8 +24,6 @@ import de.dk.util.StringUtils.SimpleStringIterator;
  * <br>Erstellt am 07.08.2017
  */
 public class StringUtilsTest {
-   @Rule
-   public ExpectedException expectedException = ExpectedException.none();
 
    public StringUtilsTest() {
 
@@ -60,12 +57,9 @@ public class StringUtilsTest {
       assertNull(getCommonPrefixesOf(strings));
       assertNull(getCommonPrefixesOfParallel(strings));
 
-      strings = null;
-      expectedException.expect(NullPointerException.class);
-      getCommonPrefixesOf(strings);
-
-      expectedException.expect(NullPointerException.class);
-      getCommonPrefixesOfParallel(strings);
+      String[] nullString = null;
+      assertThrows(NullPointerException.class, () -> getCommonPrefixesOf(nullString));
+      assertThrows(NullPointerException.class, () -> getCommonPrefixesOfParallel(nullString));
    }
 
    @Test
@@ -81,8 +75,7 @@ public class StringUtilsTest {
       string = "kjafhbäga#egjrefbgadmfsönkv ds fv pjqwfe#+e";
       assertEquals(string, getLastLineOf(string));
 
-      expectedException.expect(NullPointerException.class);
-      getLastLineOf(null);
+      assertThrows(NullPointerException.class, () -> getLastLineOf(null));
    }
 
    @Test
@@ -112,8 +105,7 @@ public class StringUtilsTest {
       text = a + theWord + b;
       assertEquals(a + theWord, getLineUntil(text, a.length() + theWord.length()));
 
-      expectedException.expect(StringIndexOutOfBoundsException.class);
-      getLineUntil(a, -1);
+      assertThrows(StringIndexOutOfBoundsException.class, () -> getLineUntil(a, -1));
    }
 
    @Test

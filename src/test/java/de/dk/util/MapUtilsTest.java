@@ -2,7 +2,7 @@ package de.dk.util;
 
 import static de.dk.util.MapUtils.toMap;
 import static de.dk.util.MapUtils.transfer;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David Koettlitz
@@ -47,7 +47,7 @@ public class MapUtilsTest {
 
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       this.source = new HashMap<>();
       this.target = new HashMap<>();

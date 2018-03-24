@@ -1,13 +1,13 @@
 package de.dk.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David Koettlitz
@@ -23,7 +23,7 @@ public class SerializerTest {
 
    }
 
-   @Before
+   @BeforeEach
    public void initSerialization() {
       this.serializer = new SimpleSerializer();
    }

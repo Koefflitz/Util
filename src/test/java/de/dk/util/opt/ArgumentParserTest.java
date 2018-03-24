@@ -1,15 +1,14 @@
 package de.dk.util.opt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Iterator;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import de.dk.util.opt.ex.MissingArgumentException;
 import de.dk.util.opt.ex.MissingOptionValueException;
@@ -40,9 +39,6 @@ public class ArgumentParserTest {
    private static final String OPT_NAME2 = "Wachsmalstift";
 
    private static final String CMD_NAME0 = "run";
-
-   @Rule
-   public ExpectedException expectedException = ExpectedException.none();
 
    public ArgumentParserTest() {
 
@@ -180,16 +176,11 @@ public class ArgumentParserTest {
       assertEquals(ARG_VALUE2, result.getArgumentValue(ARG_NAME2));
       assertFalse(result.isOptionPresent(OPT_KEY0));
 
-      expectedException.expect(MissingArgumentException.class);
-      try {
-         result = parser.parseArguments(ARG_VALUE0, ARG_VALUE1, ARG_VALUE2, "-" + OPT_KEY0);
-      } catch (MissingOptionValueException
-               | UnknownArgumentException
-               | UnexpectedOptionValueException e) {
-         fail(e.getMessage());
-      }
+      assertThrows(MissingArgumentException.class, () -> {
+            ArgumentModel tmpResult = parser.parseArguments(ARG_VALUE0, ARG_VALUE1, ARG_VALUE2, "-" + OPT_KEY0);
+            assertTrue(tmpResult.isOptionPresent(OPT_KEY0));
+      });
 
-      assertTrue(result.isOptionPresent(OPT_KEY0));
    }
 
    @Test
@@ -305,15 +296,8 @@ public class ArgumentParserTest {
                                                    .addArgument(ARG_NAME0)
                                                    .addArgument(ARG_NAME1)
                                                    .buildAndGet();
-      expectedException.expect(MissingArgumentException.class);
-      try {
-         parser.parseArguments(ARG_VALUE0);
-      } catch (MissingOptionValueException
-               | UnknownArgumentException
-               | IllegalArgumentException
-               | UnexpectedOptionValueException e) {
-         fail(e.getMessage());
-      }
+
+      assertThrows(MissingArgumentException.class, () -> parser.parseArguments(ARG_VALUE0));
    }
 
    @Test
@@ -326,14 +310,8 @@ public class ArgumentParserTest {
                                                       .setMandatory(true)
                                                       .build()
                                                    .buildAndGet();
-      expectedException.expect(MissingArgumentException.class);
-      try {
-         parser.parseArguments("-" + OPT_KEY0, OPT_VALUE0);
-      } catch (MissingOptionValueException
-               | UnknownArgumentException
-               | UnexpectedOptionValueException e) {
-         fail(e.getMessage());
-      }
+
+      assertThrows(MissingArgumentException.class, () -> parser.parseArguments("-" + OPT_KEY0, OPT_VALUE0));
    }
 
    @Test
@@ -342,14 +320,7 @@ public class ArgumentParserTest {
                                                    .addArgument(ARG_NAME0)
                                                    .buildAndGet();
 
-      expectedException.expect(UnknownArgumentException.class);
-      try {
-         parser.parseArguments(ARG_VALUE0, "InvalidOne");
-      } catch (MissingArgumentException
-               | MissingOptionValueException
-               | UnexpectedOptionValueException e) {
-         fail(e.getMessage());
-      }
+      assertThrows(UnknownArgumentException.class, () -> parser.parseArguments(ARG_VALUE0, "InvalidOne"));
    }
 
 }

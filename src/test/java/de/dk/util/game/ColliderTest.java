@@ -1,16 +1,16 @@
 package de.dk.util.game;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ColliderTest {
    private Collider<CollisionObject, CollisionObject> collider;
@@ -23,7 +23,7 @@ public class ColliderTest {
 
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       this.object = new CollisionObject();
       this.collider = new Collider<>(object);
@@ -53,7 +53,7 @@ public class ColliderTest {
       assertEquals(object, collision.getObjectA());
       assertEquals(other, collision.getObjectB());
       assertEquals(-1, object.getVelocity().y(), 0.0001f);
-      assertEquals(0, object.getVelocity().x(), 0);
+      assertEquals(0, object.getVelocity().x());
    }
 
    @Test
@@ -78,7 +78,7 @@ public class ColliderTest {
       assertEquals(object, collision.getObjectA());
       assertEquals(other, collision.getObjectB());
       assertEquals(1, object.getVelocity().y(), 0.0001f);
-      assertEquals(0, object.getVelocity().x(), 0);
+      assertEquals(0, object.getVelocity().x());
    }
 
    @Test
@@ -102,7 +102,7 @@ public class ColliderTest {
       assertEquals(Direction.LEFT, collision.getDirection());
       assertEquals(object, collision.getObjectA());
       assertEquals(other, collision.getObjectB());
-      assertEquals(0, object.getVelocity().y(), 0);
+      assertEquals(0, object.getVelocity().y());
       assertEquals(-1, object.getVelocity().x(), 0.0001f);
    }
 
@@ -127,7 +127,7 @@ public class ColliderTest {
       assertEquals(Direction.RIGHT, collision.getDirection());
       assertEquals(object, collision.getObjectA());
       assertEquals(other, collision.getObjectB());
-      assertEquals(0, object.getVelocity().y(), 0);
+      assertEquals(0, object.getVelocity().y());
       assertEquals(1, object.getVelocity().x(), 0.0001f);
    }
 
@@ -160,7 +160,7 @@ public class ColliderTest {
       assertEquals(object, collision.getObjectA());
       assertEquals(other, collision.getObjectB());
       assertEquals(2, object.getVelocity().x(), 0.0001f);
-      assertEquals(0, object.getVelocity().y(), 0);
+      assertEquals(0, object.getVelocity().y());
 
       collision = iter.next();
       assertEquals(Direction.RIGHT, collision.getDirection());
@@ -186,7 +186,7 @@ public class ColliderTest {
       assertTrue(collisions.isEmpty());
    }
 
-   @After
+   @AfterEach
    public void cleanUp() {
       collisions.clear();
    }

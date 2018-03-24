@@ -1,16 +1,15 @@
 package de.dk.util.text;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.NoSuchElementException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.dk.util.timing.TimeUtils;
 
@@ -19,9 +18,6 @@ import de.dk.util.timing.TimeUtils;
  * <br>Erstellt am 07.08.2017
  */
 public class CharIteratorTest {
-   @Rule
-   public ExpectedException expectedException = ExpectedException.none();
-
    protected final String line0 = "Test";
    protected final String line1 = "Testtest";
    protected final String content = line0 + '\n' + line1;
@@ -36,7 +32,7 @@ public class CharIteratorTest {
                     .append("\n}");
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       this.iterator = new CharIterator(content);
    }
@@ -103,6 +99,7 @@ public class CharIteratorTest {
       builder.append(line0)
              .append("\n^\n")
              .append(line1);
+
       assertEquals(wrapToStringMeta(builder).toString(), iterator.toString());
 
       iterator.next();
@@ -151,15 +148,12 @@ public class CharIteratorTest {
       long slow = TimeUtils.time(tmp::readToEnd);
       tmp = new CharIterator(builder.toString());
       long fast = TimeUtils.time(tmp::readFastToEnd);
-      assertTrue("readToEnd needed " + slow + "ns, while readFastToEnd needed " + fast + "ns",
-                 fast < slow);
+      assertTrue(fast < slow, "readToEnd needed " + slow + "ns, while readFastToEnd needed " + fast + "ns");
 
       assertEquals(content, iterator.readFastToEnd());
       assertTrue(iterator.isClosed());
-      expectedException.expect(NoSuchElementException.class);
-      iterator.next();
-      expectedException.expect(IllegalStateException.class);
-      iterator.getColumnNumber();
+      assertThrows(NoSuchElementException.class, iterator::next);
+      assertThrows(IllegalStateException.class, iterator::getColumnNumber);
    }
 
    @Test
@@ -176,7 +170,7 @@ public class CharIteratorTest {
       assertEquals(branch.peek(), iterator.peek());
    }
 
-   @After
+   @AfterEach
    public void tearDown() {
       iterator = null;
    }

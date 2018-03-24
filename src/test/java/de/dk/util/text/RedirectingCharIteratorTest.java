@@ -1,11 +1,12 @@
 package de.dk.util.text;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David Koettlitz
@@ -14,14 +15,11 @@ import org.junit.Test;
 public class RedirectingCharIteratorTest extends CharIteratorTest {
    private ByteArrayOutputStream target;
 
-//   line0 = "Test";
-//   line1 = "Testtest";
-//   content = line0 + '\n' + line1;
-
    public RedirectingCharIteratorTest() {
 
    }
 
+   @BeforeEach
    @Override
    public void init() {
       this.target = new ByteArrayOutputStream();

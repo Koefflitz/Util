@@ -1,16 +1,16 @@
 package de.dk.util.net;
 
 import static de.dk.util.net.Connector.TIMEOUT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.dk.util.channel.Sender;
 
@@ -37,7 +37,7 @@ public class ConnectionTest {
       }
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       this.serverReceiver = new TestReceiver();
       this.clientReceiver = new TestReceiver();
@@ -63,10 +63,10 @@ public class ConnectionTest {
 
    @Test
    public void testStates() {
-      assertTrue("server connection running", serverConnection.isRunning());
-      assertFalse("server connection socket closed", serverConnection.getSocket().isClosed());
-      assertTrue("client connection running", clientConnection.isRunning());
-      assertFalse("client connection socket closed", clientConnection.getSocket().isClosed());
+      assertTrue(serverConnection.isRunning(), "server connection running");
+      assertFalse(serverConnection.getSocket().isClosed(), "server connection socket closed");
+      assertTrue(clientConnection.isRunning(), "client connection running");
+      assertFalse(clientConnection.getSocket().isClosed(), "client connection socket closed");
    }
 
    @Test
@@ -76,16 +76,16 @@ public class ConnectionTest {
       } catch (IOException | InterruptedException e) {
          fail(e.getMessage());
       }
-      assertFalse("server connection running", serverConnection.isRunning());
-      assertTrue("server connection socket closed", serverConnection.getSocket().isClosed());
+      assertFalse(serverConnection.isRunning(), "server connection running");
+      assertTrue(serverConnection.getSocket().isClosed(), "server connection socket closed");
 
       try {
          clientConnection.getThread().join(TIMEOUT);
       } catch (InterruptedException e) {
          fail(e.getMessage());
       }
-      assertFalse("client connection running", clientConnection.isRunning());
-      assertTrue("client connection socket closed", clientConnection.getSocket().isClosed());
+      assertFalse(clientConnection.isRunning(), "client connection running");
+      assertTrue(clientConnection.getSocket().isClosed(), "client connection socket closed");
    }
 
    public void testMessage(Sender sender, TestReceiver receiver) {
@@ -111,7 +111,7 @@ public class ConnectionTest {
       testClose();
    }
 
-   @After
+   @AfterEach
    public void cleanUp() {
       if (clientConnection != null)
          close(clientConnection);

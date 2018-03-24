@@ -6,19 +6,19 @@ import static de.dk.util.FileUtils.delete;
 import static de.dk.util.FileUtils.getContentOf;
 import static de.dk.util.FileUtils.removeExtension;
 import static de.dk.util.FileUtils.writeContentOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class FileUtilsTest {
       }
    }
 
-   @Before
+   @BeforeEach
    public void init() {
       this.workingDir = createTempDir();
       if (workingDir == null || !workingDir.exists() || !workingDir.isDirectory())
@@ -192,7 +192,7 @@ public class FileUtilsTest {
       assertEquals(expected, removeExtension(name));
    }
 
-   @After
+   @AfterEach
    public void cleanUp() {
       if (workingDir == null) {
          LOGGER.warn("Working dir was null when intended to delete it.");
