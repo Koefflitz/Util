@@ -1,6 +1,9 @@
 package de.dk.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -16,6 +19,25 @@ import de.dk.util.function.UnsafeSupplier;
 public final class Util {
 
    private Util() {}
+
+   public static int[] indicesOfEquals(Object[] a, Object[] b) {
+      if (Objects.requireNonNull(a).length == 0
+          | Objects.requireNonNull(b).length == 0) {
+
+         return new int[0];
+      }
+
+      List<Integer> indices = new ArrayList<>(Math.max(a.length, b.length));
+      for (int i = 0; i < a.length; i++) {
+         for (int j = 0; j < b.length; j++) {
+            if (a[i].equals(b[j])) {
+               indices.add(i);
+               break;
+            }
+         }
+      }
+      return box(indices.toArray(new Integer[indices.size()]));
+   }
 
    /**
     * Inverts the <code>array</code>.

@@ -44,4 +44,11 @@ public class CachedSupplier<T> implements Supplier<T> {
    public T update() {
       return (this.buffer = supplier.get());
    }
+
+   /**
+    * Drops the cached value, if a cached value is present.
+    */
+   public void clearCache() {
+      this.buffer = null;
+   }
 }

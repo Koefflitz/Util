@@ -22,19 +22,6 @@ public final class DMath {
    }
 
    /**
-    * Divides the dividend by the divisor and even supports division by zero operations.
-    *
-    * @param dividend The dividend to divide through <code>divisor</code>
-    * @param divisor The divisor to divide <code>dividend</code> through
-    *
-    * @return The result of the division. If the divisor is <code>0</code>
-    * the highest possible value is returned.
-    */
-   public static int divideSafely(int dividend, int divisor) {
-      return divisor == 0 ? Integer.MAX_VALUE : dividend / divisor;
-   }
-
-   /**
     * Checks if the given <code>value</code> is an integer number.
     * In other words: Checks if there are <code>digits != 0</code> behind the decimal point.
     *
@@ -67,10 +54,31 @@ public final class DMath {
     * @param dividend The dividend to divide through <code>divisor</code>
     * @param divisor The divisor to divide <code>dividend</code> through
     *
-    * @return The result of the division. If the divisor is <code>0</code>
+    * @return The result of the division. if the <code>dividend</code> is <code>0</code>
+    * 0 is returned. Otherwise if the <code>divisor</code> is <code>0</code>
+    * the highest possible value is returned.
+    */
+   public static int divideSafely(int dividend, int divisor) {
+      if (dividend == 0)
+         return 0;
+
+      return divisor == 0 ? Integer.MAX_VALUE : dividend / divisor;
+   }
+
+   /**
+    * Divides the dividend by the divisor and even supports division by zero operations.
+    *
+    * @param dividend The dividend to divide through <code>divisor</code>
+    * @param divisor The divisor to divide <code>dividend</code> through
+    *
+    * @return The result of the division. if the <code>dividend</code> is <code>0</code>
+    * 0 is returned. Otherwise if the <code>divisor</code> is <code>0</code>
     * the highest possible value is returned.
     */
    public static long divideSafely(long dividend, long divisor) {
+      if (dividend == 0)
+         return 0;
+
       return divisor == 0 ? Long.MAX_VALUE : dividend / divisor;
    }
 
@@ -80,10 +88,14 @@ public final class DMath {
     * @param dividend The dividend to divide through <code>divisor</code>
     * @param divisor The divisor to divide <code>dividend</code> through
     *
-    * @return The result of the division. If the divisor is <code>0</code>
-    * {@link Float#MAX_VALUE} is returned.
+    * @return The result of the division. if the <code>dividend</code> is <code>0</code>
+    * 0 is returned. Otherwise if the <code>divisor</code> is <code>0</code>
+    * the highest possible value is returned.
     */
    public static float divideSafely(float dividend, float divisor) {
+      if (dividend == 0)
+         return 0;
+
       return divisor == 0 ? Float.MAX_VALUE : dividend / divisor;
    }
 
@@ -93,10 +105,14 @@ public final class DMath {
     * @param dividend The dividend to divide through <code>divisor</code>
     * @param divisor The divisor to divide <code>dividend</code> through
     *
-    * @return The result of the division. If the divisor is <code>0</code>
+    * @return The result of the division. if the <code>dividend</code> is <code>0</code>
+    * 0 is returned. Otherwise if the <code>divisor</code> is <code>0</code>
     * the highest possible value is returned.
     */
    public static double divideSafely(double dividend, double divisor) {
+      if (dividend == 0)
+         return 0;
+
       return divisor == 0 ? Double.MAX_VALUE : dividend / divisor;
    }
 

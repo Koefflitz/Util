@@ -114,7 +114,7 @@ public final class FileUtils {
       byte[] piece = new byte[DMath.cutToInt(file.length())];
 
       try {
-         for (int readLength = input.read(piece); readLength > -1; readLength = input.read(piece))
+         for (int readLength = input.read(piece); readLength > 0; readLength = input.read(piece))
             out.write(piece, 0, readLength);
       } finally {
          input.close();

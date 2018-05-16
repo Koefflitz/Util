@@ -9,9 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +25,27 @@ import java.util.stream.Stream;
 public final class CollectionUtils {
 
    private CollectionUtils() {}
+
+   /**
+    * Get the first element from the given <code>collection</code>
+    * that matches the given <code>predicate</code>.
+    *
+    * @param collection The collection to search
+    * @param predicate The predicate to filter the elements
+    * @param <E> The element type
+    *
+    * @return The first element that matched the given <code>predicate</code>
+    */
+   public static <E> Optional<E> find(Collection<E> collection, Predicate<? super E> predicate) {
+      try {
+         return Optional.of(collection.stream()
+                        .filter(predicate)
+                        .iterator()
+                        .next());
+      } catch (NoSuchElementException e) {
+         return Optional.empty();
+      }
+   }
 
    /**
     * Finds a the collection, that contains a specific element
