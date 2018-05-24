@@ -41,10 +41,7 @@ public class ArrayIterator<E> implements PeekableIterator<E> {
     * @see #ofNullable(Object[])
     */
    public static <E> ArrayIterator<E> of(E[] array) throws IllegalArgumentException {
-      if (array == null || array.length < 1)
-         throw new IllegalArgumentException("array was empty or null.");
-
-      return new ArrayIterator<>(0, array.length, array);
+      return new ArrayIterator<>(0, Objects.requireNonNull(array).length, array);
    }
 
    /**
