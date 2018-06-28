@@ -1,7 +1,6 @@
 package de.dk.util.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
@@ -63,7 +62,7 @@ public class Collider<G extends Collidable, C extends Collidable> {
     * so that it is not intersecting any other game-object.<br>
     * <code>false</code> if the collidable-object is going straight through the other game-objects.
     */
-   public void collisionDetection(Collection<? extends C> collisionObjects,
+   public void collisionDetection(Iterable<? extends C> collisionObjects,
                                   Vector velocity,
                                   boolean correctVelocity) {
       if (collisionObjects == null || (velocity.getMagnitude() == 0 && correctVelocity))
@@ -142,7 +141,7 @@ public class Collider<G extends Collidable, C extends Collidable> {
          velocity.x(velocity.x() > 0 ? dist : -dist);
    }
 
-   protected ArrayList<? extends C> getCollisions(Vector force, Collection<? extends C> collisionObjects) {
+   protected Iterable<? extends C> getCollisions(Vector force, Iterable<? extends C> collisionObjects) {
       collidable.getPosition().add(force);
 
       ArrayList<C> collisions = new ArrayList<C>();

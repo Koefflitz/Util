@@ -66,7 +66,7 @@ public interface Pulse {
     * Get the calls per second
     *
     * @return the rate in which this pulse is running.
-    * It provides information about how many times per second it is called.
+    * In other words: How many times per second it is called.
     */
    public float getCps();
 
