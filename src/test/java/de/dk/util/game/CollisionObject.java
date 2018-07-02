@@ -1,5 +1,7 @@
 package de.dk.util.game;
 
+import de.dk.util.Vector;
+
 public class CollisionObject implements Collidable {
    private final Vector position = new Vector();
    private int width;

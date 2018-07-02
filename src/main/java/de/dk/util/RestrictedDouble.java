@@ -3,7 +3,7 @@ package de.dk.util;
 import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;
 
-import de.dk.util.BoundedDoubleListener.BoundedDoubleListenerChain;
+import de.dk.util.RestrictedDoubleListener.BoundedDoubleListenerChain;
 
 /**
  * An double value wrapper with boundaries.
@@ -14,7 +14,7 @@ import de.dk.util.BoundedDoubleListener.BoundedDoubleListenerChain;
  * @author David Koettlitz
  * <br>Erstellt am 21.06.2018
  */
-public class BoundedDouble implements Comparable<BoundedDouble>, DoubleSupplier {
+public class RestrictedDouble implements Comparable<RestrictedDouble>, DoubleSupplier {
    private double value;
    private double min;
    private double max;
@@ -30,7 +30,7 @@ public class BoundedDouble implements Comparable<BoundedDouble>, DoubleSupplier 
     *
     * @throws IllegalArgumentException if <code>min</code> is greater than <code>max</code>.
     */
-   public BoundedDouble(double min, double max) throws IllegalArgumentException {
+   public RestrictedDouble(double min, double max) throws IllegalArgumentException {
       this(min, max, 0);
    }
 
@@ -44,7 +44,7 @@ public class BoundedDouble implements Comparable<BoundedDouble>, DoubleSupplier 
     *
     * @throws IllegalArgumentException if <code>min</code> is greater than <code>max</code>.
     */
-   public BoundedDouble(double min, double max, double value) throws IllegalArgumentException {
+   public RestrictedDouble(double min, double max, double value) throws IllegalArgumentException {
       if (min > max)
          throwMinGreaterThanMin(min, max);
 
@@ -271,16 +271,16 @@ public class BoundedDouble implements Comparable<BoundedDouble>, DoubleSupplier 
       setMax(manipulator.applyAsDouble(max));
    }
 
-   public void addListener(BoundedDoubleListener listener) {
+   public void addListener(RestrictedDoubleListener listener) {
       listeners.add(listener);
    }
 
-   public void removeListener(BoundedDoubleListener listener) {
+   public void removeListener(RestrictedDoubleListener listener) {
       listeners.remove(listener);
    }
 
    @Override
-   public int compareTo(BoundedDouble o) {
+   public int compareTo(RestrictedDouble o) {
       return Double.compare(value, o.value);
    }
 
@@ -302,7 +302,7 @@ public class BoundedDouble implements Comparable<BoundedDouble>, DoubleSupplier 
          return false;
       if (getClass() != obj.getClass())
          return false;
-      BoundedDouble other = (BoundedDouble) obj;
+      RestrictedDouble other = (RestrictedDouble) obj;
       if (Double.doubleToLongBits(this.value) != Double.doubleToLongBits(other.value))
          return false;
       return true;

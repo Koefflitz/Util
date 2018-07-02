@@ -1,5 +1,6 @@
-package de.dk.util.game;
+package de.dk.util;
 
+import java.io.Serializable;
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
 
@@ -8,11 +9,14 @@ import java.util.function.UnaryOperator;
  * Provides getters and setters for some of its properties, e.g. its magnitude or angle.
  *
  * @author David Koettlitz
- * <br>Erstellt am 02.02.2017
+ * <br>Erstellt am 14.11.2016
  */
-public class IntVector implements Cloneable {
+public class IntVector implements Cloneable, Serializable {
+   private static final long serialVersionUID = -6572827884413220031L;
+
    protected int x = 1;
    protected int y = 1;
+
 
    public IntVector(int x, int y) {
       this.x = x;
@@ -26,17 +30,17 @@ public class IntVector implements Cloneable {
    /**
     * Creates a new vector by angle and magnitude.
     *
+    * @param magnitude The magnitude (length) of the IntVector.
     * @param angle The angle-value goes from the plus-x-axis(0° or 360°) anti-clockwise over the minus-x-axis(180°).
-    * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()),
-    * this method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
-    * this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
-    * this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
+    * For example: If the IntVector is parallel to the x-axis and has a positive x-value(IntVector.right()),
+    * this method will return 0. If the IntVector is parallel to the y-axis and has a positive y-value(IntVector.up()),
+    * this method will return 90. If the IntVector is parallel to the x-axis and has a negative x-value(IntVector.left()),
+    * this method will return 180. If the IntVector is parallel to the y-axis and has a negative y-value(IntVector.down()),
     * this method will return 270.
-    * @param magnitude The magnitude (length) of the Vector.
     *
-    * @return The new Vector.
+    * @return The new IntVector.
     */
-   public static IntVector newVector(float angle, float magnitude) {
+   public static IntVector of(float magnitude, float angle) {
       IntVector v = new IntVector(1, 1);
       v.setAngle(angle);
       v.setMagnitude(magnitude);
@@ -44,50 +48,124 @@ public class IntVector implements Cloneable {
    }
 
    /**
-    * Creates a vector which is pointing straight up. The vectors x-value is 0,
-    * while the y-value gets the value of the parameter.
+    * Creates a new IntVector with the given x value and the given <code>angle</code>.
+    *
+    * @param x The x value of the vector
+    * @param angle The angle of the vector
+    *
+    * @return The new created vector
+    *
+    * @throws ArithmeticException if a vector of the given values cannot be created,
+    * e.g. a IntVector with an angle of 90° and an x value, that is != 0 is not possible.
+    */
+   public static IntVector ofX(int x, float angle) throws ArithmeticException {
+      AngleCalculation tuple = angleCalculation(angle);
+      if (tuple.x == 0)
+         throw new ArithmeticException("Cannot create a IntVector of x=" + x + " and an angle of " + angle);
+
+      int magnitude = x / (int) (Math.cos(tuple.angle) * tuple.x);
+      int y = (int) (Math.sin(tuple.angle) * magnitude * tuple.y);
+      return new IntVector(x, y);
+   }
+
+   /**
+    * Creates a new IntVector with the given y value and the given <code>angle</code>.
+    *
+    * @param y The y value of the vector
+    * @param angle The angle of the vector
+    *
+    * @return The new created vector
+    *
+    * @throws ArithmeticException if a vector of the given values cannot be created,
+    * e.g. a IntVector with an angle of 0° and a y value, that is != 0 is not possible.
+    */
+   public static IntVector ofY(int y, float angle) throws ArithmeticException {
+      AngleCalculation tuple = angleCalculation(angle);
+      if (tuple.y == 0)
+         throw new ArithmeticException("Cannot create a IntVector of y=" + y + " and an angle of " + angle);
+
+      int magnitude = y / (int) (Math.sin(tuple.angle) * tuple.y);
+      int x = (int) (Math.cos(tuple.angle) * magnitude * tuple.x);
+      return new IntVector(x, y);
+   }
+
+   /**
+    * Creates a vector which is pointing straight up <code>(0, magnitude)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
-    * @return The new vector.
+    * @return A vector pointing up.
     */
    public static IntVector up(int magnitude) {
       return new IntVector(0, magnitude);
    }
 
    /**
-    * Creates a vector which is pointing straight down. The vectors x-value is 0,
-    * while the y-value gets the negative value of the parameter.
+    * Creates a vector which is pointing straight down <code>(0, -magnitude)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing down.
     */
    public static IntVector down(int magnitude) {
       return new IntVector(0, -magnitude);
    }
 
    /**
-    * Creates a vector which is pointing straight left. The vectors y-value is 0,
-    * while the x-value gets the negative value of the parameter.
+    * Creates a vector which is pointing straight left <code>(-magnitude, 0)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing left.
     */
    public static IntVector left(int magnitude) {
       return new IntVector(-magnitude, 0);
    }
 
    /**
-    * Creates a vector which is pointing straight right. The vectors y-value is 0,
-    * while the x-value gets the value of the parameter.
+    * Creates a vector which is pointing straight right <code>(magnitude, 0)</code>.
     *
     * @param magnitude The magnitude (length) of the vector.
     *
-    * @return The new vector.
+    * @return A vector pointing right.
     */
    public static IntVector right(int magnitude) {
       return new IntVector(magnitude, 0);
+   }
+
+   /**
+    * Creates a vector which is pointing straight up <code>(0, 1)</code>.
+    *
+    * @return A vector pointing up.
+    */
+   public static IntVector up() {
+      return up(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight down <code>(0, -1)</code>.
+    *
+    * @return A vector pointing down.
+    */
+   public static IntVector down() {
+      return down(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight left <code>(-1, 0)</code>.
+    *
+    * @return A vector pointing left.
+    */
+   public static IntVector left() {
+      return left(1);
+   }
+
+   /**
+    * Creates a vector which is pointing straight right <code>(1, 0)</code>.
+    *
+    * @return A vector pointing right.
+    */
+   public static IntVector right() {
+      return right(1);
    }
 
    /**
@@ -139,11 +217,11 @@ public class IntVector implements Cloneable {
     *
     * @return The new vector.
     */
-   public static IntVector multiply(IntVector v, float amount) {
+   public static IntVector multiply(IntVector v, int amount) {
       if (v == null)
          return null;
 
-      return new IntVector(Math.round(v.x * amount), Math.round(v.y * amount));
+      return new IntVector(v.x * amount, v.y * amount);
    }
 
    /**
@@ -154,11 +232,11 @@ public class IntVector implements Cloneable {
     *
     * @return The new vector.
     */
-   public static IntVector divide(IntVector v, float amount) {
-      if (amount != 0)
-         return new IntVector(Math.round(v.x / amount), Math.round(v.y / amount));
+   public static IntVector divide(IntVector v, int amount) {
+      if (amount == 0)
+         throw new ArithmeticException("Division by zero");
 
-      return null;
+      return new IntVector(v.x / amount, v.y / amount);
    }
 
    /**
@@ -180,6 +258,55 @@ public class IntVector implements Cloneable {
          return 360f - a1 + a2;
       else
          return 360f - a2 + a1;
+   }
+
+   private static AngleCalculation angleCalculation(float angle) {
+      // Make sure angle is >= 0 && < 360
+      angle = angle % 360;
+      if (angle < 0)
+         angle += 360;
+
+      int x;
+      int y;
+
+      // quadrant I
+      if (angle == 0) {
+         x = 1;
+         y = 0;
+      } else if (angle < 90) {
+         x = 1;
+         y = 1;
+      } else if (angle == 90) {
+         x = 0;
+         y = 1;
+      }
+
+      // quadrant II
+      else if (angle <= 180) {
+         x = -1;
+         y = angle == 180 ? 0 : 1;
+         angle = 180 - angle;
+      }
+
+      // quadrant III
+      else if (angle <= 270) {
+         x = angle == 270 ? 0 : -1;
+         y = -1;
+         angle -= 180;
+      }
+
+      // quadrant IV
+      else if (angle < 360) {
+         x = 1;
+         y = -1;
+         angle = 360 - angle;
+      }
+
+      // this method asured, that angle is never < 0 || >= 360
+      // so that exception should never be thrown and is just here to satisfy the compiler
+      else throw new IllegalStateException("Angle should be >= 0 && < 360, but was: " + angle);
+
+      return new AngleCalculation(x, y, Math.toRadians(angle));
    }
 
    /**
@@ -253,6 +380,8 @@ public class IntVector implements Cloneable {
    }
 
    /**
+    * Get the magnitude (length) of this vector.
+    *
     * @return The magnitude (length) of this vector.
     */
    public float getMagnitude() {
@@ -267,10 +396,15 @@ public class IntVector implements Cloneable {
     * @return this vector to go on
     */
    public IntVector setMagnitude(float magnitude) {
-      float mag = getMagnitude();
-      if (mag != 0) {
-         this.x *= magnitude / mag;
-         this.y *= magnitude / mag;
+      if (magnitude == 0) {
+         this.x = 0;
+         this.y = 0;
+      } else {
+         float mag = getMagnitude();
+         if (mag != 0) {
+            this.x *= magnitude / mag;
+            this.y *= magnitude / mag;
+         }
       }
       return this;
    }
@@ -287,12 +421,12 @@ public class IntVector implements Cloneable {
    }
 
    /**
-    * Calculates the angle from the +x-level to the Vector. The angle-value goes from the plus-x-axis(0° or 360°)
+    * Calculates the angle from the +x-level to the IntVector. The angle-value goes from the plus-x-axis(0° or 360°)
     * anti-clockwise over the minus-x-axis(180°).
-    * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()), this
-    * method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
-    * this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
-    * this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
+    * For example: If the IntVector is parallel to the x-axis and has a positive x-value(IntVector.right()), this
+    * method will return 0. If the IntVector is parallel to the y-axis and has a positive y-value(IntVector.up()),
+    * this method will return 90. If the IntVector is parallel to the x-axis and has a negative x-value(IntVector.left()),
+    * this method will return 180. If the IntVector is parallel to the y-axis and has a negative y-value(IntVector.down()),
     * this method will return 270.
     *
     * @return The angle of this vector
@@ -320,57 +454,24 @@ public class IntVector implements Cloneable {
    /**
     * The angle-value goes from the plus-x-axis(0°) anti-clockwise over the plus-y-axis(90°) and the minus-x-axis(180°)...
     *
-    * @param angle Examples: If the Vector should be parallel to the x-axis and should have a positive x-value(Vector.right()),
-    * enter 0 as parameter to this method. If the Vector should be parallel to the y-axis and should have a positive
-    * y-value(Vector.up()), enter 90 as parameter to this method.
-    * If the Vector should be parallel to the x-axis and should have a negative x-value(Vector.left()),
-    * enter 180 as parameter to this method. If the Vector should be parallel to the
-    * y-axis and should have a negative y-value(Vector.down()), enter 270 as parameter to this method.
+    * @param angle Examples: If the IntVector should be parallel to the x-axis and should have a positive x-value(IntVector.right()),
+    * enter 0 as parameter to this method. If the IntVector should be parallel to the y-axis and should have a positive
+    * y-value(IntVector.up()), enter 90 as parameter to this method.
+    * If the IntVector should be parallel to the x-axis and should have a negative x-value(IntVector.left()),
+    * enter 180 as parameter to this method. If the IntVector should be parallel to the
+    * y-axis and should have a negative y-value(IntVector.down()), enter 270 as parameter to this method.
     *
     * @return this vector to go on
     */
    public IntVector setAngle(float angle) {
       float magnitude = getMagnitude();
-      int x = 0;
-      int y = 0;
-
-      while (angle < 0)
-         angle += 360;
-
-      if (angle >= 360 || angle < 0)
-         angle -= 360 * (int) (angle / 360);
-
-      // quadrant I
-      if (angle >= 0 && angle <= 90) {
-         x = 1;
-         y = 1;
-      }
-      // quadrant II
-      else if (angle > 90 && angle <= 180) {
-         angle = 180 - angle;
-         x = -1;
-         y = 1;
-      }
-
-      // quadrant III
-      else if (angle > 180 && angle <= 270) {
-         angle -= 180;
-         x = -1;
-         y = -1;
-      }
-
-      // quadrant IV
-      else if (angle > 270 && angle <= 360) {
-         angle = 360 - angle;
-         x = 1;
-         y = -1;
-      }
-
-      else
+      if (magnitude == 0)
          return this;
 
-      this.x = Math.round((float) (Math.cos(Math.toRadians(angle)) * magnitude * x));
-      this.y = Math.round((float) (Math.sin(Math.toRadians(angle)) * magnitude * y));
+      AngleCalculation tuple = angleCalculation(angle);
+      this.x = (int) (Math.cos(tuple.angle) * magnitude * tuple.x);
+      this.y = (int) (Math.sin(tuple.angle) * magnitude * tuple.y);
+
       return this;
    }
 
@@ -388,7 +489,7 @@ public class IntVector implements Cloneable {
    /**
     * Takes over the x- and the y-value of the given vector.
     *
-    * @param v The Vector of which the values are taken over.
+    * @param v The IntVector of which the values are taken over.
     *
     * @return this vector to go on
     */
@@ -431,6 +532,30 @@ public class IntVector implements Cloneable {
    }
 
    /**
+    * Set the x value of this vector.
+    *
+    * @param x The x value to set
+    *
+    * @return This IntVector to go on
+    */
+   public IntVector x(int x) {
+      this.x = x;
+      return this;
+   }
+
+   /**
+    * Set the y value of this vector.
+    *
+    * @param y The y value to set
+    *
+    * @return This IntVector to go on
+    */
+   public IntVector y(int y) {
+      this.y = y;
+      return this;
+   }
+
+   /**
     * Manupilates the x and the y value of this vector.
     *
     * @param opX The x manipulation
@@ -440,6 +565,28 @@ public class IntVector implements Cloneable {
     */
    public IntVector manipulate(IntUnaryOperator opX, IntUnaryOperator opY) {
       return set(opX.applyAsInt(x), opY.applyAsInt(y));
+   }
+
+   /**
+    * Manupilates the x value of this vector.
+    *
+    * @param op The x manipulation
+    *
+    * @return This vector to go on
+    */
+   public IntVector manipulateX(IntUnaryOperator op) {
+      return x(op.applyAsInt(x()));
+   }
+
+   /**
+    * Manupilates the y value of this vector.
+    *
+    * @param op The y manipulation
+    *
+    * @return This vector to go on
+    */
+   public IntVector manipulateY(IntUnaryOperator op) {
+      return y(op.applyAsInt(y()));
    }
 
    /**
@@ -458,8 +605,7 @@ public class IntVector implements Cloneable {
       try {
          return (IntVector) super.clone();
       } catch (CloneNotSupportedException e) {
-         String msg = "Error cloning this vector. "
-                      + "This error should never occur.";
+         String msg = "Error calling super.clone() in IntVector " + this;
          throw new Error(msg, e);
       }
    }
@@ -491,7 +637,19 @@ public class IntVector implements Cloneable {
 
    @Override
    public String toString() {
-      return "IntVector(" + x + ", " + y + ")";
+      return "IntVector{" + x + ", " + y + "}";
+   }
+
+   private static class AngleCalculation {
+      int x;
+      int y;
+      double angle;
+
+      AngleCalculation(int x, int y, double angle) {
+         this.x = x;
+         this.y = y;
+         this.angle = angle;
+      }
    }
 
 }

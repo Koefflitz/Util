@@ -3,6 +3,8 @@ package de.dk.util.game;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import de.dk.util.Vector;
+
 /**
  * @author David Koettlitz
  * <br>Erstellt am 15.10.2015
@@ -22,18 +24,18 @@ public enum Direction {
 	}
 
 	public static Direction vertical(Collidable objectA, Collidable objectB, Vector velocity){
-		if (objectA.isUnder(objectB) && velocity.y < 0)
+		if (objectA.isUnder(objectB) && velocity.y() < 0)
 			return Direction.TOP;
-		else if (objectA.isOver(objectB) && velocity.y > 0)
+		else if (objectA.isOver(objectB) && velocity.y() > 0)
 			return Direction.BOTTOM;
 		else
 			return null;
 	}
 
 	public static Direction horizontal(Collidable objectA, Collidable objectB, Vector velocity){
-		if (objectA.isLeftOf(objectB) && velocity.x > 0)
+		if (objectA.isLeftOf(objectB) && velocity.x() > 0)
 			return Direction.RIGHT;
-		else if (objectA.isRightOf(objectB) && velocity.x < 0)
+		else if (objectA.isRightOf(objectB) && velocity.x() < 0)
 			return Direction.LEFT;
 		else
 			return null;

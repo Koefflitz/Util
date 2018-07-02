@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 import de.dk.util.DMath;
+import de.dk.util.Vector;
 
 /**
  * Class to do collision detection for rectangles. Possible to add collision-listeners to a collider.

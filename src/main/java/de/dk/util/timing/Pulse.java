@@ -1,6 +1,6 @@
 package de.dk.util.timing;
 
-import de.dk.util.game.Vector;
+import de.dk.util.Vector;
 
 /**
  * Represents the current cycle of a pulse and provides information about the cycle.

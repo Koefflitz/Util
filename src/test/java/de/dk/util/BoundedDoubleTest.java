@@ -13,8 +13,8 @@ public class BoundedDoubleTest {
 
    @Test
    public void maxCannotBeLowerThanMin() {
-      assertThrows(IllegalArgumentException.class, () -> new BoundedDouble(2, 1));
-      BoundedDouble value = new BoundedDouble(1, 2);
+      assertThrows(IllegalArgumentException.class, () -> new RestrictedDouble(2, 1));
+      RestrictedDouble value = new RestrictedDouble(1, 2);
       assertThrows(IllegalArgumentException.class, () -> value.setMax(0));
       assertThrows(IllegalArgumentException.class, () -> value.decreaseMax(2));
       assertThrows(IllegalArgumentException.class, () -> value.increaseMax(-2));
@@ -23,7 +23,7 @@ public class BoundedDoubleTest {
 
    @Test
    public void minCannotBeGreaterThanMax() {
-      BoundedDouble value = new BoundedDouble(0, 1);
+      RestrictedDouble value = new RestrictedDouble(0, 1);
       assertThrows(IllegalArgumentException.class, () -> value.setMin(2));
       assertThrows(IllegalArgumentException.class, () -> value.increaseMin(2));
       assertThrows(IllegalArgumentException.class, () -> value.decreaseMin(-2));
@@ -32,7 +32,7 @@ public class BoundedDoubleTest {
 
    @Test
    public void valueCannotBeLessThanMin() {
-      BoundedDouble value = new BoundedDouble(0, 1, -1);
+      RestrictedDouble value = new RestrictedDouble(0, 1, -1);
       assertEquals(0, value.getAsDouble());
       value.set(-1);
       assertEquals(0, value.getAsDouble());
@@ -44,7 +44,7 @@ public class BoundedDoubleTest {
 
    @Test
    public void valueCannotBeGreaterThanMax() {
-      BoundedDouble value = new BoundedDouble(0, 1, 2);
+      RestrictedDouble value = new RestrictedDouble(0, 1, 2);
       assertEquals(1, value.getAsDouble());
       value.set(2);
       assertEquals(1, value.getAsDouble());
@@ -56,7 +56,7 @@ public class BoundedDoubleTest {
 
    @Test
    public void valuesAreAsSetIfInsideBounds() {
-      BoundedDouble value = new BoundedDouble(0, 10, 1);
+      RestrictedDouble value = new RestrictedDouble(0, 10, 1);
       assertEquals(0, value.getMin());
       assertEquals(10, value.getMax());
       assertEquals(1, value.getAsDouble());
@@ -71,7 +71,7 @@ public class BoundedDoubleTest {
 
    @Test
    public void boundsAreChangable() {
-      BoundedDouble value = new BoundedDouble(0, 10, 1);
+      RestrictedDouble value = new RestrictedDouble(0, 10, 1);
       assertEquals(0, value.getMin());
       assertEquals(10, value.getMax());
       assertEquals(1, value.getAsDouble());

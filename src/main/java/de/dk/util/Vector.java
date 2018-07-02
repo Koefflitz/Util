@@ -1,6 +1,7 @@
-package de.dk.util.game;
+package de.dk.util;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
@@ -12,9 +13,11 @@ import java.util.function.UnaryOperator;
  */
 public class Vector implements Cloneable, Serializable {
    private static final long serialVersionUID = -6572827884413220031L;
+   private static float equalsDelta = 0.001f;
 
    protected float x = 1;
    protected float y = 1;
+
 
    public Vector(float x, float y) {
       this.x = x;
@@ -26,23 +29,85 @@ public class Vector implements Cloneable, Serializable {
    }
 
    /**
+    * Get the tolerance delta to be used for the floating point value
+    * comparison of x and y by the {@link #equals(Object)} method.
+    *
+    * @return The delta for float comparisons.
+    */
+   public static float getEqualsDelta() {
+      return equalsDelta;
+   }
+
+   /**
+    * Set the tolerance delta to be used for the floating point value
+    * comparison of x and y by the {@link #equals(Object)} method.
+    *
+    * @param floatDelta the delta for float comparisons.
+    */
+   public static void setEqualsDelta(float floatDelta) {
+      Vector.equalsDelta = floatDelta;
+   }
+
+   /**
     * Creates a new vector by angle and magnitude.
     *
+    * @param magnitude The magnitude (length) of the Vector.
     * @param angle The angle-value goes from the plus-x-axis(0° or 360°) anti-clockwise over the minus-x-axis(180°).
     * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()),
     * this method will return 0. If the Vector is parallel to the y-axis and has a positive y-value(Vector.up()),
     * this method will return 90. If the Vector is parallel to the x-axis and has a negative x-value(Vector.left()),
     * this method will return 180. If the Vector is parallel to the y-axis and has a negative y-value(Vector.down()),
     * this method will return 270.
-    * @param magnitude The magnitude (length) of the Vector.
     *
     * @return The new Vector.
     */
-   public static Vector newVector(float angle, float magnitude) {
+   public static Vector of(float magnitude, float angle) {
       Vector v = new Vector(1, 1);
       v.setAngle(angle);
       v.setMagnitude(magnitude);
       return v;
+   }
+
+   /**
+    * Creates a new Vector with the given x value and the given <code>angle</code>.
+    *
+    * @param x The x value of the vector
+    * @param angle The angle of the vector
+    *
+    * @return The new created vector
+    *
+    * @throws ArithmeticException if a vector of the given values cannot be created,
+    * e.g. a Vector with an angle of 90° and an x value, that is != 0 is not possible.
+    */
+   public static Vector ofX(float x, float angle) throws ArithmeticException {
+      AngleCalculation tuple = angleCalculation(angle);
+      if (tuple.x == 0)
+         throw new ArithmeticException("Cannot create a Vector of x=" + x + " and an angle of " + angle);
+
+      float magnitude = x / (float) (Math.cos(tuple.angle) * tuple.x);
+      float y = (float) (Math.sin(tuple.angle) * magnitude * tuple.y);
+      return new Vector(x, y);
+   }
+
+   /**
+    * Creates a new Vector with the given y value and the given <code>angle</code>.
+    *
+    * @param y The y value of the vector
+    * @param angle The angle of the vector
+    *
+    * @return The new created vector
+    *
+    * @throws ArithmeticException if a vector of the given values cannot be created,
+    * e.g. a Vector with an angle of 0° and a y value, that is != 0 is not possible.
+    */
+   public static Vector ofY(float y, float angle) throws ArithmeticException {
+      AngleCalculation tuple = angleCalculation(angle);
+      if (tuple.y == 0)
+         throw new ArithmeticException("Cannot create a Vector of y=" + y + " and an angle of " + angle);
+
+      float magnitude = y / (float) (Math.sin(tuple.angle) * tuple.y);
+      float x = (float) (Math.cos(tuple.angle) * magnitude * tuple.x);
+      return new Vector(x, y);
    }
 
    /**
@@ -122,6 +187,38 @@ public class Vector implements Cloneable, Serializable {
     */
    public static Vector right() {
       return right(1);
+   }
+
+   /**
+    * Determines the vector with the less magnitude.
+    *
+    * @param a one vector
+    * @param b another vector
+    *
+    * @return the vector with the less magnitude
+    *
+    * @throws NullPointerException if one of the arguments is <code>null</code>.
+    */
+   public static Vector min(Vector a, Vector b) throws NullPointerException {
+      Objects.requireNonNull(a);
+      Objects.requireNonNull(b);
+      return a.getMagnitude() < b.getMagnitude() ? a : b;
+   }
+
+   /**
+    * Determines the vector with the greater magnitude.
+    *
+    * @param a one vector
+    * @param b another vector
+    *
+    * @return the vector with the greater magnitude
+    *
+    * @throws NullPointerException if one of the arguments is <code>null</code>.
+    */
+   public static Vector max(Vector a, Vector b) {
+      Objects.requireNonNull(a);
+      Objects.requireNonNull(b);
+      return a.getMagnitude() > b.getMagnitude() ? a : b;
    }
 
    /**
@@ -214,6 +311,55 @@ public class Vector implements Cloneable, Serializable {
          return 360f - a1 + a2;
       else
          return 360f - a2 + a1;
+   }
+
+   private static AngleCalculation angleCalculation(float angle) {
+      // Make sure angle is >= 0 && < 360
+      angle = angle % 360;
+      if (angle < 0)
+         angle += 360;
+
+      int x;
+      int y;
+
+      // quadrant I
+      if (angle == 0) {
+         x = 1;
+         y = 0;
+      } else if (angle < 90) {
+         x = 1;
+         y = 1;
+      } else if (angle == 90) {
+         x = 0;
+         y = 1;
+      }
+
+      // quadrant II
+      else if (angle <= 180) {
+         x = -1;
+         y = angle == 180 ? 0 : 1;
+         angle = 180 - angle;
+      }
+
+      // quadrant III
+      else if (angle <= 270) {
+         x = angle == 270 ? 0 : -1;
+         y = -1;
+         angle -= 180;
+      }
+
+      // quadrant IV
+      else if (angle < 360) {
+         x = 1;
+         y = -1;
+         angle = 360 - angle;
+      }
+
+      // this method asured, that angle is never < 0 || >= 360
+      // so that exception should never be thrown and is just here to satisfy the compiler
+      else throw new IllegalStateException("Angle should be >= 0 && < 360, but was: " + angle);
+
+      return new AngleCalculation(x, y, Math.toRadians(angle));
    }
 
    /**
@@ -372,46 +518,13 @@ public class Vector implements Cloneable, Serializable {
     */
    public Vector setAngle(float angle) {
       float magnitude = getMagnitude();
-      int x = 0;
-      int y = 0;
-
-      while (angle < 0)
-         angle += 360;
-
-      if (angle >= 360 || angle < 0)
-         angle -= 360 * (int) (angle / 360);
-
-      // quadrant I
-      if (angle >= 0 && angle <= 90) {
-         x = 1;
-         y = 1;
-      }
-      // quadrant II
-      else if (angle > 90 && angle <= 180) {
-         angle = 180 - angle;
-         x = -1;
-         y = 1;
-      }
-
-      // quadrant III
-      else if (angle > 180 && angle <= 270) {
-         angle -= 180;
-         x = -1;
-         y = -1;
-      }
-
-      // quadrant IV
-      else if (angle > 270 && angle <= 360) {
-         angle = 360 - angle;
-         x = 1;
-         y = -1;
-      }
-
-      else
+      if (magnitude == 0)
          return this;
 
-      this.x = (float) (Math.cos(Math.toRadians(angle)) * magnitude * x);
-      this.y = (float) (Math.sin(Math.toRadians(angle)) * magnitude * y);
+      AngleCalculation tuple = angleCalculation(angle);
+      this.x = (float) (Math.cos(tuple.angle) * magnitude * tuple.x);
+      this.y = (float) (Math.sin(tuple.angle) * magnitude * tuple.y);
+
       return this;
    }
 
@@ -560,6 +673,14 @@ public class Vector implements Cloneable, Serializable {
       return result;
    }
 
+   /**
+    * Checks if the x and y value are equal.
+    * The comparison of the floating point values
+    * is done by tolerating a delta that is accessible by
+    * {@link #setEqualsDelta(float)} and {@link #getEqualsDelta()}.
+    *
+    * @see #equals(Vector, float)
+    */
    @Override
    public boolean equals(Object obj) {
       if (this == obj)
@@ -568,10 +689,30 @@ public class Vector implements Cloneable, Serializable {
          return false;
       if (getClass() != obj.getClass())
          return false;
+
       Vector other = (Vector) obj;
-      if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x))
+      return equals(other, equalsDelta);
+   }
+
+   /**
+    * This method is equal to the {@link #equals(Object)} method,
+    * except that the <code>delta</code> of the comparisons of x and y
+    * is customly provided by parameter.
+    *
+    * @param other The other vector to test whether it is equal to this one
+    * @param delta The delta to use for the floating point value comparison
+    * of x and y.
+    *
+    * @return <code>true</code> if this vector is equal to <code>other</code>
+    */
+   public boolean equals(Vector other, float delta) {
+      if (this == other)
+         return true;
+      if (other == null)
          return false;
-      if (Float.floatToIntBits(this.y) != Float.floatToIntBits(other.y))
+      if (Math.abs(x - other.x) > equalsDelta)
+         return false;
+      if (Math.abs(y - other.y) > equalsDelta)
          return false;
       return true;
    }
@@ -579,6 +720,18 @@ public class Vector implements Cloneable, Serializable {
    @Override
    public String toString() {
       return "Vector{" + x + ", " + y + "}";
+   }
+
+   private static class AngleCalculation {
+      int x;
+      int y;
+      double angle;
+
+      AngleCalculation(int x, int y, double angle) {
+         this.x = x;
+         this.y = y;
+         this.angle = angle;
+      }
    }
 
 }

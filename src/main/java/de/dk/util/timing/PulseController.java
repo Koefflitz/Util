@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import de.dk.util.game.Vector;
+import de.dk.util.Vector;
 
 /**
  * Creates a pulse in the application with a specific pulse rate.

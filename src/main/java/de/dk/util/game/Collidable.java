@@ -1,5 +1,7 @@
 package de.dk.util.game;
 
+import de.dk.util.Vector;
+
 /**
  * Objects that can be handled by a {@link Collider}.
  *
@@ -34,18 +36,18 @@ public interface Collidable {
    }
 
    public default float topBorder() {
-      return getPosition().y - (float) getHeight() / 2;
+      return getPosition().y() - (float) getHeight() / 2;
    }
 
    public default float bottomBorder() {
-      return getPosition().y + (float) getHeight() / 2;
+      return getPosition().y() + (float) getHeight() / 2;
    }
 
    public default float leftBorder() {
-      return getPosition().x - (float) getWidth() / 2;
+      return getPosition().x() - (float) getWidth() / 2;
    }
 
    public default float rightBorder() {
-      return getPosition().x + (float) getWidth() / 2;
+      return getPosition().x() + (float) getWidth() / 2;
    }
 }
