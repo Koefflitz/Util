@@ -3,18 +3,21 @@ package de.dk.util.timing;
 import de.dk.util.Vector;
 
 /**
- * Represents the current cycle of a pulse and provides information about the cycle.
- * A pulsehandler attached to a {@link PulseController} will receive a Pulse object in each pulsecylce.
+ * Represents the current frame of a pulse and provides information about the pulse.
+ * A pulsehandler attached to a {@link PulseController} will receive a <code>Pulse</code> object in each frame.
  *
  * @author David Koettlitz
  * <br>Erstellt am 14.11.2016
  *
- * @see PulseController
+ * @see AsyncPulseController
  */
 public interface Pulse {
+   static final long SECOND_IN_NANOS = 1000000000L;
+   static final float DEFAULT_FPS = 60;
+   static final float DEFAULT_INTERVALL = SECOND_IN_NANOS / DEFAULT_FPS;
 
    /**
-    * Interpolates the value in order to fit the time that has passed since the last cycle.
+    * Interpolates the value in order to fit the time that has passed since the last frame.
     *
     * @param value A value that is dependend to the time to be interpolated.
     *
@@ -23,7 +26,7 @@ public interface Pulse {
    public float interpolate(float value);
 
    /**
-    * Interpolates the vector in order to fit the time that has passed since the last cycle.
+    * Interpolates the vector in order to fit the time that has passed since the last frame.
     *
     * @param v A vector that is dependend to the time to be interpolated.
     *
@@ -32,14 +35,14 @@ public interface Pulse {
    public Vector interpolate(Vector v);
 
    /**
-    * Provides the timestamp of this current pulse cycle.
+    * Provides the timestamp of this current pulse frame.
     *
     * @return The timestamp in nanoseconds
     */
    public long now();
 
    /**
-    * Provides the time that has passed since the last pulse cycle.
+    * Provides the time that has passed since the last pulse frame.
     *
     * @return The passed time in nanoseconds
     */
@@ -63,17 +66,16 @@ public interface Pulse {
    public void remove(PulseController pulse);
 
    /**
-    * Get the calls per second
+    * Get the target interval time between two frames.
     *
-    * @return the rate in which this pulse is running.
-    * In other words: How many times per second it is called.
+    * @return The target interval time
     */
-   public float getCps();
+   long getInterval();
 
    /**
-    * Get the interval time between calls.
+    * Get the number of frames that should be executed every second.
     *
-    * @return The interval time that has to pass between the calls.
+    * @return the target framerate
     */
-   public long getInterval();
+   float getFramerate();
 }

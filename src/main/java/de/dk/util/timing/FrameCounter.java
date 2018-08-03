@@ -4,11 +4,12 @@ import java.util.Objects;
 import java.util.function.IntConsumer;
 
 /**
- * A tracker for a pulse to count the frames for each second.
- * The update method has to be called in each frame of the pulse.
+ * A tracker for a pulse to determine the actual framerate by counting
+ * the instantiated frames for each second.
+ * The update method has to be called each frame of the pulse.
  * You can either call the update method by yourself or use a {@link PulseController}
- * and attach the framecounter to it. After each second the attached handler will notified
- * of how many frames were executed in that second.
+ * and attach the framecounter to it. After each second the attached handler
+ * will be notified of how many frames were executed in that second.
  *
  * @author David Koettlitz
  * <br>Erstellt am 11.11.2016

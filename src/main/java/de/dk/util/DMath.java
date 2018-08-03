@@ -13,12 +13,21 @@ import java.util.Random;
  * <br>Erstellt am 10.11.2016
  */
 public final class DMath {
+   private static final float TOLERANCE_FOR_ZERO_CHECK = 0.001f;
    private static Random rnd;
 
    private DMath() {}
 
    private static Random rnd() {
       return rnd == null ? (rnd = new Random()) : rnd;
+   }
+
+   public static boolean isRoughly0(float f, float tolerance) {
+      return f > -tolerance && f < tolerance;
+   }
+
+   public static boolean isRoughly0(float f) {
+      return isRoughly0(f, TOLERANCE_FOR_ZERO_CHECK);
    }
 
    /**

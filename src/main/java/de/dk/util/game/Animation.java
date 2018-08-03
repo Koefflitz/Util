@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import de.dk.util.timing.Pulse;
 import de.dk.util.timing.PulseController;
+import de.dk.util.timing.SimplePulseController;
 
 public class Animation<I> {
    private int index;
@@ -12,7 +13,7 @@ public class Animation<I> {
 
    public Animation(I[] images, float fps) {
       this.images = Objects.requireNonNull(images);
-      this.pulse = new PulseController(this::nextImage, fps);
+      this.pulse = new SimplePulseController(this::nextImage, fps);
    }
 
    public I getImage() {
@@ -30,12 +31,11 @@ public class Animation<I> {
       pulse.reset();
    }
 
-   public void setFps(float fps) {
-      pulse.setCps(fps);
+   public void setFramerate(float fps) {
+      pulse.setFramerate(fps);
    }
 
-   public float getFps() {
-      return pulse.getCps();
+   public float getFramerate() {
+      return pulse.getFramerate();
    }
-
 }
