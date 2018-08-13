@@ -210,6 +210,18 @@ public final class Util {
          action.accept(var);
    }
 
+   /**
+    * Processes the time to run the {@link Runnable}.
+    *
+    * @param r The runnable to be timed.
+    * @return The time in nanoseconds the runnable took to run.
+    */
+   public static long time(Runnable r) {
+      long nanos = System.nanoTime();
+      r.run();
+      return System.nanoTime() - nanos;
+   }
+
    public static <T> Consumer<T> noOp() {
       return t -> {};
    }

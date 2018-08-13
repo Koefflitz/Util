@@ -66,7 +66,7 @@ public class Collider<G extends Collidable, C extends Collidable> {
    public void collisionDetection(Iterable<? extends C> collisionObjects,
                                   Vector velocity,
                                   boolean correctVelocity) {
-      if (collisionObjects == null || (velocity.getMagnitude() == 0 && correctVelocity))
+      if (collisionObjects == null || (velocity.isZero() && correctVelocity))
          return;
 
       collisionObjects = getCollisions(velocity, collisionObjects);

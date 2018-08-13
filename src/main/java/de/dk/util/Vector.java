@@ -474,6 +474,16 @@ public class Vector implements Cloneable, Serializable {
    }
 
    /**
+    * Determines wether this vector has a magnitude or not
+    *
+    * @return <code>false</code> if x and y are both 0,
+    * <code>true</code> otherwise
+    */
+   public boolean isZero() {
+      return x == 0 && y == 0;
+   }
+
+   /**
     * Calculates the angle from the +x-level to the Vector. The angle-value goes from the plus-x-axis(0° or 360°)
     * anti-clockwise over the minus-x-axis(180°).
     * For example: If the Vector is parallel to the x-axis and has a positive x-value(Vector.right()), this

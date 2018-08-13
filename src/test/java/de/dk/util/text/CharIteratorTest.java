@@ -11,7 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.dk.util.timing.TimeUtils;
+import de.dk.util.Util;
 
 /**
  * @author David Koettlitz
@@ -145,9 +145,9 @@ public class CharIteratorTest {
       }
 
       CharIterator tmp = new CharIterator(builder.toString());
-      long slow = TimeUtils.time(tmp::readToEnd);
+      long slow = Util.time(tmp::readToEnd);
       tmp = new CharIterator(builder.toString());
-      long fast = TimeUtils.time(tmp::readFastToEnd);
+      long fast = Util.time(tmp::readFastToEnd);
       assertTrue(fast < slow, "readToEnd needed " + slow + "ns, while readFastToEnd needed " + fast + "ns");
 
       assertEquals(content, iterator.readFastToEnd());
