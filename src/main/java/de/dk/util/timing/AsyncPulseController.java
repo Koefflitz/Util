@@ -114,8 +114,14 @@ public class AsyncPulseController implements PulseController, Pulse, Runnable {
 
    @Override
    public synchronized void update(Pulse pulse) {
-      if (lastTime == 0)
+      if (lastTime == 0) {
          lastTime = pulse.now();
+         handler.accept(pulse);
+         synchronized (joinedPulses) {
+            joinedPulses.forEach(p -> p.update(pulse));
+         }
+         return;
+      }
 
       while ((frameTime = pulse.now() - lastTime) > interval) {
          handler.accept(pulse);
@@ -126,7 +132,7 @@ public class AsyncPulseController implements PulseController, Pulse, Runnable {
          if (frameCounter != null)
             frameCounter.update();
 
-         if (interval == 0 || !catchUpForSkippedFrames && frameTime >= interval * 2)
+         if (interval == 0 || !catchUpForSkippedFrames)
             lastTime = pulse.now();
          else
             lastTime += interval;

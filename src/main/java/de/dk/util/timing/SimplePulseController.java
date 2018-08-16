@@ -103,8 +103,12 @@ public class SimplePulseController implements PulseController, Pulse {
 
    @Override
    public void update(Pulse pulse) {
-      if (lastTime == 0)
+      if (lastTime == 0) {
          lastTime = pulse.now();
+         handler.accept(pulse);
+         joinedPulses.forEach(p -> p.update(pulse));
+         return;
+      }
 
       while ((frameTime = pulse.now() - lastTime) > interval) {
          handler.accept(pulse);
@@ -113,7 +117,7 @@ public class SimplePulseController implements PulseController, Pulse {
          if (frameCounter != null)
             frameCounter.update();
 
-         if (interval == 0 || !catchUpForSkippedFrames && frameTime >= interval * 2)
+         if (interval == 0 || !catchUpForSkippedFrames)
             lastTime = pulse.now();
          else
             lastTime += interval;
