@@ -13,8 +13,8 @@ import java.util.function.UnaryOperator;
  * <br>Erstellt am 20.09.2016
  */
 public class IndirectList<E> implements List<E> {
-   private final LinkedList<E> newElements = new LinkedList<>();
-   private List<E> impl;
+   protected final LinkedList<E> newElements = new LinkedList<>();
+   protected List<E> impl;
 
    public IndirectList(List<E> impl) {
       this.impl = impl;
