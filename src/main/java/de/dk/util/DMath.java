@@ -18,8 +18,37 @@ public final class DMath {
 
    private DMath() {}
 
+   /**
+    * Returns a cached {@link Random} instance.
+    * That instance is not thread safe.
+    *
+    * @return The cached <code>Random</code> instance.
+    */
    private static Random rnd() {
       return rnd == null ? (rnd = new Random()) : rnd;
+   }
+
+   /**
+    * Generates a random value between <code>min</code> and <code>max</code>,
+    * where all possible values have the same probability.
+    *
+    * @param min the minimum value of the result
+    * @param max the maximum value of the result
+    *
+    * @return A random value that is <code>&gt;= min &amp;&amp; &lt;= max</code>
+    *
+    * @throws IllegalArgumentException if <code>min</code> is greater than <code>max</code>
+    */
+   public static double rnd(double min, double max) throws IllegalArgumentException {
+      if (min > max) {
+         String msg = String.format("The minimum value(%s) was greater than the max value(%s).",
+                                    min,
+                                    max);
+
+         throw new IllegalArgumentException(msg);
+      }
+
+      return min + Math.random() * (max - min);
    }
 
    public static boolean isRoughly0(float f, float tolerance) {
