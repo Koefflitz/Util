@@ -15,8 +15,8 @@ public class Vector implements Cloneable, Serializable {
    private static final long serialVersionUID = -6572827884413220031L;
    private static float equalsDelta = 0.001f;
 
-   protected float x = 1;
-   protected float y = 1;
+   protected float x;
+   protected float y;
 
 
    public Vector(float x, float y) {
@@ -46,6 +46,10 @@ public class Vector implements Cloneable, Serializable {
     */
    public static void setEqualsDelta(float floatDelta) {
       Vector.equalsDelta = floatDelta;
+   }
+
+   public static Vector from(Vector v) {
+      return new Vector(v.x(), v.y());
    }
 
    /**
@@ -244,7 +248,7 @@ public class Vector implements Cloneable, Serializable {
       if (a == null || b == null)
          return null;
 
-      return new Vector(a.x + b.x, a.y + b.y);
+      return new Vector(a.x() + b.x(), a.y() + b.y());
    }
 
    /**
@@ -259,7 +263,7 @@ public class Vector implements Cloneable, Serializable {
       if (a == null || b == null)
          return null;
 
-      return new Vector(a.x - b.x, a.y - b.y);
+      return new Vector(a.x() - b.x(), a.y() - b.y());
    }
 
    /**
@@ -274,7 +278,7 @@ public class Vector implements Cloneable, Serializable {
       if (v == null)
          return null;
 
-      return new Vector(v.x * amount, v.y * amount);
+      return new Vector(v.x() * amount, v.y() * amount);
    }
 
    /**
@@ -289,7 +293,7 @@ public class Vector implements Cloneable, Serializable {
       if (amount == 0)
          throw new ArithmeticException("Division by zero");
 
-      return new Vector(v.x / amount, v.y / amount);
+      return new Vector(v.x() / amount, v.y() / amount);
    }
 
    /**
@@ -371,9 +375,10 @@ public class Vector implements Cloneable, Serializable {
     */
    public Vector add(Vector v) {
       if (v != null) {
-         this.x += v.x;
-         this.y += v.y;
+         this.x += v.x();
+         this.y += v.y();
       }
+
       return this;
    }
 
@@ -386,9 +391,10 @@ public class Vector implements Cloneable, Serializable {
     */
    public Vector subtract(Vector v) {
       if (v != null) {
-         this.x = this.x - v.x;
-         this.y = this.y - v.y;
+         this.x -= v.x();
+         this.y -= v.y();
       }
+
       return this;
    }
 
@@ -678,8 +684,8 @@ public class Vector implements Cloneable, Serializable {
    public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + Float.floatToIntBits(this.x);
-      result = prime * result + Float.floatToIntBits(this.y);
+      result = prime * result + Float.floatToIntBits(this.x());
+      result = prime * result + Float.floatToIntBits(this.y());
       return result;
    }
 
@@ -697,7 +703,7 @@ public class Vector implements Cloneable, Serializable {
          return true;
       if (obj == null)
          return false;
-      if (getClass() != obj.getClass())
+      if (!Vector.class.isAssignableFrom(obj.getClass()))
          return false;
 
       Vector other = (Vector) obj;
@@ -720,9 +726,9 @@ public class Vector implements Cloneable, Serializable {
          return true;
       if (other == null)
          return false;
-      if (Math.abs(x - other.x) > equalsDelta)
+      if (Math.abs(x() - other.x()) > equalsDelta)
          return false;
-      if (Math.abs(y - other.y) > equalsDelta)
+      if (Math.abs(y() - other.y()) > equalsDelta)
          return false;
       return true;
    }
