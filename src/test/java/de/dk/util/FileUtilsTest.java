@@ -19,15 +19,12 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
  */
 public class FileUtilsTest {
-   private static final Logger LOGGER = LoggerFactory.getLogger(FileUtilsTest.class);
    private static final String FILE_CONTENT = "This file is created by a unit test and should be deleted.";
 
    private File workingDir;
@@ -55,7 +52,7 @@ public class FileUtilsTest {
             if (out != null)
                out.close();
          } catch (IOException e) {
-            LOGGER.warn("Filewriter could not be closed: " + e.getMessage());
+            System.out.println("Filewriter could not be closed: " + e.getMessage());
          }
       }
    }
@@ -195,12 +192,13 @@ public class FileUtilsTest {
    @AfterEach
    public void cleanUp() {
       if (workingDir == null) {
-         LOGGER.warn("Working dir was null when intended to delete it.");
+         System.out.println("Working dir was null when intended to delete it.");
       } else if (workingDir.exists()) {
          try {
             delete(workingDir);
          } catch (IOException e) {
-            LOGGER.warn("Could not delete working dir: " + workingDir.getAbsolutePath(), e);
+            System.out.println("Could not delete working dir: " + workingDir.getAbsolutePath());
+            e.printStackTrace();
          }
       }
    }
