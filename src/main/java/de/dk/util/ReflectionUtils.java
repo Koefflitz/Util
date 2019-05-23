@@ -1,18 +1,14 @@
 package de.dk.util;
 
+import de.dk.util.function.UnsafeFunction;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import de.dk.util.function.UnsafeFunction;
 
 /**
  * @author David Koettlitz
@@ -284,6 +280,33 @@ public final class ReflectionUtils {
    }
 
    /**
+    * Parses the given String <code>value</code> to the <code>field</code>s
+    * primitive type and assigns the value to the <code>field</code>.
+    *
+    * @param target the owner object of the field to assign the <code>value</code> to
+    * @param field the field of <code>target</code> to assign the <code>value</code> to
+    * @param value the String value representing a primitive to be parsed
+    *              and assigned to the <code>field</code>
+    *
+    * @throws SecurityException if the field is not modifiable via reflection
+    * @throws IllegalArgumentException if the value cannot be parsed to the fields type
+    * or the fields type is a primitive, primitive wrapper nor String
+    */
+   public static void setPrimitiveValue(Object target,
+                                        Field field,
+                                        String value) throws SecurityException,
+                                                             IllegalArgumentException {
+      if (!field.isAccessible())
+         field.setAccessible(true);
+
+      try {
+         field.set(target, Primitive.of(field.getType()).parse(value));
+      } catch (IllegalAccessException e) {
+         throw new IllegalArgumentException("Could not modify field " + field, e);
+      }
+   }
+
+   /**
     * Checks whether the given type is a primitive type (or a String).
     *
     * @param type The type to be checked.
@@ -317,16 +340,21 @@ public final class ReflectionUtils {
       }
 
       /**
-       * Provides an instance of a Primitive, that is matching the given primitive type (or String).
+       * Provides an instance of a Primitive, that is matching the given primitive type
+       * (or <code>String</code>).
        * An object wrapper class of the primitives will also go for a result.
        *
-       * @param type The primitive type, object wrapper class of a primitive type or String class
-       * @param <P> The primitive type, object wrapper class of a primitive type or String class
+       * @param type The primitive type, primitive wrapper class of a primitive type or <code>String</code>
+       * @param <P> The primitive type, primitive wrapper class of a primitive type or <code>String</code>
        *
-       * @return The primitive instance matching the given primitive type, object wrapper class or String class.
-       *         Otherwise <code>null</code> will be returned.
+       * @return The primitive instance matching the given primitive type,
+       * primitive wrapper class or String class.
+       *
+       * @throws IllegalArgumentException if the given <code>type</code> is neither of
+       * a primitive type primitive wrapper class or <code>String</code>
+       *
        */
-      public static <P> Primitive<P> of(Class<P> type) {
+      public static <P> Primitive<P> of(Class<P> type) throws IllegalArgumentException {
          for (Primitive<?> p : PRIMITIVES) {
             if (p.type.equals(type) || p.boxType.equals(type)) {
                @SuppressWarnings("unchecked")
@@ -334,7 +362,7 @@ public final class ReflectionUtils {
                return returnVal;
             }
          }
-         return null;
+         throw new IllegalArgumentException(type + " is not a primitive, primitive wrapper, nor String.");
       }
 
       /**
@@ -353,8 +381,12 @@ public final class ReflectionUtils {
          invokePrimitiveSetter(target, field, converter.apply(value), type);
       }
 
-      public T parse(String string) {
-         return converter.apply(string);
+      public T parse(String string) throws IllegalArgumentException {
+         try {
+            return converter.apply(string);
+         } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Could not parse \"" + string + "\" to " + type.getName(), e);
+         }
       }
 
       public Class<T> getType() {

@@ -1,14 +1,15 @@
 package de.dk.util;
 
+import de.dk.util.function.UnsafeConsumer;
+import de.dk.util.function.UnsafeSupplier;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import de.dk.util.function.UnsafeConsumer;
-import de.dk.util.function.UnsafeSupplier;
+import java.util.function.Supplier;
 
 /**
  * Some static utility methods, that can sometimes be useful.
@@ -19,6 +20,20 @@ import de.dk.util.function.UnsafeSupplier;
 public final class Util {
 
    private Util() {}
+
+   /**
+    * Ensures that an object is created, if <code>null</code>
+    *
+    * @param object the object to do the nullcheck on
+    * @param supplier the supplier of the object, if <code>object</code> is <code>null</code>
+    * @param <E> the objects type
+    *
+    * @return the object if not <code>null</code>, otherwise the created object from the given
+    * supplier
+    */
+   public static <E> E nonNull(E object, Supplier<E> supplier) {
+      return object != null ? object : supplier.get();
+   }
 
    public static int[] indicesOfEquals(Object[] a, Object[] b) {
       if (Objects.requireNonNull(a).length == 0
